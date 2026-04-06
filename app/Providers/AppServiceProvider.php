@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\View\CartComposer;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share cart & wishlist counts to navbar
+        View::composer('layouts.navigation', CartComposer::class);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Buyer\CartController;
+use App\Http\Controllers\Buyer\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,23 +18,25 @@ Route::middleware(['auth', 'role:buyer,seller,admin'])->prefix('buyer')->name('b
         return view('buyer.dashboard');
     })->name('dashboard');
 
-    // Orders
+    // Cart
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+    // Wishlist
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Orders (Fase 5B)
     // Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
     // Route::get('/orders/{id}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
     // Route::post('/orders/{id}/confirm', [App\Http\Controllers\Buyer\OrderController::class, 'confirm'])->name('orders.confirm');
 
-    // Cart
-    // Route::get('/cart', [App\Http\Controllers\Buyer\CartController::class, 'index'])->name('cart.index');
-    // Route::post('/cart', [App\Http\Controllers\Buyer\CartController::class, 'store'])->name('cart.store');
-    // Route::delete('/cart/{id}', [App\Http\Controllers\Buyer\CartController::class, 'destroy'])->name('cart.destroy');
-
-    // Wishlist
-    // Route::get('/wishlist', [App\Http\Controllers\Buyer\WishlistController::class, 'index'])->name('wishlist.index');
-    // Route::post('/wishlist/toggle', [App\Http\Controllers\Buyer\WishlistController::class, 'toggle'])->name('wishlist.toggle');
-
-    // Checkout
-    // Route::get('/checkout', [App\Http\Controllers\Buyer\CheckoutController::class, 'index'])->name('checkout.index');
-    // Route::post('/checkout', [App\Http\Controllers\Buyer\CheckoutController::class, 'store'])->name('checkout.store');
+    // Checkout (Fase 5B)
+    Route::post('/checkout/init', [\App\Http\Controllers\Buyer\CheckoutController::class, 'init'])->name('checkout.init');
+    Route::post('/checkout', [\App\Http\Controllers\Buyer\CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [\App\Http\Controllers\Buyer\CheckoutController::class, 'process'])->name('checkout.process');
 
     // Reviews
     // Route::get('/reviews', [App\Http\Controllers\Buyer\ReviewController::class, 'index'])->name('reviews.index');
@@ -51,3 +55,4 @@ Route::middleware(['auth', 'role:buyer,seller,admin'])->prefix('buyer')->name('b
     // Route::delete('/addresses/{id}', [App\Http\Controllers\Buyer\AddressController::class, 'destroy'])->name('addresses.destroy');
     // Route::post('/addresses/{id}/primary', [App\Http\Controllers\Buyer\AddressController::class, 'setPrimary'])->name('addresses.primary');
 });
+

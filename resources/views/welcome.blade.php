@@ -17,7 +17,7 @@
                     Temukan segala kebutuhan jaringan, server, dan alat telekomunikasi dari distributor resmi — dijamin original.
                 </p>
                 <div class="flex flex-wrap gap-4">
-                    <a href="#" class="bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">
+                    <a href="{{ route('products.index') }}" class="bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">
                         Mulai Belanja
                     </a>
                     <a href="#kategori" class="bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 px-6 md:px-8 py-3 md:py-4 rounded-xl backdrop-blur-sm transition-colors text-sm sm:text-base block">
@@ -37,7 +37,7 @@
     <section id="kategori" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex items-center justify-between mb-6">
             <h2 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Kategori Pilihan</h2>
-            <a href="#" class="text-brand-orange font-semibold text-sm hover:underline">Lihat Semua</a>
+            <a href="{{ route('products.index') }}" class="text-brand-orange font-semibold text-sm hover:underline">Lihat Semua</a>
         </div>
         
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-6">
@@ -46,7 +46,7 @@
             @endphp
             
             @forelse($categories as $category)
-                <a href="#" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-navy/30 transition-all duration-300">
+                <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-navy/30 transition-all duration-300">
                     <div class="w-14 h-14 bg-brand-navylight rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-orange transition-colors duration-300 text-brand-navy group-hover:text-white">
                         {!! $category->icon_svg !!}
                     </div>
@@ -143,7 +143,7 @@
             </div>
             
             <div class="mt-10 text-center">
-                <a href="#" class="inline-block border-2 border-brand-navy text-brand-navy font-bold hover:bg-brand-navy hover:text-white transition-colors px-10 py-3 rounded-full">
+                <a href="{{ route('products.index') }}" class="inline-block border-2 border-brand-navy text-brand-navy font-bold hover:bg-brand-navy hover:text-white transition-colors px-10 py-3 rounded-full">
                     Muat Lebih Banyak
                 </a>
             </div>

@@ -57,37 +57,47 @@
 
                 @auth
                     <!-- Notification User -->
-                    <x-dropdown align="right" width="80">
+                    <x-dropdown align="right" width="w-80" contentClasses="py-0 overflow-hidden bg-white">
                         <x-slot name="trigger">
-                            <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none hidden sm:block">
+                            <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none hidden sm:flex items-center justify-center p-1 mt-1 mr-2">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
-                                <span class="absolute -top-1 -right-1 bg-brand-orange text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
-                                    1
-                                </span>
+                                <span class="absolute top-0 right-0 bg-brand-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">1</span>
                             </button>
                         </x-slot>
                         <x-slot name="content">
-                            <div class="px-4 py-3 border-b border-gray-100">
+                            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                                 <p class="text-sm font-bold text-gray-800">Notifikasi</p>
+                                <a href="#" class="text-[11px] font-medium text-brand-orange hover:text-orange-600 transition-colors">Tandai sudah dibaca</a>
                             </div>
-                            <div class="p-6 text-center text-gray-500 text-sm">
-                                <x-icon name="bell-slash" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                                Belum ada notifikasi baru.
+                            <div class="p-8 text-center flex flex-col items-center justify-center">
+                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-300">
+                                    <x-icon name="bell-slash" class="w-8 h-8" />
+                                </div>
+                                <p class="text-sm font-medium text-gray-500">Belum ada notifikasi baru</p>
+                                <p class="text-[11px] text-gray-400 mt-1">Kami akan mengabari Anda jika ada pembaruan pesanan.</p>
+                            </div>
+                            <div class="px-4 py-2 border-t border-gray-100 bg-gray-50 text-center">
+                                <a href="#" class="text-[11px] font-bold text-brand-navy hover:underline transition-all">Lihat Semua Notifikasi</a>
                             </div>
                         </x-slot>
                     </x-dropdown>
 
                     <!-- Cart -->
-                    <a href="#" class="text-gray-500 hover:text-brand-navy relative group transition-colors">
+                    <a href="{{ route('buyer.cart.index') }}" class="text-gray-500 hover:text-brand-navy relative group transition-colors">
                         <x-icon name="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7" />
-                        <span class="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
-                            3
+                        <span id="navCartBadge" class="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white {{ ($cartCount ?? 0) == 0 ? 'hidden' : '' }}">
+                            {{ $cartCount ?? 0 }}
                         </span>
                     </a>
                     
                     <!-- Wishlist -->
-                    <a href="#" class="hidden sm:block text-gray-500 hover:text-red-500 transition-colors">
+                    <a href="{{ route('buyer.wishlist.index') }}" class="hidden sm:block text-gray-500 hover:text-red-500 transition-colors relative">
                         <x-icon name="heart" class="w-6 h-6 sm:w-7 sm:h-7" />
+                        @if(($wishlistCount ?? 0) > 0)
+                            <span class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
+                                {{ $wishlistCount }}
+                            </span>
+                        @endif
                     </a>
 
                     <div class="hidden sm:flex items-center border-l-2 border-gray-100 pl-6 gap-3">
@@ -201,8 +211,11 @@
                     <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         Dashboard
                     </x-responsive-nav-link>
-                    <x-responsive-nav-link href="#">
-                        Wishlist
+                    <x-responsive-nav-link :href="route('buyer.cart.index')">
+                        Keranjang ({{ $cartCount ?? 0 }})
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('buyer.wishlist.index')">
+                        Wishlist ({{ $wishlistCount ?? 0 }})
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('profile.edit')">
                         Profil Saya
