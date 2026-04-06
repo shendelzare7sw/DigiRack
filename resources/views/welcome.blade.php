@@ -1,34 +1,34 @@
 <x-app-layout>
-    <x-slot name="title">DigiRack - Pusat Peralatan Jaringan & IT</x-slot>
+    <x-slot name="title">Pusat Peralatan Jaringan & IT</x-slot>
 
     <!-- 1. Hero Banner Section -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="relative bg-brand-navy rounded-2xl overflow-hidden shadow-xl aspect-[21/9] sm:aspect-[24/7] flex items-center">
+        <div class="relative bg-brand-navy rounded-2xl overflow-hidden shadow-xl min-h-[350px] md:min-h-[450px] lg:min-h-[500px] flex items-center">
             <!-- Decorative Elements -->
             <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-brand-orange/20 to-transparent"></div>
             <div class="absolute -right-20 -bottom-20 w-96 h-96 border-8 border-white/5 rounded-full"></div>
             
-            <div class="relative z-10 px-6 sm:px-12 md:px-16 w-full max-w-3xl text-white py-8 sm:py-0">
-                <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-balance leading-tight mb-4 md:mb-6 tracking-tight">
+            <div class="relative z-10 w-full max-w-4xl px-6 sm:px-10 md:px-16 lg:px-20 text-white py-12 md:py-16">
+                <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.2] md:leading-[1.1] mb-4 md:mb-6 tracking-tight">
                     Infrastruktur IT Enterprise
                     <span class="block text-brand-orange mt-1 md:mt-2">Terpercaya.</span>
                 </h1>
-                <p class="text-sm sm:text-base md:text-lg text-gray-200 mb-8 max-w-xl hidden sm:block leading-relaxed">
+                <p class="text-sm sm:text-base md:text-lg text-gray-200 mb-8 max-w-2xl hidden sm:block leading-relaxed">
                     Temukan segala kebutuhan jaringan, server, dan alat telekomunikasi dari distributor resmi — dijamin original.
                 </p>
-                <div class="flex gap-4">
-                    <a href="#" class="bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">
+                <div class="flex flex-wrap gap-4">
+                    <a href="#" class="bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">
                         Mulai Belanja
                     </a>
-                    <a href="#kategori" class="bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 px-6 py-3 rounded-xl backdrop-blur-sm transition-colors text-sm sm:text-base block">
+                    <a href="#kategori" class="bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 px-6 md:px-8 py-3 md:py-4 rounded-xl backdrop-blur-sm transition-colors text-sm sm:text-base block">
                         Jelajahi Kategori
                     </a>
                 </div>
             </div>
             
             <!-- Graphic/Image placeholder -->
-            <div class="absolute right-0 bottom-0 h-full w-1/2 hidden lg:flex items-center justify-end pr-12">
-                <x-icon name="server-stack" class="w-64 h-64 text-white/10" />
+            <div class="absolute right-0 bottom-0 h-full w-1/2 md:w-5/12 hidden md:flex items-center justify-end pr-8 lg:pr-16 pointer-events-none">
+                <x-icon name="server-stack" class="w-48 h-48 lg:w-80 lg:h-80 text-white/5 drop-shadow-2xl translate-y-4 lg:translate-y-8" />
             </div>
         </div>
     </section>
