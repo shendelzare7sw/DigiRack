@@ -54,10 +54,10 @@
                 </label>
                 <label class="flex-1 cursor-pointer group">
                     <input type="radio" name="role" value="seller" x-model="role" class="sr-only peer" />
-                    <div class="p-4 text-center rounded-xl border-2 transition-all duration-200 peer-checked:border-brand-orange peer-checked:bg-brand-orangelight border-gray-200 group-hover:border-brand-orange/50 relative overflow-hidden">
-                        <div class="absolute inset-x-0 top-0 h-1 bg-brand-orange transform origin-left transition-transform duration-300 scale-x-0 peer-checked:scale-x-100"></div>
-                        <x-icon name="building-storefront" class="w-6 h-6 mx-auto mb-2" x-bind:class="role === 'seller' ? 'text-brand-orange' : 'text-gray-400'" />
-                        <span class="text-sm font-bold block" x-bind:class="role === 'seller' ? 'text-brand-orange' : 'text-gray-600'">Penjual</span>
+                    <div class="p-4 text-center rounded-xl border-2 transition-all duration-200 peer-checked:border-brand-blue peer-checked:bg-brand-bluelight border-gray-200 group-hover:border-brand-blue/50 relative overflow-hidden">
+                        <div class="absolute inset-x-0 top-0 h-1 bg-brand-blue transform origin-left transition-transform duration-300 scale-x-0 peer-checked:scale-x-100"></div>
+                        <x-icon name="building-storefront" class="w-6 h-6 mx-auto mb-2" x-bind:class="role === 'seller' ? 'text-brand-blue' : 'text-gray-400'" />
+                        <span class="text-sm font-bold block" x-bind:class="role === 'seller' ? 'text-brand-blue' : 'text-gray-600'">Penjual</span>
                     </div>
                 </label>
             </div>
@@ -65,14 +65,14 @@
         </div>
 
         <div class="mt-8">
-            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brand-orange hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-orange transition-all active:scale-[0.98]">
+            <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brand-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all active:scale-[0.98]">
                 Daftar Sekarang
             </button>
         </div>
         
         <div class="mt-6 text-center text-sm text-gray-600">
             Sudah punya akun? 
-            <a href="{{ route('login') }}" class="font-bold text-brand-navy hover:text-brand-orange transition-colors">
+            <a href="{{ route('login') }}" class="font-bold text-brand-navy hover:text-brand-blue transition-colors">
                 Masuk di sini
             </a>
         </div>

@@ -103,7 +103,7 @@
         {{-- Page Header --}}
         <div class="mb-6">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900 flex items-center gap-3">
-                <x-icon name="shopping-cart" class="w-7 h-7 text-brand-orange" />
+                <x-icon name="shopping-cart" class="w-7 h-7 text-brand-blue" />
                 Keranjang Belanja
             </h1>
         </div>
@@ -111,12 +111,12 @@
         @if($cartItems->isEmpty())
             {{-- Empty Cart --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 sm:p-16 text-center">
-                <div class="w-28 h-28 bg-brand-orangelight rounded-full flex items-center justify-center mx-auto mb-6">
-                    <x-icon name="shopping-cart" class="w-14 h-14 text-brand-orange/50" />
+                <div class="w-28 h-28 bg-brand-bluelight rounded-full flex items-center justify-center mx-auto mb-6">
+                    <x-icon name="shopping-cart" class="w-14 h-14 text-brand-blue/50" />
                 </div>
                 <h2 class="font-display font-bold text-xl text-gray-700 mb-2">Keranjang Masih Kosong</h2>
                 <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Ayo mulai belanja dan temukan produk infrastruktur IT terbaik untuk kebutuhan Anda.</p>
-                <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-xl shadow-sm transition-colors">
+                <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold px-8 py-3.5 rounded-xl shadow-sm transition-colors">
                     <x-icon name="magnifying-glass" class="w-5 h-5" />
                     Jelajahi Produk
                 </a>
@@ -129,7 +129,7 @@
                     {{-- Master Checkbox --}}
                     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
                         <input type="checkbox" x-model="selectAll" @change="toggleAll()"
-                            class="w-5 h-5 text-brand-orange border-gray-300 rounded focus:ring-brand-orange/50 cursor-pointer">
+                            class="w-5 h-5 text-brand-blue border-gray-300 rounded focus:ring-brand-blue/50 cursor-pointer">
                         <label class="font-semibold text-gray-700 cursor-pointer" @click="selectAll = !selectAll; toggleAll()">Pilih Semua Barang</label>
                     </div>
 
@@ -154,7 +154,7 @@
                                         {{-- Checkbox --}}
                                         <div class="pt-2 sm:pt-8">
                                             <input type="checkbox" name="selected_items[]" value="{{ $cartItem->id }}" x-model="selectedItems" @change="checkAllState()"
-                                                class="item-checkbox w-5 h-5 text-brand-orange border-gray-300 rounded focus:ring-brand-orange/50 cursor-pointer">
+                                                class="item-checkbox w-5 h-5 text-brand-blue border-gray-300 rounded focus:ring-brand-blue/50 cursor-pointer">
                                         </div>
 
                                         {{-- Hidden Data --}}
@@ -196,7 +196,7 @@
 
                                                 {{-- Price & Delete --}}
                                                 <div class="flex items-center gap-4">
-                                                    <span id="subtotal-{{ $cartItem->id }}" class="font-bold text-brand-orange text-sm sm:text-base">
+                                                    <span id="subtotal-{{ $cartItem->id }}" class="font-bold text-brand-blue text-sm sm:text-base">
                                                         Rp {{ number_format($cartItem->product->price * $cartItem->quantity, 0, ',', '.') }}
                                                     </span>
                                                     <button type="button" @click="removeItem({{ $cartItem->id }})"
@@ -231,7 +231,7 @@
 
                         <div class="flex justify-between items-center mb-6">
                             <span class="font-bold text-gray-900">Total Tagihan</span>
-                            <span class="font-display font-bold text-xl text-brand-orange" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTotalPrice)"></span>
+                            <span class="font-display font-bold text-xl text-brand-blue" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTotalPrice)"></span>
                         </div>
 
                         <button type="submit" :disabled="selectedItems.length === 0" 
@@ -245,7 +245,7 @@
                         @endif
 
                         <a href="{{ route('products.index') }}" class="block w-full text-center text-sm text-brand-navy hover:text-brand-navydark font-semibold mt-4 py-2 transition-colors">
-                            ← Lanjut Belanja
+                            â† Lanjut Belanja
                         </a>
                     </div>
                 </div>

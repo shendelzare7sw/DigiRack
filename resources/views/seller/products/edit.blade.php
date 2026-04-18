@@ -81,7 +81,7 @@
             {{-- Harga & Stok --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h2 class="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
-                    <x-icon name="banknotes" class="w-5 h-5 text-brand-orange" />
+                    <x-icon name="banknotes" class="w-5 h-5 text-brand-blue" />
                     Harga & Stok
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -117,11 +117,11 @@
                         @foreach($product->images as $img)
                             <label class="relative cursor-pointer group">
                                 <input type="checkbox" name="delete_images[]" value="{{ $img->id }}" class="sr-only peer">
-                                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-200 peer-checked:border-red-500 peer-checked:opacity-40 transition-all {{ $img->is_primary ? 'ring-2 ring-brand-orange ring-offset-2' : '' }}">
+                                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-200 peer-checked:border-red-500 peer-checked:opacity-40 transition-all {{ $img->is_primary ? 'ring-2 ring-brand-blue ring-offset-2' : '' }}">
                                     <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover">
                                 </div>
                                 @if($img->is_primary)
-                                    <span class="absolute bottom-0 inset-x-0 bg-brand-orange text-white text-[9px] font-bold text-center py-0.5 rounded-b-lg">UTAMA</span>
+                                    <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5 rounded-b-lg">UTAMA</span>
                                 @endif
                                 <div class="absolute inset-0 bg-red-500/20 rounded-xl hidden peer-checked:flex items-center justify-center">
                                     <x-icon name="trash" class="w-6 h-6 text-red-600" />
@@ -175,7 +175,7 @@
                 <a href="{{ route('seller.products.index') }}" class="text-gray-500 hover:text-gray-700 font-semibold text-sm px-6 py-3 transition-colors">
                     Batal
                 </a>
-                <button type="submit" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-colors flex items-center gap-2">
+                <button type="submit" class="bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-colors flex items-center gap-2">
                     <x-icon name="check" class="w-4 h-4" />
                     Simpan Perubahan
                 </button>

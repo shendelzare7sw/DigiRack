@@ -39,7 +39,7 @@
                             @forelse($fees as $fee)
                             <tr>
                                 <td class="py-3 font-semibold">{{ $fee->name }}</td>
-                                <td class="py-3 text-brand-orange font-bold">Rp {{ number_format($fee->amount, 0, ',', '.') }}</td>
+                                <td class="py-3 text-brand-blue font-bold">Rp {{ number_format($fee->amount, 0, ',', '.') }}</td>
                                 <td class="py-3">
                                     <span class="px-2 py-1 rounded text-xs text-white {{ $fee->is_active ? 'bg-green-500' : 'bg-gray-400' }}">
                                         {{ $fee->is_active ? 'Aktif' : 'NonAktif' }}

@@ -72,7 +72,7 @@
             {{-- Harga & Stok --}}
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                 <h2 class="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
-                    <x-icon name="banknotes" class="w-5 h-5 text-brand-orange" />
+                    <x-icon name="banknotes" class="w-5 h-5 text-brand-blue" />
                     Harga & Stok
                 </h2>
 
@@ -113,9 +113,9 @@
 
                     <div x-show="previews.length > 0" class="flex gap-3 flex-wrap">
                         <template x-for="(src, i) in previews" :key="i">
-                            <div class="w-24 h-24 rounded-xl overflow-hidden border-2 relative" :class="i === 0 ? 'border-brand-orange' : 'border-gray-200'">
+                            <div class="w-24 h-24 rounded-xl overflow-hidden border-2 relative" :class="i === 0 ? 'border-brand-blue' : 'border-gray-200'">
                                 <img :src="src" class="w-full h-full object-cover">
-                                <span x-show="i === 0" class="absolute bottom-0 inset-x-0 bg-brand-orange text-white text-[9px] font-bold text-center py-0.5">UTAMA</span>
+                                <span x-show="i === 0" class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">UTAMA</span>
                             </div>
                         </template>
                     </div>
@@ -157,7 +157,7 @@
                 <a href="{{ route('seller.products.index') }}" class="text-gray-500 hover:text-gray-700 font-semibold text-sm px-6 py-3 transition-colors">
                     Batal
                 </a>
-                <button type="submit" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-colors flex items-center gap-2">
+                <button type="submit" class="bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-colors flex items-center gap-2">
                     <x-icon name="check" class="w-4 h-4" />
                     Simpan Produk
                 </button>

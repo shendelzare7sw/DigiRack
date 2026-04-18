@@ -19,7 +19,7 @@
                 </div>
                 <h2 class="font-display font-bold text-xl text-gray-700 mb-2">Wishlist Masih Kosong</h2>
                 <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Simpan produk favorit Anda di sini agar mudah ditemukan nanti.</p>
-                <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold px-8 py-3.5 rounded-xl shadow-sm transition-colors">
+                <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold px-8 py-3.5 rounded-xl shadow-sm transition-colors">
                     <x-icon name="magnifying-glass" class="w-5 h-5" />
                     Jelajahi Produk
                 </a>
@@ -50,7 +50,7 @@
                                     </h3>
                                 </a>
                                 <div class="mt-2">
-                                    <p class="text-base font-bold text-brand-orange">{{ $wishlist->product->formatted_price }}</p>
+                                    <p class="text-base font-bold text-brand-blue">{{ $wishlist->product->formatted_price }}</p>
                                 </div>
                                 <div class="mt-2 flex items-center gap-1">
                                     <x-star-rating :value="$wishlist->product->avg_rating" size="w-3.5 h-3.5" />

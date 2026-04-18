@@ -17,7 +17,7 @@
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Kelola Produk</h1>
                 <p class="text-sm text-gray-500 mt-1">{{ $stats['total'] }} produk • {{ $stats['active'] }} aktif • {{ $stats['lowStock'] }} stok menipis</p>
             </div>
-            <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
+            <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
                 <x-icon name="plus" class="w-4 h-4" />
                 Tambah Produk
             </a>
@@ -66,7 +66,7 @@
                     </div>
                     <h3 class="font-bold text-lg text-gray-700 mb-2">Belum Ada Produk</h3>
                     <p class="text-gray-500 text-sm mb-6">Mulai berjualan dengan menambahkan produk pertama Anda.</p>
-                    <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors">
+                    <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors">
                         <x-icon name="plus" class="w-4 h-4" /> Tambah Produk
                     </a>
                 </div>
@@ -101,10 +101,10 @@
                                         </div>
                                     </td>
                                     <td class="px-5 py-4 text-gray-600">{{ $product->category->name ?? '-' }}</td>
-                                    <td class="px-5 py-4 text-right font-semibold text-brand-orange">{{ $product->formatted_price }}</td>
+                                    <td class="px-5 py-4 text-right font-semibold text-brand-blue">{{ $product->formatted_price }}</td>
                                     <td class="px-5 py-4">
                                         <div class="text-center">
-                                            <span class="font-semibold {{ $product->stock === 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-orange-500' : 'text-gray-900') }}">
+                                            <span class="font-semibold {{ $product->stock === 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-blue-500' : 'text-gray-900') }}">
                                                 {{ $product->stock }}
                                             </span>
                                         </div>

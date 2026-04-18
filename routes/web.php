@@ -23,6 +23,9 @@ Route::post('/api/ongkir/calculate', [\App\Http\Controllers\Api\OngkirController
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
+// Public Storefront (no login required)
+Route::get('/toko/{slug}', [\App\Http\Controllers\Public\StoreController::class, 'show'])->name('store.show');
+
 // Auth-protected routes (Breeze profile)
 Route::middleware('auth')->group(function () {
     // Smart dashboard redirect based on role

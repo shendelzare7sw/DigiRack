@@ -61,13 +61,13 @@
                         <x-slot name="trigger">
                             <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none flex items-center justify-center p-1 mt-1 mr-2">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
-                                <span class="absolute top-0 right-0 bg-brand-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">1</span>
+                                <span class="absolute top-0 right-0 bg-brand-blue text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">1</span>
                             </button>
                         </x-slot>
                         <x-slot name="content">
                             <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                                 <p class="text-sm font-bold text-gray-800">Notifikasi</p>
-                                <a href="#" class="text-[11px] font-medium text-brand-orange hover:text-orange-600 transition-colors">Tandai sudah dibaca</a>
+                                <a href="#" class="text-[11px] font-medium text-brand-blue hover:text-blue-600 transition-colors">Tandai sudah dibaca</a>
                             </div>
                             <div class="p-8 text-center flex flex-col items-center justify-center">
                                 <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-300">
@@ -86,7 +86,7 @@
                     @if(!Auth::user()->isAdmin())
                         <a href="{{ route('buyer.cart.index') }}" class="text-gray-500 hover:text-brand-navy relative group transition-colors">
                             <x-icon name="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7" />
-                            <span id="navCartBadge" class="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white {{ ($cartCount ?? 0) == 0 ? 'hidden' : '' }}">
+                            <span id="navCartBadge" class="absolute -top-1.5 -right-2 bg-brand-blue text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white {{ ($cartCount ?? 0) == 0 ? 'hidden' : '' }}">
                                 {{ $cartCount ?? 0 }}
                             </span>
                         </a>
@@ -126,7 +126,7 @@
                                             <x-icon name="building-storefront" class="w-4 h-4 text-brand-navy" />
                                             <span class="text-xs font-bold text-gray-700">Toko Saya</span>
                                         </div>
-                                        <a href="{{ route('seller.dashboard') }}" class="text-[10px] bg-brand-orange text-white px-2 py-1 rounded shadow-sm hover:bg-orange-600 font-bold transition">Buka</a>
+                                        <a href="{{ route('seller.dashboard') }}" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded shadow-sm hover:bg-blue-600 font-bold transition">Buka</a>
                                     </div>
                                 @endif
                                 <x-dropdown-link :href="route('dashboard')">
@@ -152,15 +152,15 @@
                             <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                         </button>
                         
-                        <div x-show="notifOpen" x-transition x-cloak class="absolute right-[-80px] mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 z-50 overflow-hidden">
+                        <div x-show="notifOpen" x-transition x-cloak class="absolute right-[-10px] sm:right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 z-50 overflow-hidden">
                             <div class="p-6 text-center">
-                                <div class="w-20 h-20 bg-brand-orangelight rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
-                                    <x-icon name="user" class="w-8 h-8 text-brand-orange" />
+                                <div class="w-20 h-20 bg-brand-bluelight rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
+                                    <x-icon name="user" class="w-8 h-8 text-brand-blue" />
                                 </div>
                                 <p class="text-sm text-gray-500 mb-6 px-4">Log in untuk lihat notifikasi pembaruan pesanan dan promo.</p>
                                 <div class="grid grid-cols-2 text-sm font-bold border-t border-gray-100 -mx-6 -mb-6 bg-gray-50/50">
                                     <a href="{{ route('register') }}" class="py-3.5 text-gray-600 hover:bg-gray-100 transition-colors border-r border-gray-100">Daftar</a>
-                                    <a href="{{ route('login') }}" class="py-3.5 text-brand-orange hover:bg-brand-orangelight transition-colors">Log In</a>
+                                    <a href="{{ route('login') }}" class="py-3.5 text-brand-blue hover:bg-brand-bluelight transition-colors">Log In</a>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +214,7 @@
                     <img src="{{ Auth::user()->avatar_url }}" alt="Avatar" class="w-10 h-10 rounded-full">
                     <div>
                         <div class="font-semibold text-base text-gray-800">{{ Auth::user()->name }}</div>
-                        <div class="font-medium text-xs text-brand-orange uppercase">{{ Auth::user()->role }}</div>
+                        <div class="font-medium text-xs text-brand-blue uppercase">{{ Auth::user()->role }}</div>
                     </div>
                 </div>
                 
@@ -225,7 +225,7 @@
                                 <x-icon name="building-storefront" class="w-5 h-5 text-brand-navy" />
                                 <span class="text-sm font-bold text-gray-700">Toko Saya</span>
                             </div>
-                            <a href="{{ route('seller.dashboard') }}" class="text-xs bg-brand-orange text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-orange-600 font-bold transition">Buka Toko</a>
+                            <a href="{{ route('seller.dashboard') }}" class="text-xs bg-brand-blue text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-600 font-bold transition">Buka Toko</a>
                         </div>
                         <x-responsive-nav-link :href="route('buyer.cart.index')">
                             Keranjang ({{ $cartCount ?? 0 }})
@@ -257,7 +257,7 @@
                 <a href="{{ route('login') }}" class="block w-full text-center text-brand-navy font-bold text-base px-4 py-3 border-2 border-brand-navy rounded-xl transition-colors hover:bg-brand-navylight">
                     Masuk
                 </a>
-                <a href="{{ route('register') }}" class="block w-full text-center bg-brand-orange text-white font-bold text-base px-4 py-3 rounded-xl shadow-sm transition-colors hover:bg-orange-600">
+                <a href="{{ route('register') }}" class="block w-full text-center bg-brand-blue text-white font-bold text-base px-4 py-3 rounded-xl shadow-sm transition-colors hover:bg-blue-600">
                     Daftar Akun Baru
                 </a>
             </div>

@@ -17,7 +17,7 @@
                     @csrf
                     <label class="block text-sm mb-1">Jumlah Tarik (Min: 10.000)</label>
                     <input type="number" name="amount" required class="border p-2 rounded mb-2">
-                    <button type="submit" class="bg-brand-orange text-white px-4 py-2 rounded ml-2">Request Payout</button>
+                    <button type="submit" class="bg-brand-blue text-white px-4 py-2 rounded ml-2">Request Payout</button>
                     <p class="text-xs text-gray-500 mt-2">Pencairan akan dikenakan potongan Admin Fee yang akan dikalkulasi oleh Admin saat Approval.</p>
                 </form>
             </div>

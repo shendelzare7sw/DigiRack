@@ -46,7 +46,7 @@
                                     <div class="font-semibold">{{ $courier->name }}</div>
                                     <div class="text-xs text-gray-500">{{ $courier->estimation ? 'Est: ' . $courier->estimation : '' }}</div>
                                 </td>
-                                <td class="py-3 text-brand-orange font-bold">Rp {{ number_format($courier->price, 0, ',', '.') }}</td>
+                                <td class="py-3 text-brand-blue font-bold">Rp {{ number_format($courier->price, 0, ',', '.') }}</td>
                                 <td class="py-3">
                                     <span class="px-2 py-1 rounded text-xs text-white {{ $courier->is_active ? 'bg-green-500' : 'bg-gray-400' }}">
                                         {{ $courier->is_active ? 'Aktif' : 'NonAktif' }}

@@ -16,9 +16,9 @@ export default {
                     navy:        '#1B3A6B',
                     navydark:    '#112549',
                     navylight:   '#E8EEF7',
-                    orange:      '#F97316',
-                    orangedark:  '#EA6C0A',
-                    orangelight: '#FFF3E8',
+                    blue:        '#1e90ff',
+                    bluedark:    '#1874cd',
+                    bluelight:   '#e8f4ff',
                 },
             },
             fontFamily: {

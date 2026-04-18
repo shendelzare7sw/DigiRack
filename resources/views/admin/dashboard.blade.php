@@ -5,7 +5,7 @@
         {{-- Welcome Header --}}
         <div class="mb-8">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
-                Dashboard Admin ⚙️
+                Dashboard Admin âš™ï¸
             </h1>
             <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Berikut ringkasan sistem DigiRack Enterprise.</p>
         </div>
@@ -42,7 +42,7 @@
                 <p class="text-[10px] text-gray-400 mt-0.5">{{ $verifiedStores }} terverifikasi</p>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <div class="w-10 h-10 bg-brand-orangelight rounded-xl flex items-center justify-center text-brand-orange mb-3">
+                <div class="w-10 h-10 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue mb-3">
                     <x-icon name="cube" class="w-5 h-5" />
                 </div>
                 <p class="font-display font-bold text-2xl text-gray-900">{{ $totalProducts }}</p>
@@ -78,7 +78,7 @@
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {{-- Products (Live) --}}
                         <a href="{{ route('products.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-navy/30 hover:shadow-sm transition-all group">
-                            <div class="w-12 h-12 bg-brand-orangelight rounded-xl flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-colors">
+                            <div class="w-12 h-12 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
                                 <x-icon name="cube" class="w-6 h-6" />
                             </div>
                             <span class="text-xs font-semibold text-gray-700 text-center">Lihat Katalog</span>

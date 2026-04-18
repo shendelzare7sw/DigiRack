@@ -19,7 +19,7 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 relative overflow-hidden">
             <!-- Decorative Background Background -->
             <div class="absolute inset-0 bg-brand-navy/5 pattern-dots pattern-gray-200 pattern-bg-transparent pattern-size-4 pattern-opacity-10 pointer-events-none"></div>
-            <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-orange/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-blue/20 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-navy/20 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="relative z-10 w-full sm:max-w-md flex flex-col items-center">

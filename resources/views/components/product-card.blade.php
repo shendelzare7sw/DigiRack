@@ -82,7 +82,7 @@
             </div>
         @endif
         @if($product->stock <= 5 && $product->stock > 0)
-            <div class="absolute top-2 {{ $product->flashSale ? 'left-16' : 'left-2' }} bg-brand-orange text-white text-xs font-semibold px-2 py-1 rounded-full">
+            <div class="absolute top-2 {{ $product->flashSale ? 'left-16' : 'left-2' }} bg-brand-blue text-white text-xs font-semibold px-2 py-1 rounded-full">
                 Stok Terbatas
             </div>
         @endif
@@ -92,7 +92,7 @@
             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                 <button @click.prevent="quickAddToCart()"
                     :disabled="addingToCart"
-                    class="w-full bg-brand-orange hover:bg-orange-600 disabled:opacity-60 text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors">
+                    class="w-full bg-brand-blue hover:bg-blue-600 disabled:opacity-60 text-white text-xs font-bold py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors">
                     <x-icon name="shopping-cart" class="w-3.5 h-3.5" />
                     <span x-text="addingToCart ? 'Menambahkan...' : '+ Keranjang'"></span>
                 </button>
@@ -116,9 +116,9 @@
         <div class="mt-2">
             @if($product->flashSale)
                 <p class="text-xs text-gray-400 line-through">{{ $product->formatted_price }}</p>
-                <p class="text-base font-bold text-brand-orange">{{ $product->flashSale->formatted_sale_price }}</p>
+                <p class="text-base font-bold text-brand-blue">{{ $product->flashSale->formatted_sale_price }}</p>
             @else
-                <p class="text-base font-bold text-brand-orange">{{ $product->formatted_price }}</p>
+                <p class="text-base font-bold text-brand-blue">{{ $product->formatted_price }}</p>
             @endif
         </div>
 

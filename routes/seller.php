@@ -17,9 +17,9 @@ Route::middleware(['auth', 'role:seller,admin'])->prefix('seller')->name('seller
         return view('seller.dashboard');
     })->name('dashboard');
 
-    // Store Profile (Fase 6)
-    // Route::get('/store', [App\Http\Controllers\Seller\StoreProfileController::class, 'show'])->name('store.show');
-    // Route::post('/store', [App\Http\Controllers\Seller\StoreProfileController::class, 'update'])->name('store.update');
+    // Store Profile (Fase 6 & 9)
+    Route::get('/store', [\App\Http\Controllers\Seller\StoreProfileController::class, 'show'])->name('store.show');
+    Route::post('/store', [\App\Http\Controllers\Seller\StoreProfileController::class, 'update'])->name('store.update');
 
     // Products (CRUD)
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');

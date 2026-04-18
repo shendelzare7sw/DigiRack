@@ -77,7 +77,7 @@
                         <button type="button"
                             @click="selected = selected == '{{ $r }}' ? '' : '{{ $r }}'"
                             class="flex items-center gap-2 w-full px-3 py-2 rounded-lg transition-colors"
-                            :class="selected == '{{ $r }}' ? 'bg-brand-orangelight border border-brand-orange/30' : 'hover:bg-gray-50'"
+                            :class="selected == '{{ $r }}' ? 'bg-brand-bluelight border border-brand-blue/30' : 'hover:bg-gray-50'"
                         >
                             <div class="flex items-center gap-0.5">
                                 @for($s = 1; $s <= 5; $s++)

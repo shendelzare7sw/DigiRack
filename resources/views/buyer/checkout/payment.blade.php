@@ -25,7 +25,7 @@
                 </div>
                 <div class="flex justify-between items-center mb-3 text-sm">
                     <span class="text-gray-500">Status</span>
-                    <span class="font-bold text-brand-orange uppercase">{{ $order->payment_status }}</span>
+                    <span class="font-bold text-brand-blue uppercase">{{ $order->payment_status }}</span>
                 </div>
                 <div class="border-t border-gray-200 my-3 pt-3 flex justify-between items-center">
                     <span class="font-bold text-gray-900 text-sm">Total Tagihan</span>
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <button id="pay-button" class="w-full sm:w-auto bg-brand-orange hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-xl text-base shadow-lg shadow-orange-500/30 transition-all flex items-center justify-center gap-2 mx-auto">
+            <button id="pay-button" class="w-full sm:w-auto bg-brand-blue hover:bg-blue-600 text-white font-bold py-4 px-10 rounded-xl text-base shadow-lg shadow-orange-500/30 transition-all flex items-center justify-center gap-2 mx-auto">
                 <x-icon name="credit-card" class="w-5 h-5" />
                 Bayar Sekarang
             </button>

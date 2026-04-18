@@ -20,7 +20,7 @@
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
                     @if(request('q'))
-                        Hasil Pencarian: <span class="text-brand-orange">"{{ request('q') }}"</span>
+                        Hasil Pencarian: <span class="text-brand-blue">"{{ request('q') }}"</span>
                     @else
                         Katalog Produk
                     @endif
@@ -79,7 +79,7 @@
                 @if(request('category'))
                     @foreach((array) request('category') as $catSlug)
                         <a href="{{ request()->fullUrlWithQuery(['category' => array_values(array_diff((array) request('category'), [$catSlug]))]) }}"
-                            class="inline-flex items-center gap-1.5 bg-brand-orangelight text-brand-orange text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-brand-orange hover:text-white transition-colors group">
+                            class="inline-flex items-center gap-1.5 bg-brand-bluelight text-brand-blue text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-brand-blue hover:text-white transition-colors group">
                             {{ ucfirst(str_replace('-', ' ', $catSlug)) }}
                             <x-icon name="x-mark" class="w-3 h-3 opacity-60 group-hover:opacity-100" />
                         </a>

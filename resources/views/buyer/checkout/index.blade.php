@@ -20,7 +20,7 @@
                 {{-- Form Pengiriman --}}
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h2 class="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
-                        <x-icon name="map-pin" class="w-6 h-6 text-brand-orange" />
+                        <x-icon name="map-pin" class="w-6 h-6 text-brand-blue" />
                         Alamat Pengiriman
                     </h2>
 
@@ -142,7 +142,7 @@
                             </select>
 
                             <div x-show="isCalculating[{{ $storeId }}]" class="text-xs text-gray-500 flex items-center gap-2">
-                                <svg class="animate-spin h-3 w-3 text-brand-orange" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg class="animate-spin h-3 w-3 text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                 Menghitung tarif...
                             </div>
                             
@@ -171,7 +171,7 @@
                             <span class="font-semibold text-gray-900">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
-                            <span>Total Ongkos Kirim <br><template x-if="isAnyCalculating"><span class="text-[10px] text-brand-orange mt-1 truncate">Sedang menghitung...</span></template></span>
+                            <span>Total Ongkos Kirim <br><template x-if="isAnyCalculating"><span class="text-[10px] text-brand-blue mt-1 truncate">Sedang menghitung...</span></template></span>
                             <span class="font-semibold text-gray-900" x-text="totalShipping > 0 ? 'Rp ' + formatRupiah(totalShipping) : '-'"></span>
                         </div>
                         @if($totalBuyerFees > 0)
@@ -189,7 +189,7 @@
 
                     <div class="flex justify-between items-center mb-1">
                         <span class="font-bold text-gray-900">Total Tagihan</span>
-                        <span class="font-display font-bold text-xl text-brand-orange" x-text="grandTotal > 0 ? 'Rp ' + formatRupiah(grandTotal) : 'Rp {{ number_format($totalPrice, 0, ',', '.') }}'"></span>
+                        <span class="font-display font-bold text-xl text-brand-blue" x-text="grandTotal > 0 ? 'Rp ' + formatRupiah(grandTotal) : 'Rp {{ number_format($totalPrice, 0, ',', '.') }}'"></span>
                     </div>
                     <p class="text-xs text-gray-400 mb-6 text-right">Termasuk PPN jika ada</p>
 

@@ -5,19 +5,19 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="relative bg-brand-navy rounded-2xl overflow-hidden shadow-xl min-h-[350px] md:min-h-[450px] lg:min-h-[500px] flex items-center">
             <!-- Decorative Elements -->
-            <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-brand-orange/20 to-transparent"></div>
+            <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-brand-blue/20 to-transparent"></div>
             <div class="absolute -right-20 -bottom-20 w-96 h-96 border-8 border-white/5 rounded-full"></div>
             
             <div class="relative z-10 w-full max-w-4xl px-6 sm:px-10 md:px-16 lg:px-20 text-white py-12 md:py-16">
                 <h1 class="font-display font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] leading-[1.2] md:leading-[1.1] mb-4 md:mb-6 tracking-tight">
                     Infrastruktur IT Enterprise
-                    <span class="block text-brand-orange mt-1 md:mt-2">Terpercaya.</span>
+                    <span class="block text-brand-blue mt-1 md:mt-2">Terpercaya.</span>
                 </h1>
                 <p class="text-sm sm:text-base md:text-lg text-gray-200 mb-8 max-w-2xl hidden sm:block leading-relaxed">
                     Temukan segala kebutuhan jaringan, server, dan alat telekomunikasi dari distributor resmi — dijamin original.
                 </p>
                 <div class="flex flex-wrap gap-4">
-                    <a href="{{ route('products.index') }}" class="bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">
+                    <a href="{{ route('products.index') }}" class="bg-brand-blue hover:bg-blue-600 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">
                         Mulai Belanja
                     </a>
                     <a href="#kategori" class="bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 px-6 md:px-8 py-3 md:py-4 rounded-xl backdrop-blur-sm transition-colors text-sm sm:text-base block">
@@ -37,7 +37,7 @@
     <section id="kategori" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex items-center justify-between mb-6">
             <h2 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Kategori Pilihan</h2>
-            <a href="{{ route('products.index') }}" class="text-brand-orange font-semibold text-sm hover:underline">Lihat Semua</a>
+            <a href="{{ route('products.index') }}" class="text-brand-blue font-semibold text-sm hover:underline">Lihat Semua</a>
         </div>
         
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-6">
@@ -47,7 +47,7 @@
             
             @forelse($categories as $category)
                 <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-navy/30 transition-all duration-300">
-                    <div class="w-14 h-14 bg-brand-navylight rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-orange transition-colors duration-300 text-brand-navy group-hover:text-white">
+                    <div class="w-14 h-14 bg-brand-navylight rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-blue transition-colors duration-300 text-brand-navy group-hover:text-white">
                         {!! $category->icon_svg !!}
                     </div>
                     <span class="text-xs sm:text-sm font-semibold text-gray-700 text-center leading-tight group-hover:text-brand-navy">
@@ -70,7 +70,7 @@
 
     @if($flashSales->isNotEmpty())
     <section class="mt-4 mb-8">
-        <div class="bg-gradient-to-r from-red-600 to-brand-orange py-10">
+        <div class="bg-gradient-to-r from-red-600 to-brand-blue py-10">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8">
                     <div class="text-white">
@@ -94,11 +94,11 @@
                     }" class="relative group">
                     
                     <!-- Prev Button -->
-                    <button @click="scrollLeft" class="absolute -left-5 top-1/2 -translate-y-1/2 z-10 bg-white w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-gray-700 hover:text-brand-orange hidden sm:flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110">
+                    <button @click="scrollLeft" class="absolute -left-5 top-1/2 -translate-y-1/2 z-10 bg-white w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-gray-700 hover:text-brand-blue hidden sm:flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110">
                         <x-icon name="chevron-left" class="w-6 h-6 border-0" />
                     </button>
                     <!-- Next Button -->
-                    <button @click="scrollRight" class="absolute -right-5 top-1/2 -translate-y-1/2 z-10 bg-white w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-gray-700 hover:text-brand-orange hidden sm:flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110">
+                    <button @click="scrollRight" class="absolute -right-5 top-1/2 -translate-y-1/2 z-10 bg-white w-12 h-12 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-gray-700 hover:text-brand-blue hidden sm:flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 hover:scale-110">
                         <x-icon name="chevron-right" class="w-6 h-6 border-0" />
                     </button>
 
@@ -119,7 +119,7 @@
     <section class="bg-gray-50 py-10 border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="font-display font-bold text-xl sm:text-2xl text-gray-900 mb-6 flex items-center gap-2">
-                <x-icon name="arrow-trending-up" class="w-6 h-6 text-brand-orange" />
+                <x-icon name="arrow-trending-up" class="w-6 h-6 text-brand-blue" />
                 Rekomendasi Spesial
             </h2>
             

@@ -163,10 +163,10 @@
                 </div>
 
                 {{-- Price --}}
-                <div class="bg-gradient-to-r from-brand-orangelight to-orange-50/50 rounded-2xl p-5 mb-5">
+                <div class="bg-gradient-to-r from-brand-bluelight to-blue-50/50 rounded-2xl p-5 mb-5">
                     @if($product->flashSale)
                         <p class="text-sm text-gray-400 line-through mb-1">{{ $product->formatted_price }}</p>
-                        <p class="font-display font-bold text-3xl sm:text-4xl text-brand-orange">
+                        <p class="font-display font-bold text-3xl sm:text-4xl text-brand-blue">
                             {{ $product->flashSale->formatted_sale_price }}
                         </p>
                         <div class="mt-2 inline-flex items-center gap-1.5 bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
@@ -174,7 +174,7 @@
                             Flash Sale -{{ $product->flashSale->discount_percent }}%
                         </div>
                     @else
-                        <p class="font-display font-bold text-3xl sm:text-4xl text-brand-orange">
+                        <p class="font-display font-bold text-3xl sm:text-4xl text-brand-blue">
                             {{ $product->formatted_price }}
                         </p>
                     @endif
@@ -193,7 +193,7 @@
                             Stok Tersedia ({{ $product->stock }})
                         </span>
                     @elseif($product->stock > 0)
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-brand-orangelight text-brand-orange border border-brand-orange/20">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-brand-bluelight text-brand-blue border border-brand-blue/20">
                             <x-icon name="exclamation-triangle" class="w-3.5 h-3.5" />
                             Stok Terbatas ({{ $product->stock }})
                         </span>
@@ -244,7 +244,7 @@
 
                             <button @click="addToCart()"
                                 :disabled="addingToCart"
-                                class="flex-1 bg-brand-orange hover:bg-orange-600 disabled:opacity-60 text-white font-bold py-3.5 px-6 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all text-sm sm:text-base active:scale-[0.98]">
+                                class="flex-1 bg-brand-blue hover:bg-blue-600 disabled:opacity-60 text-white font-bold py-3.5 px-6 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all text-sm sm:text-base active:scale-[0.98]">
                                 <x-icon name="shopping-cart" class="w-5 h-5" />
                                 <span x-text="addingToCart ? 'Menambahkan...' : '+ Keranjang'"></span>
                             </button>
@@ -301,7 +301,7 @@
                     </span>
                 </div>
             </div>
-            <a href="#" class="shrink-0 border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-colors">
+            <a href="{{ route('store.show', $product->store->slug) }}" class="shrink-0 border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-colors">
                 Kunjungi Toko
             </a>
         </div>
@@ -414,7 +414,7 @@
     <section class="bg-gray-50 py-10 border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="font-display font-bold text-xl sm:text-2xl text-gray-900 mb-6 flex items-center gap-2">
-                <x-icon name="squares-2x2" class="w-6 h-6 text-brand-orange" />
+                <x-icon name="squares-2x2" class="w-6 h-6 text-brand-blue" />
                 Produk Serupa
             </h2>
 
@@ -422,10 +422,10 @@
                 scrollLeft() { $refs.related.scrollBy({ left: -300, behavior: 'smooth' }) },
                 scrollRight() { $refs.related.scrollBy({ left: 300, behavior: 'smooth' }) }
             }" class="relative group">
-                <button @click="scrollLeft" class="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-lg text-gray-700 hover:text-brand-orange hidden md:flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
+                <button @click="scrollLeft" class="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-lg text-gray-700 hover:text-brand-blue hidden md:flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
                     <x-icon name="chevron-left" class="w-5 h-5" />
                 </button>
-                <button @click="scrollRight" class="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-lg text-gray-700 hover:text-brand-orange hidden md:flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
+                <button @click="scrollRight" class="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-lg text-gray-700 hover:text-brand-blue hidden md:flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110">
                     <x-icon name="chevron-right" class="w-5 h-5" />
                 </button>
 

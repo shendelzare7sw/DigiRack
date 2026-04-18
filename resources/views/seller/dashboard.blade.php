@@ -10,7 +10,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
-                    Dashboard Seller 🏪
+                    Dashboard Seller ðŸª
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">
                     @if($store)
@@ -21,7 +21,7 @@
                 </p>
             </div>
             @if($store)
-                <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
+                <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
                     <x-icon name="plus" class="w-4 h-4" />
                     Tambah Produk Baru
                 </a>
@@ -67,7 +67,7 @@
                     <p class="text-xs text-gray-500 font-medium mt-1">Produk Aktif</p>
                 </div>
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                    <div class="w-10 h-10 bg-brand-orangelight rounded-xl flex items-center justify-center text-brand-orange mb-3">
+                    <div class="w-10 h-10 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue mb-3">
                         <x-icon name="shopping-bag" class="w-5 h-5" />
                     </div>
                     <p class="font-display font-bold text-2xl text-gray-900">{{ $totalSold }}</p>
@@ -80,11 +80,11 @@
                     <p class="font-display font-bold text-lg text-gray-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
                     <p class="text-xs text-gray-500 font-medium mt-1">Estimasi Pendapatan</p>
                 </div>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 {{ $lowStock > 0 ? 'border-orange-200' : '' }}">
-                    <div class="w-10 h-10 {{ $lowStock > 0 ? 'bg-orange-50' : 'bg-gray-50' }} rounded-xl flex items-center justify-center {{ $lowStock > 0 ? 'text-orange-500' : 'text-gray-400' }} mb-3">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 {{ $lowStock > 0 ? 'border-blue-200' : '' }}">
+                    <div class="w-10 h-10 {{ $lowStock > 0 ? 'bg-blue-50' : 'bg-gray-50' }} rounded-xl flex items-center justify-center {{ $lowStock > 0 ? 'text-blue-500' : 'text-gray-400' }} mb-3">
                         <x-icon name="exclamation-triangle" class="w-5 h-5" />
                     </div>
-                    <p class="font-display font-bold text-2xl {{ $lowStock > 0 ? 'text-orange-500' : 'text-gray-900' }}">{{ $lowStock }}</p>
+                    <p class="font-display font-bold text-2xl {{ $lowStock > 0 ? 'text-blue-500' : 'text-gray-900' }}">{{ $lowStock }}</p>
                     <p class="text-xs text-gray-500 font-medium mt-1">Stok Menipis</p>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                         <h2 class="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
-                            <x-icon name="bolt" class="w-5 h-5 text-brand-orange" />
+                            <x-icon name="bolt" class="w-5 h-5 text-brand-blue" />
                             Menu Seller
                         </h2>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -104,8 +104,8 @@
                                 </div>
                                 <span class="text-xs font-semibold text-gray-700 text-center">Kelola Produk</span>
                             </a>
-                            <a href="{{ route('seller.products.create') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-orange/30 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-brand-orangelight rounded-xl flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-colors">
+                            <a href="{{ route('seller.products.create') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-blue/30 hover:shadow-sm transition-all group">
+                                <div class="w-12 h-12 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
                                     <x-icon name="plus-circle" class="w-6 h-6" />
                                 </div>
                                 <span class="text-xs font-semibold text-gray-700 text-center">Tambah Produk</span>

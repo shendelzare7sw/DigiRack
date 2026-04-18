@@ -27,7 +27,7 @@
             <div class="flex items-center justify-between">
                 <x-input-label for="password" value="Kata Sandi" class="text-gray-700 font-semibold" />
                 @if (Route::has('password.request'))
-                    <a class="text-xs font-semibold text-brand-orange hover:text-orange-600 transition-colors" href="{{ route('password.request') }}">
+                    <a class="text-xs font-semibold text-brand-blue hover:text-blue-600 transition-colors" href="{{ route('password.request') }}">
                         Lupa sandi?
                     </a>
                 @endif
@@ -60,7 +60,7 @@
 
         <div class="mt-6 text-center text-sm text-gray-600">
             Belum punya akun? 
-            <a href="{{ route('register') }}" class="font-bold text-brand-navy hover:text-brand-orange transition-colors">
+            <a href="{{ route('register') }}" class="font-bold text-brand-navy hover:text-brand-blue transition-colors">
                 Daftar sekarang
             </a>
         </div>

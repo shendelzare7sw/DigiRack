@@ -25,7 +25,7 @@
                         <td class="px-4 py-3">
                             @if($p->status == 'pending')
                             <form action="{{ route('admin.payouts.approve', $p->id) }}" method="POST" class="inline">
-                                @csrf <button type="submit" class="bg-brand-orange text-white px-3 py-1 rounded text-xs" onclick="return confirm('Cairkan dana ke seller melalui IRIS?')">Approve & Transfer</button>
+                                @csrf <button type="submit" class="bg-brand-blue text-white px-3 py-1 rounded text-xs" onclick="return confirm('Cairkan dana ke seller melalui IRIS?')">Approve & Transfer</button>
                             </form>
                             @else
                                 <span class="text-xs text-green-500">Selesai ({{ $p->iris_reference_no }})</span>
