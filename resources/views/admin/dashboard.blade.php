@@ -12,16 +12,9 @@
 
         {{-- System Stats --}}
         @php
-            $totalUsers = \App\Models\User::count();
-            $totalBuyers = \App\Models\User::where('role', 'buyer')->count();
-            $totalSellers = \App\Models\User::where('role', 'seller')->count();
-            $totalStores = \App\Models\Store::count();
-            $verifiedStores = \App\Models\Store::where('is_verified', true)->count();
-            $totalProducts = \App\Models\Product::count();
-            $activeProducts = \App\Models\Product::where('status', 'active')->count();
-            $totalCategories = \App\Models\Category::count();
-            $totalOrders = \App\Models\Order::count();
-            $totalRevenue = \App\Models\Order::where('payment_status', 'paid')->sum('total_price');
+            extract($stats);
+            $chartDatesJson = json_encode($chartDates);
+            $chartRevenuesJson = json_encode($chartRevenues);
         @endphp
 
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
@@ -92,11 +85,18 @@
                             <span class="text-xs font-semibold text-gray-700 text-center">Pengaturan Sistem</span>
                         </a>
 
+                        {{-- Toko (Live Phase 10) --}}
+                        <a href="{{ route('admin.stores.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
+                                <x-icon name="building-storefront" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-bold text-purple-900 text-center">Kelola Toko</span>
+                        </a>
+
                         {{-- Coming Soon Items --}}
                         @php
                             $comingSoon = [
                                 ['icon' => 'users', 'label' => 'Kelola Users', 'color' => 'brand-navy', 'bg' => 'brand-navylight'],
-                                ['icon' => 'building-storefront', 'label' => 'Kelola Toko', 'color' => 'purple-500', 'bg' => 'purple-50'],
                                 ['icon' => 'clipboard-document-check', 'label' => 'Moderasi Produk', 'color' => 'green-600', 'bg' => 'green-50'],
                                 ['icon' => 'tag', 'label' => 'Kelola Kategori', 'color' => 'teal-600', 'bg' => 'teal-50'],
                                 ['icon' => 'clipboard-document-list', 'label' => 'Semua Pesanan', 'color' => 'blue-500', 'bg' => 'blue-50'],
@@ -113,6 +113,17 @@
                             </div>
                         @endforeach
                     </div>
+                </div>
+
+                {{-- Chart Area --}}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mt-6">
+                    <h2 class="font-bold text-lg text-gray-900 mb-2 flex items-center gap-2">
+                        <x-icon name="chart-bar" class="w-5 h-5 text-brand-navy" />
+                        Tren Pertumbuhan Transaksi (30 Hari)
+                    </h2>
+                    <p class="text-xs text-gray-500 mb-6">Gross Merchandise Value (GMV) Platform berdasarkan order yang sukses dibayar.</p>
+                    
+                    <div id="revenueChart" class="w-full h-80"></div>
                 </div>
             </div>
 
@@ -172,4 +183,64 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var options = {
+                series: [{
+                    name: 'GMV (Rp)',
+                    data: {!! $chartRevenuesJson !!}
+                }],
+                chart: {
+                    type: 'area',
+                    height: 320,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                colors: ['#0d2757'], // Brand Navy
+                fill: {
+                    type: "gradient",
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.05,
+                        stops: [0, 90, 100]
+                    }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 3 },
+                xaxis: {
+                    categories: {!! $chartDatesJson !!},
+                    tooltip: { enabled: false },
+                    labels: { style: { colors: '#9CA3AF' } }
+                },
+                yaxis: {
+                    labels: { 
+                        formatter: function (val) {
+                            return "Rp " + new Intl.NumberFormat('id-ID').format(val);
+                        },
+                        style: { colors: '#6B7280' }
+                    }
+                },
+                grid: {
+                    borderColor: '#f1f1f1',
+                    strokeDashArray: 4,
+                },
+                tooltip: {
+                    theme: 'light',
+                    y: {
+                        formatter: function (val) {
+                            return "Rp " + new Intl.NumberFormat('id-ID').format(val);
+                        }
+                    }
+                }
+            };
+
+            var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
+            chart.render();
+        });
+    </script>
+    @endpush
 </x-app-layout>

@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     // Users
     // Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
@@ -22,9 +20,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route::post('/users/{id}/toggle-active', [App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('users.toggle');
 
     // Stores
-    // Route::get('/stores', [App\Http\Controllers\Admin\StoreController::class, 'index'])->name('stores.index');
-    // Route::get('/stores/{id}', [App\Http\Controllers\Admin\StoreController::class, 'show'])->name('stores.show');
-    // Route::post('/stores/{id}/toggle-active', [App\Http\Controllers\Admin\StoreController::class, 'toggleActive'])->name('stores.toggle');
+    Route::get('/stores', [\App\Http\Controllers\Admin\StoreController::class, 'index'])->name('stores.index');
+    Route::get('/stores/{id}', [\App\Http\Controllers\Admin\StoreController::class, 'show'])->name('stores.show');
+    Route::post('/stores/{id}/toggle-active', [\App\Http\Controllers\Admin\StoreController::class, 'toggleActive'])->name('stores.toggle');
+    Route::post('/stores/{id}/toggle-verify', [\App\Http\Controllers\Admin\StoreController::class, 'toggleVerification'])->name('stores.verify');
 
     // Products (moderation)
     // Route::get('/products', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index');
