@@ -56,28 +56,56 @@
                 </button>
 
                 @auth
-                    <!-- Notification User -->
-                    <x-dropdown align="right" width="w-80" contentClasses="py-0 overflow-hidden bg-white">
+                    <!-- Notification User (Dynamic) -->
+                    @php
+                        $unreadNotifs = Auth::user()->unreadNotifications->take(8);
+                        $unreadCount = Auth::user()->unreadNotifications->count();
+                    @endphp
+                    <x-dropdown align="right" width="w-96" contentClasses="py-0 overflow-hidden bg-white">
                         <x-slot name="trigger">
                             <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none flex items-center justify-center p-1 mt-1 mr-2">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
-                                <span class="absolute top-0 right-0 bg-brand-blue text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">1</span>
+                                @if($unreadCount > 0)
+                                    <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white animate-pulse">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+                                @endif
                             </button>
                         </x-slot>
                         <x-slot name="content">
                             <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                                 <p class="text-sm font-bold text-gray-800">Notifikasi</p>
-                                <a href="#" class="text-[11px] font-medium text-brand-blue hover:text-blue-600 transition-colors">Tandai sudah dibaca</a>
+                                @if($unreadCount > 0)
+                                    <form action="{{ route('notifications.markAllRead') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-[11px] font-medium text-brand-blue hover:text-blue-600 transition-colors">Tandai semua dibaca</button>
+                                    </form>
+                                @endif
                             </div>
-                            <div class="p-8 text-center flex flex-col items-center justify-center">
-                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-300">
-                                    <x-icon name="bell-slash" class="w-8 h-8" />
+                            @if($unreadNotifs->count() > 0)
+                                <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                                    @foreach($unreadNotifs as $notif)
+                                        <a href="{{ route('notifications.read', $notif->id) }}" class="block px-4 py-3 hover:bg-brand-navylight/20 transition-colors group">
+                                            <div class="flex items-start gap-3">
+                                                <span class="text-xl mt-0.5 shrink-0">{{ $notif->data['icon'] ?? '🔔' }}</span>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-bold text-gray-900 group-hover:text-brand-navy truncate">{{ $notif->data['title'] ?? 'Notifikasi' }}</p>
+                                                    <p class="text-xs text-gray-500 line-clamp-2 mt-0.5">{{ $notif->data['message'] ?? '' }}</p>
+                                                    <p class="text-[10px] text-gray-400 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @endforeach
                                 </div>
-                                <p class="text-sm font-medium text-gray-500">Belum ada notifikasi baru</p>
-                                <p class="text-[11px] text-gray-400 mt-1">Kami akan mengabari Anda jika ada pembaruan pesanan.</p>
-                            </div>
+                            @else
+                                <div class="p-8 text-center flex flex-col items-center justify-center">
+                                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3 text-gray-300">
+                                        <x-icon name="bell-slash" class="w-8 h-8" />
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-500">Belum ada notifikasi baru</p>
+                                    <p class="text-[11px] text-gray-400 mt-1">Kami akan mengabari Anda jika ada pembaruan pesanan.</p>
+                                </div>
+                            @endif
                             <div class="px-4 py-2 border-t border-gray-100 bg-gray-50 text-center">
-                                <a href="#" class="text-[11px] font-bold text-brand-navy hover:underline transition-all">Lihat Semua Notifikasi</a>
+                                <span class="text-[11px] font-bold text-gray-400">{{ $unreadCount }} notifikasi belum dibaca</span>
                             </div>
                         </x-slot>
                     </x-dropdown>

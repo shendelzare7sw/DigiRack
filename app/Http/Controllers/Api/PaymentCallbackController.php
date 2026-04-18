@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\SystemSetting;
+use App\Notifications\OrderNotification;
 use Illuminate\Http\Request;
 
 class PaymentCallbackController extends Controller
@@ -71,6 +72,34 @@ class PaymentCallbackController extends Controller
                         $item->product->decrement('stock', $item->quantity);
                         $item->product->increment('sold_count', $item->quantity);
                     }
+                }
+
+                // Notify Seller: Pesanan baru masuk!
+                try {
+                    $sellerUser = $order->store->user ?? null;
+                    if ($sellerUser) {
+                        $sellerUser->notify(new OrderNotification(
+                            'new_order',
+                            '🎉 Pesanan Baru Masuk!',
+                            'Pesanan ' . $order->invoice_number . ' senilai Rp ' . number_format($order->total_price, 0, ',', '.') . ' telah dibayar. Segera proses dan kirimkan!',
+                            route('seller.orders.show', $order->id),
+                            '🛒'
+                        ));
+                    }
+
+                    // Notify Buyer: Pembayaran berhasil
+                    $buyer = $order->buyer ?? null;
+                    if ($buyer) {
+                        $buyer->notify(new OrderNotification(
+                            'payment_success',
+                            '✅ Pembayaran Berhasil!',
+                            'Pembayaran untuk pesanan ' . $order->invoice_number . ' telah dikonfirmasi. Penjual akan segera memproses pesanan Anda.',
+                            route('buyer.orders.show', $order->id),
+                            '💳'
+                        ));
+                    }
+                } catch (\Exception $e) {
+                    // Notification failure should not block payment processing
                 }
             }
 

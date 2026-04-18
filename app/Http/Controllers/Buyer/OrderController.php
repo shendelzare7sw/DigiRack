@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
+use App\Notifications\OrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +94,20 @@ class OrderController extends Controller
             }
 
             DB::commit();
+
+            // Notify Seller: Dana telah masuk ke wallet
+            try {
+                $sellerUser = $order->store->user ?? null;
+                if ($sellerUser) {
+                    $sellerUser->notify(new OrderNotification(
+                        'order_completed',
+                        '💰 Dana Pesanan Dicairkan!',
+                        'Pembeli telah mengkonfirmasi penerimaan pesanan ' . $order->invoice_number . '. Dana sebesar Rp ' . number_format($netToSeller, 0, ',', '.') . ' telah masuk ke Saldo Toko Anda.',
+                        route('seller.wallet.index'),
+                        '🎉'
+                    ));
+                }
+            } catch (\Exception $e) {}
 
             return back()->with('success', 'Pesanan telah selesai! Dana telah diteruskan ke penjual. Jangan lupa berikan ulasan Anda!');
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Notifications\OrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,6 +75,23 @@ class OrderController extends Controller
 
         $order->status = $request->status;
         $order->save();
+
+        // Notify buyer when order is shipped
+        if ($request->status === 'shipped') {
+            try {
+                $buyer = $order->buyer ?? null;
+                if ($buyer) {
+                    $resi = $order->shipping_tracking_number ?? '-';
+                    $buyer->notify(new OrderNotification(
+                        'order_shipped',
+                        '🚚 Pesanan Sedang Dikirim!',
+                        'Pesanan ' . $order->invoice_number . ' sudah dikirim dengan nomor resi: ' . $resi . '. Pantau pengiriman Anda.',
+                        route('buyer.orders.show', $order->id),
+                        '📦'
+                    ));
+                }
+            } catch (\Exception $e) {}
+        }
 
         return back()->with('success', 'Status pesanan berhasil diperbarui menjadi ' . $order->status_label);
     }

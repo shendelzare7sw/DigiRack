@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     
     // Switch Role Endpoint
     Route::get('/switch-role/{role}', [\App\Http\Controllers\RoleSwitchController::class, 'switchRole'])->name('switch.role');
+
+    // Notifications
+    Route::get('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
 });
 
 // Termasuk file route berdasarkan peran
