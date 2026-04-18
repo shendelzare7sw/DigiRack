@@ -206,7 +206,7 @@
                 </div>
 
                 {{-- Quantity Selector & CTA --}}
-                @if($product->isInStock())
+                @if($product->isInStock() && (!Auth::check() || Auth::user()->role !== 'admin'))
                     <div class="space-y-4">
                         {{-- Quantity --}}
                         <div class="flex items-center gap-4">

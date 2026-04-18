@@ -10,6 +10,7 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
+        'invoice_number',
         'buyer_id',
         'store_id',
         'status',
@@ -17,7 +18,11 @@ class Order extends Model
         'shipping_cost',
         'payment_method',
         'payment_status',
+        'payment_token',
+        'payment_reference',
         'shipping_address',
+        'applied_buyer_fees',
+        'shipping_tracking_number',
         'notes',
     ];
 
@@ -27,6 +32,7 @@ class Order extends Model
             'total_price' => 'integer',
             'shipping_cost' => 'integer',
             'shipping_address' => 'array',
+            'applied_buyer_fees' => 'array',
         ];
     }
 

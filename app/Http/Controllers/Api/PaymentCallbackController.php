@@ -30,47 +30,52 @@ class PaymentCallbackController extends Controller
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
-        // Cari Order berdasarkan invoice_number yang diset sebagai order_id di Midtrans
-        $order = Order::with('items.product')->where('invoice_number', $orderId)->first();
+        // Cari Order berdasarkan payment_reference atau invoice_number
+        $orders = Order::with('items.product')
+            ->where('payment_reference', $orderId)
+            ->orWhere('invoice_number', $orderId)
+            ->get();
 
-        if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'Orders not found'], 404);
         }
 
         $transactionStatus = $payload['transaction_status'];
         $fraudStatus = $payload['fraud_status'] ?? '';
 
-        // Tentukan Status Order kita berdasarkan callback Midtrans
-        if ($transactionStatus == 'capture') {
-            if ($fraudStatus == 'challenge') {
-                $order->payment_status = 'pending';
-            } else if ($fraudStatus == 'accept') {
+        foreach ($orders as $order) {
+            // Tentukan Status Order kita berdasarkan callback Midtrans
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'challenge') {
+                    $order->payment_status = 'pending';
+                } else if ($fraudStatus == 'accept') {
+                    $order->payment_status = 'paid';
+                }
+            } else if ($transactionStatus == 'settlement') {
                 $order->payment_status = 'paid';
+            } else if ($transactionStatus == 'cancel' ||
+              $transactionStatus == 'deny' ||
+              $transactionStatus == 'expire') {
+                $order->payment_status = 'failed';
+                $order->status = 'cancelled';
+            } else if ($transactionStatus == 'pending') {
+                $order->payment_status = 'pending';
             }
-        } else if ($transactionStatus == 'settlement') {
-            $order->payment_status = 'paid';
-        } else if ($transactionStatus == 'cancel' ||
-          $transactionStatus == 'deny' ||
-          $transactionStatus == 'expire') {
-            $order->payment_status = 'failed';
-            $order->status = 'cancelled';
-        } else if ($transactionStatus == 'pending') {
-            $order->payment_status = 'pending';
-        }
 
-        if ($order->isDirty('payment_status') && $order->payment_status === 'paid') {
-            // Ketika sukses bayar, otomatis potong stok produk sebagai validasi fix
-            $order->status = 'processing'; // Naikkan status pesanan jadi diproses / perlu dikirim seller
-            
-            foreach($order->items as $item) {
-                if ($item->product) {
-                    $item->product->decrement('stock', $item->quantity);
-                    $item->product->increment('sold', $item->quantity);
+            if ($order->isDirty('payment_status') && $order->payment_status === 'paid') {
+                // Ketika sukses bayar, otomatis potong stok produk sebagai validasi fix
+                $order->status = 'processing'; // Naikkan status pesanan jadi diproses / perlu dikirim seller
+                
+                foreach($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                        $item->product->increment('sold_count', $item->quantity);
+                    }
                 }
             }
-        }
 
-        $order->save();
+            $order->save();
+        }
 
         return response()->json(['message' => 'Notification processed successfully']);
     }

@@ -80,6 +80,33 @@
                                     placeholder="Contoh: SB-Mid-client-xxxxxxxx">
                             </div>
 
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">IRIS Approver Key (Untuk Payout) <span class="text-red-500">*</span></label>
+                                <input type="text" name="midtrans_iris_api_key" value="{{ $settings['midtrans_iris_api_key'] ?? '' }}" required
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    placeholder="Midtrans IRIS API Key">
+                            </div>
+
+                            <hr class="my-6 border-gray-100">
+                            
+                            <h2 class="font-bold text-lg text-gray-900 mt-6 mb-2">Potongan & Fee Platform</h2>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Potongan Fee Per Produk (Rp)</label>
+                                <input type="number" name="platform_fee_per_item" value="{{ $settings['platform_fee_per_item'] ?? '0' }}" required
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    placeholder="0">
+                                <p class="text-[10px] text-gray-400 mt-1">Dipotong setiap kali barang terjual (dikalikan kuantitas), dibebankan ke hasil jualan Seller.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Fee Pencairan / Withdrawal (%)</label>
+                                <input type="number" step="0.1" name="withdrawal_fee_percentage" value="{{ $settings['withdrawal_fee_percentage'] ?? '2' }}" required
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    placeholder="2">
+                                <p class="text-[10px] text-gray-400 mt-1">Persentase potongan saat seller melakukan Tarik Dana ke rekening bank.</p>
+                            </div>
+
                             <div class="pt-4 border-t border-gray-100 flex justify-end">
                                 <button type="submit" class="bg-brand-navy hover:bg-brand-navydark text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors">
                                     Simpan Pengaturan

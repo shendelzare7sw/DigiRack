@@ -29,16 +29,26 @@ Route::middleware(['auth', 'role:seller,admin'])->prefix('seller')->name('seller
     Route::post('/products/{id}/edit', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 
-    // Orders (Fase 6)
-    // Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
-    // Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
-    // Route::post('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.status');
+    // Orders (Fase 6 & 7)
+    Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.status');
 
     // Reviews (Fase 6)
     // Route::get('/reviews', [App\Http\Controllers\Seller\ReviewController::class, 'index'])->name('reviews.index');
 
     // Reports (Fase 7)
     // Route::get('/reports', [App\Http\Controllers\Seller\ReportController::class, 'index'])->name('reports.index');
+
+    // Wallet & Payout
+    Route::get('/wallet', [\App\Http\Controllers\Seller\WalletController::class, 'index'])->name('wallet.index');
+    Route::post('/wallet/payout', [\App\Http\Controllers\Seller\WalletController::class, 'requestPayout'])->name('wallet.payout');
+
+    // Store Couriers (Fase 8)
+    Route::get('/couriers', [\App\Http\Controllers\Seller\CourierController::class, 'index'])->name('couriers.index');
+    Route::post('/couriers', [\App\Http\Controllers\Seller\CourierController::class, 'store'])->name('couriers.store');
+    Route::post('/couriers/{id}/toggle', [\App\Http\Controllers\Seller\CourierController::class, 'toggleActive'])->name('couriers.toggle');
+    Route::delete('/couriers/{id}', [\App\Http\Controllers\Seller\CourierController::class, 'destroy'])->name('couriers.destroy');
 
     // Profile
     // Route::get('/profile', [App\Http\Controllers\Seller\ProfileController::class, 'edit'])->name('profile.edit');

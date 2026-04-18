@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Province;
 use App\Models\SystemSetting;
+use App\Services\RajaOngkirService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ use Midtrans\Snap;
 class CheckoutController extends Controller
 {
     /**
-     * Beli Langsung (Add to cart & go to checkout with only this item selected)
+     * Beli Langsung
      */
     public function init(Request $request)
     {
@@ -28,13 +29,18 @@ class CheckoutController extends Controller
         ]);
 
         $product = \App\Models\Product::findOrFail($request->product_id);
+        
+        if ($product->price <= 0) {
+            return back()->with('error', 'Produk ini tidak dapat dibeli karena harganya tidak valid (Mengandung unsur kerugian/Rp 0).');
+        }
+        
         if ($product->stock < $request->quantity) {
             return back()->with('error', 'Stok tidak mencukupi.');
         }
 
         $cartItem = Cart::where('user_id', Auth::id())->where('product_id', $product->id)->first();
         if ($cartItem) {
-            $cartItem->update(['quantity' => $request->quantity]); // Setel ulang sesuai yang diminta dari Beli Langsung
+            $cartItem->update(['quantity' => $request->quantity]);
         } else {
             $cartItem = Cart::create([
                 'user_id' => Auth::id(),
@@ -43,13 +49,12 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // Lanjut ke index checkout seolah form dikirim
         $request->merge(['selected_items' => [$cartItem->id]]);
         return $this->index($request);
     }
 
     /**
-     * Tampilkan halaman checkout berdasarkan item yang dipilih dari keranjang.
+     * Tampilkan halaman checkout.
      */
     public function index(Request $request)
     {
@@ -68,24 +73,38 @@ class CheckoutController extends Controller
             return redirect()->route('buyer.cart.index')->with('error', 'Item tidak ditemukan.');
         }
 
-        // Hitung total
+        $storesData = [];
         $totalPrice = 0;
-        $totalWeight = 0;
+
         foreach ($cartItems as $item) {
+            $storeId = $item->product->store_id;
+            if (!isset($storesData[$storeId])) {
+                $customCouriers = \App\Models\StoreCourier::where('store_id', $storeId)->where('is_active', true)->get();
+                $storesData[$storeId] = [
+                    'store' => $item->product->store,
+                    'items' => [],
+                    'totalWeight' => 0,
+                    'subtotal' => 0,
+                    'custom_couriers' => $customCouriers
+                ];
+            }
+            $storesData[$storeId]['items'][] = $item;
+            $storesData[$storeId]['totalWeight'] += ($item->product->weight_gram * $item->quantity);
+            $storesData[$storeId]['subtotal'] += ($item->product->price * $item->quantity);
             $totalPrice += ($item->product->price * $item->quantity);
-            $totalWeight += ($item->product->weight_gram * $item->quantity);
         }
 
-        // Ambil data untuk dropdown alamat
         $provinces = Province::orderBy('name')->get();
+        $buyerFees = \App\Models\BuyerTransactionFee::where('is_active', true)->get();
+        $totalBuyerFees = $buyerFees->sum('amount');
 
-        return view('buyer.checkout.index', compact('cartItems', 'totalPrice', 'totalWeight', 'provinces', 'selectedItems'));
+        return view('buyer.checkout.index', compact('storesData', 'totalPrice', 'provinces', 'selectedItems', 'buyerFees', 'totalBuyerFees'));
     }
 
     /**
      * Proses pembuatan Order dari form Checkout, lalu get SNAP Token Midtrans.
      */
-    public function process(Request $request)
+    public function process(Request $request, RajaOngkirService $rajaOngkir)
     {
         $request->validate([
             'selected_items' => 'required|string',
@@ -95,7 +114,7 @@ class CheckoutController extends Controller
             'city_id' => 'required|exists:cities,id',
             'postal_code' => 'required|string|max:10',
             'address' => 'required|string',
-            'courier' => 'required|string',
+            'couriers' => 'required|array', // key: store_id, value: courier string (e.g. "jne")
         ]);
 
         $selectedItemIds = json_decode($request->selected_items, true);
@@ -104,61 +123,134 @@ class CheckoutController extends Controller
             return redirect()->route('buyer.cart.index')->with('error', 'Data item tidak valid.');
         }
 
-        $cartItems = Cart::with(['product'])->where('user_id', Auth::id())->whereIn('id', $selectedItemIds)->get();
+        $cartItems = Cart::with(['product.store'])->where('user_id', Auth::id())->whereIn('id', $selectedItemIds)->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('buyer.cart.index')->with('error', 'Item keranjang tidak ditemukan.');
         }
 
-        // Ambil info kota & provinsi untuk disimpan statis di order (agar tidak berubah jika master kota dihapus)
+        // Group by Store
+        $storesData = [];
+        foreach ($cartItems as $item) {
+            // Verifikasi stok dan harga valid
+            if ($item->product->stock < $item->quantity) {
+                return redirect()->route('buyer.cart.index')->with('error', 'Stok untuk produk ' . $item->product->name . ' tidak mencukupi.');
+            }
+            if ($item->product->price <= 0) {
+                return redirect()->route('buyer.cart.index')->with('error', 'Terdapat produk dengan harga tidak valid (Rp 0). Harap lepas centang produk ini.');
+            }
+            
+            $storeId = $item->product->store_id;
+            if (!isset($storesData[$storeId])) {
+                $storesData[$storeId] = [
+                    'store' => $item->product->store,
+                    'items' => [],
+                    'totalWeight' => 0,
+                    'subtotal' => 0,
+                ];
+            }
+            $storesData[$storeId]['items'][] = $item;
+            $storesData[$storeId]['totalWeight'] += ($item->product->weight_gram * $item->quantity);
+            $storesData[$storeId]['subtotal'] += ($item->product->price * $item->quantity);
+        }
+
         $city = City::with('province')->find($request->city_id);
         $fullAddress = $request->address . ', ' . $city->type . ' ' . $city->name . ', ' . $city->province->name . ', ' . $request->postal_code;
+
+        $paymentReference = 'PAY/' . date('Ymd') . '/' . strtoupper(uniqid());
+        $grandTotalGross = 0;
+        $createdOrders = [];
 
         try {
             DB::beginTransaction();
 
-            $totalPrice = 0;
-            foreach ($cartItems as $item) {
-                // Verifikasi stok akhir (race condition protection)
-                if ($item->product->stock < $item->quantity) {
-                    throw new \Exception('Stok untuk produk ' . $item->product->name . ' tidak mencukupi.');
+            $index = 1;
+            foreach ($storesData as $storeId => $data) {
+                // Determine courier
+                $courierCode = $request->couriers[$storeId] ?? 'jne';
+                
+                // Calculate actual shipping cost
+                $shippingCost = 0;
+
+                if (str_starts_with($courierCode, 'toko_')) {
+                    $courierId = explode('_', $courierCode)[1];
+                    $storeCourier = \App\Models\StoreCourier::find($courierId);
+                    if ($storeCourier) {
+                        $shippingCost = (int) $storeCourier->price;
+                        $courierCode = 'toko_' . $storeCourier->name;
+                    }
+                } else {
+                    $originCityId = $data['store']->city_id ?? 153; // default jakarta selatan if not set
+                    $ongkirResponse = $rajaOngkir->getCost($originCityId, $city->id, $data['totalWeight'], $courierCode);
+                    
+                    if (isset($ongkirResponse['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value'])) {
+                        $shippingCost = $ongkirResponse['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value'];
+                    } else {
+                        // Fallback
+                        $shippingCost = 25000;
+                    }
                 }
-                $totalPrice += ($item->product->price * $item->quantity);
-            }
 
-            // Simulasi ongkir flat untuk dummy data
-            $shippingCost = 25000;
-            $grandTotal = $totalPrice + $shippingCost;
+                $totalOrderPrice = $data['subtotal'] + $shippingCost;
+                $grandTotalGross += $totalOrderPrice;
 
-            // Buat master order
-            $order = Order::create([
-                'invoice_number' => 'INV/' . date('Ymd') . '/' . strtoupper(uniqid()),
-                'buyer_id' => Auth::id(),
-                'status' => 'pending', // unpaid
-                'total_price' => $grandTotal,
-                'shipping_cost' => $shippingCost,
-                'payment_method' => 'midtrans',
-                'payment_status' => 'unpaid',
-                'shipping_address' => json_encode([
-                    'name' => $request->recipient_name,
-                    'phone' => $request->phone,
-                    'full_address' => $fullAddress,
-                    'courier' => $request->courier,
-                ])
-            ]);
+                if ($totalOrderPrice <= 0) {
+                    throw new \Exception("Pesanan ditolak karena total akhir Rp 0. Tidak ada nilai transaksi yang valid.");
+                }
 
-            // Buat order items
-            foreach ($cartItems as $item) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $item->product->id,
-                    'quantity' => $item->quantity,
-                    'price' => $item->product->price,
-                    'subtotal' => $item->product->price * $item->quantity,
+                // Check active buyer fees only on the first order to avoid duplicate charging
+                $appliedFeesJson = null;
+                if ($index === 1) {
+                    $buyerFees = \App\Models\BuyerTransactionFee::where('is_active', true)->get();
+                    if ($buyerFees->isNotEmpty()) {
+                        $feeRecords = [];
+                        foreach ($buyerFees as $fee) {
+                            $grandTotalGross += $fee->amount;
+                            $feeRecords[] = [
+                                'name' => $fee->name,
+                                'amount' => $fee->amount
+                            ];
+                        }
+                        $appliedFeesJson = json_encode($feeRecords);
+                    }
+                }
+
+                // Create Order
+                $order = Order::create([
+                    'invoice_number' => 'INV/' . date('Ymd') . '/' . strtoupper(uniqid()) . '-' . $index,
+                    'buyer_id' => Auth::id(),
+                    'store_id' => $storeId,
+                    'status' => 'pending_payment',
+                    'total_price' => $totalOrderPrice,
+                    'shipping_cost' => $shippingCost,
+                    'payment_method' => 'midtrans',
+                    'payment_status' => 'unpaid',
+                    'payment_reference' => $paymentReference,
+                    'shipping_address' => [
+                        'name' => $request->recipient_name,
+                        'phone' => $request->phone,
+                        'full_address' => $fullAddress,
+                        'courier' => strtoupper($courierCode),
+                        'destination_city_id' => $city->id
+                    ],
+                    'applied_buyer_fees' => $appliedFeesJson ? json_decode($appliedFeesJson, true) : null
                 ]);
 
-                // Hapus item dari keranjang
-                Cart::destroy($item->id);
+                // Create Order Items
+                foreach ($data['items'] as $item) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product->id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->product->price,
+                        'subtotal' => $item->product->price * $item->quantity,
+                    ]);
+
+                    Cart::destroy($item->id);
+                }
+
+                $createdOrders[] = $order;
+                $index++;
             }
 
             // Setup Midtrans
@@ -172,8 +264,8 @@ class CheckoutController extends Controller
 
             $params = [
                 'transaction_details' => [
-                    'order_id' => $order->invoice_number,
-                    'gross_amount' => $grandTotal,
+                    'order_id' => $paymentReference, // Use single token for all grouped orders
+                    'gross_amount' => $grandTotalGross,
                 ],
                 'customer_details' => [
                     'first_name' => Auth::user()->name,
@@ -182,13 +274,19 @@ class CheckoutController extends Controller
                 ],
             ];
 
-            // Dapatkan Snap Token Midtrans
+            // Get Snap Token
             $snapToken = Snap::getSnapToken($params);
-            $order->update(['payment_token' => $snapToken]);
+            
+            // Save token to all created orders
+            foreach ($createdOrders as $ord) {
+                $ord->update(['payment_token' => $snapToken]);
+            }
 
             DB::commit();
 
-            return view('buyer.checkout.payment', compact('order', 'snapToken'));
+            // Pass the first order just to render the view
+            $order = $createdOrders[0];
+            return view('buyer.checkout.payment', compact('order', 'snapToken', 'grandTotalGross', 'paymentReference'));
 
         } catch (\Exception $e) {
             DB::rollBack();

@@ -11,6 +11,7 @@ class Store extends Model
 
     protected $fillable = [
         'user_id',
+        'city_id',
         'name',
         'slug',
         'description',
@@ -20,6 +21,9 @@ class Store extends Model
         'is_verified',
         'avg_rating',
         'total_sold',
+        'bank_name',
+        'bank_account_no',
+        'bank_account_name',
     ];
 
     protected function casts(): array

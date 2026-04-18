@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | middleware: auth, role:buyer,seller,admin
 */
 
-Route::middleware(['auth', 'role:buyer,seller,admin'])->prefix('buyer')->name('buyer.')->group(function () {
+Route::middleware(['auth', 'role:buyer,seller,admin', \App\Http\Middleware\EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
 
     Route::get('/dashboard', function () {
         return view('buyer.dashboard');
@@ -29,9 +29,9 @@ Route::middleware(['auth', 'role:buyer,seller,admin'])->prefix('buyer')->name('b
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // Orders (Fase 5B)
-    // Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
-    // Route::get('/orders/{id}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
-    // Route::post('/orders/{id}/confirm', [App\Http\Controllers\Buyer\OrderController::class, 'confirm'])->name('orders.confirm');
+    Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{id}/confirm', [App\Http\Controllers\Buyer\OrderController::class, 'confirm'])->name('orders.confirm');
 
     // Checkout (Fase 5B)
     Route::post('/checkout/init', [\App\Http\Controllers\Buyer\CheckoutController::class, 'init'])->name('checkout.init');

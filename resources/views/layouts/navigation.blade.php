@@ -59,7 +59,7 @@
                     <!-- Notification User -->
                     <x-dropdown align="right" width="w-80" contentClasses="py-0 overflow-hidden bg-white">
                         <x-slot name="trigger">
-                            <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none hidden sm:flex items-center justify-center p-1 mt-1 mr-2">
+                            <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none flex items-center justify-center p-1 mt-1 mr-2">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                                 <span class="absolute top-0 right-0 bg-brand-orange text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">1</span>
                             </button>
@@ -83,22 +83,24 @@
                     </x-dropdown>
 
                     <!-- Cart -->
-                    <a href="{{ route('buyer.cart.index') }}" class="text-gray-500 hover:text-brand-navy relative group transition-colors">
-                        <x-icon name="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7" />
-                        <span id="navCartBadge" class="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white {{ ($cartCount ?? 0) == 0 ? 'hidden' : '' }}">
-                            {{ $cartCount ?? 0 }}
-                        </span>
-                    </a>
-                    
-                    <!-- Wishlist -->
-                    <a href="{{ route('buyer.wishlist.index') }}" class="hidden sm:block text-gray-500 hover:text-red-500 transition-colors relative">
-                        <x-icon name="heart" class="w-6 h-6 sm:w-7 sm:h-7" />
-                        @if(($wishlistCount ?? 0) > 0)
-                            <span class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
-                                {{ $wishlistCount }}
+                    @if(!Auth::user()->isAdmin())
+                        <a href="{{ route('buyer.cart.index') }}" class="text-gray-500 hover:text-brand-navy relative group transition-colors">
+                            <x-icon name="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7" />
+                            <span id="navCartBadge" class="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white {{ ($cartCount ?? 0) == 0 ? 'hidden' : '' }}">
+                                {{ $cartCount ?? 0 }}
                             </span>
-                        @endif
-                    </a>
+                        </a>
+                        
+                        <!-- Wishlist -->
+                        <a href="{{ route('buyer.wishlist.index') }}" class="hidden sm:block text-gray-500 hover:text-red-500 transition-colors relative mr-2">
+                            <x-icon name="heart" class="w-6 h-6 sm:w-7 sm:h-7" />
+                            @if(($wishlistCount ?? 0) > 0)
+                                <span class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
+                                    {{ $wishlistCount }}
+                                </span>
+                            @endif
+                        </a>
+                    @endif
 
                     <div class="hidden sm:flex items-center border-l-2 border-gray-100 pl-6 gap-3">
                         <x-dropdown align="right" width="48">
@@ -118,6 +120,15 @@
                                     <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                                 </div>
+                                @if(!Auth::user()->isAdmin())
+                                    <div class="px-3 py-2 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <x-icon name="building-storefront" class="w-4 h-4 text-brand-navy" />
+                                            <span class="text-xs font-bold text-gray-700">Toko Saya</span>
+                                        </div>
+                                        <a href="{{ route('seller.dashboard') }}" class="text-[10px] bg-brand-orange text-white px-2 py-1 rounded shadow-sm hover:bg-orange-600 font-bold transition">Buka</a>
+                                    </div>
+                                @endif
                                 <x-dropdown-link :href="route('dashboard')">
                                     Dashboard
                                 </x-dropdown-link>
@@ -136,7 +147,7 @@
                     </div>
                 @else
                     <!-- Notification Guest -->
-                    <div class="hidden sm:block relative mr-2" @click.away="notifOpen = false">
+                    <div class="block relative mr-2" @click.away="notifOpen = false">
                         <button @click="notifOpen = !notifOpen" class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none">
                             <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                         </button>
@@ -208,14 +219,23 @@
                 </div>
                 
                 <div class="space-y-1 px-2">
+                    @if(!Auth::user()->isAdmin())
+                        <div class="bg-gray-50 rounded-xl p-3 mb-2 flex justify-between items-center border border-gray-100">
+                            <div class="flex items-center gap-2">
+                                <x-icon name="building-storefront" class="w-5 h-5 text-brand-navy" />
+                                <span class="text-sm font-bold text-gray-700">Toko Saya</span>
+                            </div>
+                            <a href="{{ route('seller.dashboard') }}" class="text-xs bg-brand-orange text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-orange-600 font-bold transition">Buka Toko</a>
+                        </div>
+                        <x-responsive-nav-link :href="route('buyer.cart.index')">
+                            Keranjang ({{ $cartCount ?? 0 }})
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('buyer.wishlist.index')">
+                            Wishlist ({{ $wishlistCount ?? 0 }})
+                        </x-responsive-nav-link>
+                    @endif
                     <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        Dashboard
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('buyer.cart.index')">
-                        Keranjang ({{ $cartCount ?? 0 }})
-                    </x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('buyer.wishlist.index')">
-                        Wishlist ({{ $wishlistCount ?? 0 }})
+                        Dashboard Utama
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('profile.edit')">
                         Profil Saya

@@ -1,7 +1,12 @@
 <x-app-layout>
     <x-slot name="title">Checkout Pesanan</x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8" x-data="checkoutPage({
+            storesCount: {{ count($storesData) }},
+            stores: {{ json_encode(collect($storesData)->map(fn($data, $id) => ['id' => $id, 'weight' => $data['totalWeight'], 'subtotal' => $data['subtotal'], 'origin_city_id' => $data['store']['city_id'] ?? 153])->values()) }},
+            productSubtotal: {{ $totalPrice }},
+            totalBuyerFees: {{ $totalBuyerFees }}
+        })">
         <div class="mb-6">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Checkout Pesanan</h1>
             <p class="text-sm text-gray-500 mt-1">Lengkapi data pengiriman untuk memproses transaksi Anda.</p>
@@ -9,7 +14,6 @@
 
         <form method="POST" action="{{ route('buyer.checkout.process') }}" class="flex flex-col lg:flex-row gap-8">
             @csrf
-            {{-- Simpan data referensi keranjang yang dipilih --}}
             <input type="hidden" name="selected_items" value="{{ json_encode($selectedItems) }}">
 
             <div class="flex-1 min-w-0 space-y-6">
@@ -44,24 +48,24 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="locationDropdown()">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Provinsi <span class="text-red-500">*</span></label>
                                 <select name="province_id" x-model="selectedProvince" @change="fetchCities()" required
                                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
                                     <option value="">Pilih Provinsi</option>
-                                    <template x-for="prov in provinces" :key="prov.id">
-                                        <option :value="prov.id" x-text="prov.name" :selected="prov.id == {{ old('province_id', 'null') }}"></option>
-                                    </template>
+                                    @foreach($provinces as $prov)
+                                        <option value="{{ $prov->id }}">{{ $prov->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kota / Kabupaten <span class="text-red-500">*</span></label>
-                                <select name="city_id" x-model="selectedCity" :disabled="!selectedProvince || isLoading" required
+                                <select name="city_id" x-model="selectedCity" @change="onCityChange()" :disabled="!selectedProvince || isCityLoading" required
                                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white disabled:bg-gray-100">
                                     <option value="">Pilih Kota/Kabupaten</option>
                                     <template x-for="city in cities" :key="city.id">
-                                        <option :value="city.id" x-text="city.type + ' ' + city.name" :selected="city.id == {{ old('city_id', 'null') }}"></option>
+                                        <option :value="city.id" x-text="city.type + ' ' + city.name"></option>
                                     </template>
                                 </select>
                             </div>
@@ -82,45 +86,25 @@
                     </div>
                 </div>
 
-                {{-- Pilihan Kurir Dummy --}}
+                {{-- Daftar Produk Per Toko --}}
+                @foreach($storesData as $storeId => $data)
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
-                        <x-icon name="truck" class="w-6 h-6 text-brand-navy" />
-                        Pilih Kurir Pengiriman
+                    <h2 class="font-bold text-lg text-gray-900 mb-5 border-b border-gray-100 pb-4 flex justify-between items-center">
+                        <span class="flex items-center gap-2">
+                            <x-icon name="building-storefront" class="w-5 h-5 text-brand-navy" />
+                            {{ $data['store']->name }}
+                        </span>
+                        <span class="text-sm font-medium text-gray-500 max-w-[200px] text-right truncate">Asal: {{ $data['store']->city->name ?? 'Kota Pengirim' }}</span>
                     </h2>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <label class="relative flex items-center gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-brand-orange focus-within:border-brand-orange transition-all">
-                            <input type="radio" name="courier" value="JNE Reguler" required class="w-5 h-5 text-brand-orange focus:ring-brand-orange border-gray-300" checked>
-                            <div class="flex-1">
-                                <p class="font-bold text-sm text-gray-900">JNE Reguler</p>
-                                <p class="text-xs text-gray-500 mt-0.5">Estimasi 2-3 Hari</p>
-                            </div>
-                            <span class="font-semibold text-sm text-brand-orange">Rp 25.000</span>
-                        </label>
-                        <label class="relative flex items-center gap-4 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-brand-orange focus-within:border-brand-orange transition-all">
-                            <input type="radio" name="courier" value="J&T Express" required class="w-5 h-5 text-brand-orange focus:ring-brand-orange border-gray-300">
-                            <div class="flex-1">
-                                <p class="font-bold text-sm text-gray-900">J&T Express</p>
-                                <p class="text-xs text-gray-500 mt-0.5">Estimasi 1-2 Hari</p>
-                            </div>
-                            <span class="font-semibold text-sm text-brand-orange">Rp 25.000</span>
-                        </label>
-                    </div>
-                    <p class="text-[11px] text-gray-400 mt-3 text-center">Catatan: Simulasi ini meratakan ongkir (Flat Rate) sebesar Rp 25.000 untuk tujuan pengetesan.</p>
-                </div>
 
-                {{-- Daftar Produk --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 line-clamp-none">
-                    <h2 class="font-bold text-lg text-gray-900 mb-5 border-b border-gray-100 pb-4">Pesanan Anda</h2>
-                    <div class="space-y-4">
-                        @foreach($cartItems as $item)
+                    <div class="space-y-4 mb-6">
+                        @foreach($data['items'] as $item)
                         <div class="flex gap-4">
                             <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-100 shrink-0">
                             <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
                                 <div>
                                     <p class="font-semibold text-sm text-gray-900 truncate">{{ $item->product->name }}</p>
-                                    <p class="text-xs text-gray-500">Toko: <span class="font-medium text-brand-navy">{{ $item->product->store->name }}</span></p>
+                                    <p class="text-xs text-gray-500">{{ $item->product->weight_gram }} gr / item</p>
                                 </div>
                                 <div class="flex justify-between items-center text-sm font-semibold mt-2">
                                     <span class="text-gray-500">Qty: {{ $item->quantity }}</span>
@@ -130,11 +114,53 @@
                         </div>
                         @endforeach
                     </div>
+                    
+                    {{-- Pilihan Kurir Per Toko --}}
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <p class="text-sm font-semibold text-gray-700 mb-3 block">Metode Pengiriman</p>
+                        
+                        <div x-show="!selectedCity" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            Silakan pilih Kota/Kabupaten tujuan terlebih dahulu.
+                        </div>
+
+                        <div x-show="selectedCity" class="space-y-3">
+                            <select name="couriers[{{ $storeId }}]" x-model="selectedCouriers[{{ $storeId }}]" @change="calculateShipping({{ $storeId }})" required
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
+                                <option value="">Pilih Kurir</option>
+                                @if(isset($data['custom_couriers']) && $data['custom_couriers']->count() > 0)
+                                    <optgroup label="Kurir Internal Toko">
+                                        @foreach($data['custom_couriers'] as $customC)
+                                            <option value="toko_{{ $customC->id }}">{{ $customC->name }} - Rp {{ number_format($customC->price, 0, ',', '.') }}{{ $customC->estimation ? ' ('.$customC->estimation.')' : '' }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @endif
+                                <optgroup label="Ekspedisi Reguler">
+                                    <option value="jne">JNE</option>
+                                    <option value="pos">POS Indonesia</option>
+                                    <option value="tiki">TIKI</option>
+                                </optgroup>
+                            </select>
+
+                            <div x-show="isCalculating[{{ $storeId }}]" class="text-xs text-gray-500 flex items-center gap-2">
+                                <svg class="animate-spin h-3 w-3 text-brand-orange" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                Menghitung tarif...
+                            </div>
+                            
+                            <div x-show="ongkirError[{{ $storeId }}]" x-text="ongkirError[{{ $storeId }}]" class="text-xs text-red-500 font-medium"></div>
+
+                            <div x-show="shippingCosts[{{ $storeId }}] > 0" class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Biaya Kirim (<span x-text="stores.find(s => s.id == {{ $storeId }}).weight"></span>g)</span>
+                                <span class="font-bold text-gray-900" x-text="'Rp ' + formatRupiah(shippingCosts[{{ $storeId }}])"></span>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+                @endforeach
 
             </div>
 
-            {{-- Ringkasan Checkout Sidebar --}}
+            {{-- Ringkasan Pembayaran --}}
             <div class="lg:w-[360px] shrink-0">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-28">
                     <h3 class="font-bold text-lg text-gray-900 mb-5">Ringkasan Pembayaran</h3>
@@ -145,20 +171,31 @@
                             <span class="font-semibold text-gray-900">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
-                            <span>Estimasi Ongkos Kirim <br><span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 mt-1 inline-block">Flat Rate</span></span>
-                            <span class="font-semibold text-gray-900">Rp 25.000</span>
+                            <span>Total Ongkos Kirim <br><template x-if="isAnyCalculating"><span class="text-[10px] text-brand-orange mt-1 truncate">Sedang menghitung...</span></template></span>
+                            <span class="font-semibold text-gray-900" x-text="totalShipping > 0 ? 'Rp ' + formatRupiah(totalShipping) : '-'"></span>
                         </div>
+                        @if($totalBuyerFees > 0)
+                        <div class="pt-3 border-t border-gray-50">
+                            <p class="font-semibold text-gray-900 mb-1 text-xs">Biaya Tambahan</p>
+                            @foreach($buyerFees as $fee)
+                            <div class="flex justify-between text-gray-500 text-xs mb-1">
+                                <span>{{ $fee->name }}</span>
+                                <span>Rp {{ number_format($fee->amount, 0, ',', '.') }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
 
                     <div class="flex justify-between items-center mb-1">
                         <span class="font-bold text-gray-900">Total Tagihan</span>
-                        <span class="font-display font-bold text-xl text-brand-orange">Rp {{ number_format($totalPrice + 25000, 0, ',', '.') }}</span>
+                        <span class="font-display font-bold text-xl text-brand-orange" x-text="grandTotal > 0 ? 'Rp ' + formatRupiah(grandTotal) : 'Rp {{ number_format($totalPrice, 0, ',', '.') }}'"></span>
                     </div>
                     <p class="text-xs text-gray-400 mb-6 text-right">Termasuk PPN jika ada</p>
 
-                    <button type="submit" class="w-full bg-brand-navy hover:bg-brand-navydark text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-sm">
+                    <button type="submit" :disabled="!canSubmit" class="w-full bg-brand-navy hover:bg-brand-navydark disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-sm">
                         <x-icon name="shield-check" class="w-5 h-5" />
-                        Pilih Metode Pembayaran
+                        Lanjut ke Pembayaran
                     </button>
 
                     <div class="mt-5 flex items-center justify-center gap-2 text-xs text-gray-400">
@@ -172,27 +209,37 @@
 
     @push('scripts')
     <script>
-        function locationDropdown() {
+        function checkoutPage(config) {
             return {
+                stores: config.stores,
+                productSubtotal: config.productSubtotal,
+                totalBuyerFees: config.totalBuyerFees,
+                customCouriersData: {!! json_encode(collect($storesData)->mapWithKeys(function($data, $id) {
+                    return [$id => $data['custom_couriers']->map(fn($c) => ['id' => 'toko_'.$c->id, 'price' => $c->price])];
+                })) !!},
+                
                 provinces: [],
                 cities: [],
                 selectedProvince: "{{ old('province_id', '') }}",
                 selectedCity: "{{ old('city_id', '') }}",
-                isLoading: false,
+                isCityLoading: false,
+                
+                selectedCouriers: {},
+                shippingCosts: {},
+                isCalculating: {},
+                ongkirError: {},
 
                 init() {
-                    this.fetchProvinces();
+                    // Initialize empty states per store
+                    this.stores.forEach(store => {
+                        this.selectedCouriers[store.id] = "";
+                        this.shippingCosts[store.id] = 0;
+                        this.isCalculating[store.id] = false;
+                        this.ongkirError[store.id] = null;
+                    });
+
                     if (this.selectedProvince) {
                         this.fetchCities();
-                    }
-                },
-
-                async fetchProvinces() {
-                    try {
-                        const res = await fetch('/api/locations/provinces');
-                        this.provinces = await res.json();
-                    } catch (e) {
-                        console.error("Gagal load provinsi");
                     }
                 },
 
@@ -201,20 +248,111 @@
                         this.cities = [];
                         return;
                     }
-                    this.isLoading = true;
+                    this.isCityLoading = true;
                     try {
                         const res = await fetch(`/api/locations/cities/${this.selectedProvince}`);
                         this.cities = await res.json();
                         
-                        // Reset city jika tidak ada di lists
                         if (!this.cities.some(c => c.id == this.selectedCity)) {
                             this.selectedCity = "";
                         }
                     } catch (e) {
                         console.error("Gagal load kota");
                     } finally {
-                        this.isLoading = false;
+                        this.isCityLoading = false;
                     }
+                },
+
+                onCityChange() {
+                    // Jika kota ganti, hitung ulang semua ongkir yang sudah pilih kurir
+                    this.stores.forEach(store => {
+                        if (this.selectedCouriers[store.id]) {
+                            this.calculateShipping(store.id);
+                        }
+                    });
+                },
+
+                async calculateShipping(storeId) {
+                    const courier = this.selectedCouriers[storeId];
+                    if (!courier || !this.selectedCity) return;
+
+                    const store = this.stores.find(s => s.id == storeId);
+                    
+                    this.isCalculating[storeId] = true;
+                    this.ongkirError[storeId] = null;
+                    this.shippingCosts[storeId] = 0;
+
+                    // Handle Kurir Toko (Internal)
+                    if (courier.startsWith('toko_')) {
+                        let customCouriers = this.customCouriersData[storeId] || [];
+                        let customItem = customCouriers.find(c => c.id === courier);
+                        if(customItem) {
+                            this.shippingCosts[storeId] = parseFloat(customItem.price);
+                        } else {
+                            this.ongkirError[storeId] = "Tarif kurir toko tidak valid.";
+                        }
+                        this.isCalculating[storeId] = false;
+                        return;
+                    }
+
+                    try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        const res = await fetch('/api/ongkir/calculate', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                origin: store.origin_city_id,
+                                destination: this.selectedCity,
+                                weight: store.weight,
+                                courier: courier
+                            })
+                        });
+
+                        const data = await res.json();
+                        if (data.success && data.data.length > 0) {
+                            // Ambil elemen cost pertama (biasanya layanan REG)
+                            this.shippingCosts[storeId] = data.data[0].cost[0].value;
+                        } else {
+                            this.ongkirError[storeId] = data.message || "Layanan tidak didukung untuk rute ini.";
+                            this.selectedCouriers[storeId] = "";
+                        }
+                    } catch (e) {
+                        this.ongkirError[storeId] = "Gagal menghubungi server ongkir.";
+                    } finally {
+                        this.isCalculating[storeId] = false;
+                    }
+                },
+
+                get isAnyCalculating() {
+                    return Object.values(this.isCalculating).some(status => status === true);
+                },
+
+                get totalShipping() {
+                    return Object.values(this.shippingCosts).reduce((a, b) => a + (b || 0), 0);
+                },
+
+                get grandTotal() {
+                    return this.productSubtotal + this.totalShipping + this.totalBuyerFees;
+                },
+
+                get canSubmit() {
+                    // Pastikan semua store sudah dicentang dan ada harganya
+                    if (!this.selectedCity) return false;
+                    
+                    for (const store of this.stores) {
+                        if (!this.selectedCouriers[store.id] || this.shippingCosts[store.id] === 0) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+
+                formatRupiah(number) {
+                    return new Intl.NumberFormat('id-ID').format(number);
                 }
             }
         }

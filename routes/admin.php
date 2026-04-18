@@ -61,7 +61,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Route::get('/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
     // Route::delete('/reviews/{id}', [App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
+    // Payout logic
+    Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
+    Route::post('/payouts/{id}/approve', [\App\Http\Controllers\Admin\PayoutController::class, 'approve'])->name('payouts.approve');
+    Route::post('/payouts/{id}/reject', [\App\Http\Controllers\Admin\PayoutController::class, 'reject'])->name('payouts.reject');
+
     // Settings
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
+
+    // Transaction Fees
+    Route::get('/transaction-fees', [\App\Http\Controllers\Admin\BuyerTransactionFeeController::class, 'index'])->name('transaction_fees.index');
+    Route::post('/transaction-fees', [\App\Http\Controllers\Admin\BuyerTransactionFeeController::class, 'store'])->name('transaction_fees.store');
+    Route::post('/transaction-fees/{id}/toggle', [\App\Http\Controllers\Admin\BuyerTransactionFeeController::class, 'toggleActive'])->name('transaction_fees.toggle');
+    Route::delete('/transaction-fees/{id}', [\App\Http\Controllers\Admin\BuyerTransactionFeeController::class, 'destroy'])->name('transaction_fees.destroy');
 });

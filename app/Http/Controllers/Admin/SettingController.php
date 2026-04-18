@@ -19,10 +19,18 @@ class SettingController extends Controller
         $request->validate([
             'midtrans_server_key' => 'nullable|string',
             'midtrans_client_key' => 'nullable|string',
+            'midtrans_iris_api_key' => 'nullable|string',
             'midtrans_is_production' => 'nullable|in:true,false',
+            'platform_fee_per_item' => 'nullable|numeric|min:0',
+            'withdrawal_fee_percentage' => 'nullable|numeric|min:0|max:100',
         ]);
 
-        foreach ($request->only(['midtrans_server_key', 'midtrans_client_key', 'midtrans_is_production']) as $key => $value) {
+        $keys = [
+            'midtrans_server_key', 'midtrans_client_key', 'midtrans_iris_api_key', 
+            'midtrans_is_production', 'platform_fee_per_item', 'withdrawal_fee_percentage'
+        ];
+
+        foreach ($request->only($keys) as $key => $value) {
             SystemSetting::updateOrCreate(
                 ['key' => $key],
                 ['value' => $value]
