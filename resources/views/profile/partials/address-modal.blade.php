@@ -86,7 +86,7 @@
                             <!-- Right Column: Map -->
                             <div class="space-y-3 flex flex-col md:flex-1 order-first md:order-last border-b border-gray-200 pb-8 md:border-b-0 md:pb-0 mb-4 md:mb-0">
                                 <h4 class="font-bold text-gray-900 border-b pb-2 mb-2">Tandai Lokasi Map</h4>
-                                <p class="text-xs text-gray-500">Geser pin merah ke lokasi tujuan untuk mempermudah kurir menemukan alamat Anda.</p>
+                                <p class="text-xs text-gray-500">Geser pin biru ke lokasi tujuan untuk mempermudah kurir menemukan alamat Anda.</p>
                                 
                                 <div id="leafletMap" class="w-full rounded-xl border border-gray-300 shadow-inner h-[250px] md:h-auto md:flex-1 z-0 relative"></div>
                                 
