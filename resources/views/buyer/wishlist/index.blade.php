@@ -2,6 +2,9 @@
     <x-slot name="title">Wishlist Saya</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[['label' => 'Wishlist']]" />
+
         {{-- Page Header --}}
         <div class="mb-6">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900 flex items-center gap-3">

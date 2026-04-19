@@ -2,6 +2,11 @@
     <x-slot name="title">Manajemen Kurir Toko</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('seller.dashboard')],
+            ['label' => 'Pengaturan Kurir']
+        ]" />
+
         <h1 class="text-2xl font-bold mb-4">Pengaturan Kurir Toko</h1>
         <p class="text-gray-500 mb-6 text-sm">Kelola kurir internal toko Anda dengan tarif rata (Flat Rate). Pembeli bisa memilih opsi ini bersamaan dengan ekspedisi lainnya.</p>
 

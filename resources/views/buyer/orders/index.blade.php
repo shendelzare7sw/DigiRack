@@ -2,6 +2,9 @@
     <x-slot name="title">Riwayat Pesanan</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[['label' => 'Riwayat Pesanan']]" />
+
         <h1 class="text-2xl font-bold font-display text-gray-900 mb-6">Riwayat Pesanan Saya</h1>
 
         @if(session('success'))

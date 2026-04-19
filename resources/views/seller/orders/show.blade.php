@@ -2,11 +2,14 @@
     <x-slot name="title">Kelola Pesanan #{{ $order->invoice_number }}</x-slot>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Header & Back --}}
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[
+            ['label' => 'Pesanan Masuk', 'url' => route('seller.orders.index')],
+            ['label' => '#' . $order->invoice_number]
+        ]" />
+
         <div class="flex items-center justify-between mb-6">
-            <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center gap-2 text-gray-500 hover:text-brand-navy font-semibold transition-colors">
-                <x-icon name="arrow-left" class="w-4 h-4" /> Kembali ke Daftar Pesanan
-            </a>
+            <h1 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Pesanan #{{ $order->invoice_number }}</h1>
             <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
                 {{ $order->status_label }}
             </span>

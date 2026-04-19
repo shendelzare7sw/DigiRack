@@ -99,6 +99,9 @@
             },
         }">
 
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[['label' => 'Keranjang Belanja']]" />
+
         {{-- Page Header --}}
         <div class="mb-6">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900 flex items-center gap-3">

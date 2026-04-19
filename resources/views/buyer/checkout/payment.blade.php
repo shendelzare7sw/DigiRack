@@ -9,7 +9,10 @@
     @endphp
 
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 text-center">
-        
+        <x-breadcrumb :items="[
+            ['label' => 'Riwayat Pesanan', 'url' => route('buyer.orders.index')],
+            ['label' => 'Pembayaran']
+        ]" />
         <div class="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden p-8 sm:p-12 text-center relative z-10">
             <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <x-icon name="check-circle" class="w-10 h-10 text-green-500" />

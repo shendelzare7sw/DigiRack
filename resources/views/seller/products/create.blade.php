@@ -2,11 +2,14 @@
     <x-slot name="title">Tambah Produk Baru</x-slot>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[
+            ['label' => 'Kelola Produk', 'url' => route('seller.products.index')],
+            ['label' => 'Tambah Produk Baru']
+        ]" />
+
         {{-- Header --}}
         <div class="flex items-center gap-3 mb-6">
-            <a href="{{ route('seller.products.index') }}" class="p-2 text-gray-400 hover:text-brand-navy hover:bg-brand-navylight rounded-xl transition-colors">
-                <x-icon name="arrow-left" class="w-5 h-5" />
-            </a>
             <h1 class="font-display font-bold text-2xl text-gray-900">Tambah Produk Baru</h1>
         </div>
 

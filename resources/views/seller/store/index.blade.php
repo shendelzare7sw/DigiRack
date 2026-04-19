@@ -2,6 +2,11 @@
     <x-slot name="title">Pengaturan Profil Toko</x-slot>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('seller.dashboard')],
+            ['label' => 'Profil Toko']
+        ]" />
+
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-2xl font-bold font-display text-gray-900">Profil Toko</h1>

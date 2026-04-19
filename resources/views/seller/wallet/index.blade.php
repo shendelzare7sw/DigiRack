@@ -2,6 +2,10 @@
     <x-slot name="title">Saldo & Pencairan Dana</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('seller.dashboard')],
+            ['label' => 'Saldo & Pencairan']
+        ]" />
 
         @if(session('success'))
             <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">

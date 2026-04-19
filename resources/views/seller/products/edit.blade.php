@@ -2,11 +2,14 @@
     <x-slot name="title">Edit Produk — {{ $product->name }}</x-slot>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {{-- Breadcrumb --}}
+        <x-breadcrumb :items="[
+            ['label' => 'Kelola Produk', 'url' => route('seller.products.index')],
+            ['label' => 'Edit: ' . Str::limit($product->name, 30)]
+        ]" />
+
         {{-- Header --}}
         <div class="flex items-center gap-3 mb-6">
-            <a href="{{ route('seller.products.index') }}" class="p-2 text-gray-400 hover:text-brand-navy hover:bg-brand-navylight rounded-xl transition-colors">
-                <x-icon name="arrow-left" class="w-5 h-5" />
-            </a>
             <div>
                 <h1 class="font-display font-bold text-2xl text-gray-900">Edit Produk</h1>
                 <p class="text-sm text-gray-500">{{ $product->name }}</p>

@@ -7,6 +7,11 @@
             productSubtotal: {{ $totalPrice }},
             totalBuyerFees: {{ $totalBuyerFees }}
         })">
+        <x-breadcrumb :items="[
+            ['label' => 'Keranjang', 'url' => route('buyer.cart.index')],
+            ['label' => 'Checkout']
+        ]" />
+
         <div class="mb-6">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Checkout Pesanan</h1>
             <p class="text-sm text-gray-500 mt-1">Lengkapi data pengiriman untuk memproses transaksi Anda.</p>
