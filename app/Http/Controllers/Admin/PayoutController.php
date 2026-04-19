@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PayoutRequest;
+use App\Notifications\OrderNotification;
 use App\Services\IrisService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +46,17 @@ class PayoutController extends Controller
                 $payout->iris_reference_no = $response['data']['reference_no'] ?? (json_encode($response['data']));
                 $payout->save();
 
+                // Notify seller
+                try {
+                    $store->user->notify(new OrderNotification(
+                        'payout_approved',
+                        '💸 Pencairan Dana Berhasil!',
+                        'Dana sebesar Rp ' . number_format($payout->net_amount, 0, ',', '.') . ' telah ditransfer ke rekening ' . $store->bank_name . ' ' . $store->bank_account_no . '.',
+                        route('seller.wallet.index'),
+                        '✅'
+                    ));
+                } catch (\Exception $e) {}
+
                 return back()->with('success', 'Pencairan dana berhasil disetujui dan ditransfer via IRIS.');
             } else {
                 // If API fails, log error
@@ -85,6 +97,17 @@ class PayoutController extends Controller
             }
 
             DB::commit();
+
+            // Notify seller about rejection
+            try {
+                $payout->store->user->notify(new OrderNotification(
+                    'payout_rejected',
+                    '❌ Pencairan Dana Ditolak',
+                    'Permintaan pencairan Rp ' . number_format($payout->amount, 0, ',', '.') . ' ditolak oleh Admin. Dana telah dikembalikan ke saldo toko Anda.',
+                    route('seller.wallet.index'),
+                    '🔄'
+                ));
+            } catch (\Exception $e) {}
 
             return back()->with('success', 'Pencairan ditolak dan dana dikembalikan ke wallet Seller.');
         } catch (\Exception $e) {
