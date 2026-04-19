@@ -31,10 +31,10 @@
                     <input type="hidden" name="longitude" x-model="form.lng">
 
                     <div class="px-4 sm:px-6 py-5 overflow-y-auto flex-1 custom-scrollbar">
-                        <div class="flex flex-col md:flex-row gap-6 h-full">
+                        <div class="flex flex-col md:flex-row gap-6 md:h-full">
                             
                             <!-- Left Column: Form Info -->
-                            <div class="space-y-4 flex-1">
+                            <div class="space-y-4 md:flex-1">
                                 <h4 class="font-bold text-gray-900 border-b pb-2 mb-4">Detail Kontak</h4>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1">Label Alamat</label>
@@ -84,11 +84,11 @@
                             </div>
                             
                             <!-- Right Column: Map -->
-                            <div class="space-y-3 flex flex-col flex-1 order-first md:order-last border-b border-gray-100 pb-6 md:border-b-0 md:pb-0 mb-2 md:mb-0 shrink-0 min-h-[300px] md:min-h-auto">
+                            <div class="space-y-3 flex flex-col md:flex-1 order-first md:order-last border-b border-gray-200 pb-8 md:border-b-0 md:pb-0 mb-4 md:mb-0">
                                 <h4 class="font-bold text-gray-900 border-b pb-2 mb-2">Tandai Lokasi Map</h4>
                                 <p class="text-xs text-gray-500">Geser pin merah ke lokasi tujuan untuk mempermudah kurir menemukan alamat Anda.</p>
                                 
-                                <div id="leafletMap" class="w-full flex-1 rounded-xl border border-gray-300 shadow-inner min-h-[250px] md:min-h-0 z-0"></div>
+                                <div id="leafletMap" class="w-full rounded-xl border border-gray-300 shadow-inner h-[250px] md:h-auto md:flex-1 z-0 relative"></div>
                                 
                                 <div class="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-800 flex gap-2 items-start mt-2">
                                     <x-icon name="information-circle" class="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
