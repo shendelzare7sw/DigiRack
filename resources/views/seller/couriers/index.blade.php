@@ -57,7 +57,7 @@
                                         @csrf
                                         <button type="submit" class="text-xs border px-2 py-1 rounded hover:bg-gray-50">Toggle Status</button>
                                     </form>
-                                    <form action="{{ route('seller.couriers.destroy', $courier->id) }}" method="POST" onsubmit="return confirm('Hapus kurir ini?');">
+                                    <form action="{{ route('seller.couriers.destroy', $courier->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Kurir', message: 'Hapus opsi kurir pengiriman ini dari toko Anda?', type: 'danger', confirmText: 'Ya, Hapus' })">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="text-xs border border-red-500 text-red-500 px-2 py-1 rounded hover:bg-red-50">Hapus</button>
                                     </form>

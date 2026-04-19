@@ -137,7 +137,7 @@
                                                 <x-icon name="pencil-square" class="w-4 h-4" />
                                             </a>
                                             <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline"
-                                                onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+                                                x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
                                                     <x-icon name="trash" class="w-4 h-4" />
@@ -185,7 +185,7 @@
                                     <a href="{{ route('seller.products.edit', $product->id) }}" class="p-2 bg-brand-navylight text-brand-navy rounded-lg hover:bg-brand-navy hover:text-white transition-colors" title="Edit">
                                         <x-icon name="pencil-square" class="w-4 h-4" />
                                     </a>
-                                    <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline" onsubmit="return confirm('Yakin ingin menghapus?')">
+                                    <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors" title="Hapus">
                                             <x-icon name="trash" class="w-4 h-4" />

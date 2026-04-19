@@ -78,15 +78,15 @@
                                 <td class="px-6 py-4 text-right">
                                     @if($p->status === 'pending')
                                         <div class="flex items-center justify-end gap-2">
-                                            <form action="{{ route('admin.payouts.approve', $p->id) }}" method="POST">
+                                            <form action="{{ route('admin.payouts.approve', $p->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Approve Pencairan', message: 'Cairkan dana Rp {{ number_format($p->net_amount, 0, ',', '.') }} ke rekening {{ $p->store->bank_name }} {{ $p->store->bank_account_no }}?', type: 'success', confirmText: 'Ya, Cairkan' })">
                                                 @csrf
-                                                <button type="submit" onclick="return confirm('Cairkan dana Rp {{ number_format($p->net_amount, 0, ',', '.') }} ke rekening {{ $p->store->bank_name }} {{ $p->store->bank_account_no }}?');" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition-colors shadow-sm">
+                                                <button type="submit" class="inline-flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition-colors shadow-sm">
                                                     <x-icon name="check" class="w-3.5 h-3.5" /> Approve & Transfer
                                                 </button>
                                             </form>
-                                            <form action="{{ route('admin.payouts.reject', $p->id) }}" method="POST">
+                                            <form action="{{ route('admin.payouts.reject', $p->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tolak Pencairan', message: 'Tolak pencairan ini? Dana akan dikembalikan ke saldo toko.', type: 'danger', confirmText: 'Ya, Tolak' })">
                                                 @csrf
-                                                <button type="submit" onclick="return confirm('Tolak pencairan ini? Dana akan dikembalikan ke saldo toko.');" class="inline-flex items-center gap-1 bg-white border border-red-200 hover:bg-red-50 text-red-600 font-bold px-3 py-2 rounded-lg text-xs transition-colors">
+                                                <button type="submit" class="inline-flex items-center gap-1 bg-white border border-red-200 hover:bg-red-50 text-red-600 font-bold px-3 py-2 rounded-lg text-xs transition-colors">
                                                     <x-icon name="x-mark" class="w-3.5 h-3.5" /> Tolak
                                                 </button>
                                             </form>

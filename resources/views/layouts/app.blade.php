@@ -185,6 +185,7 @@
         </footer>
 
         <x-toast />
+        <x-confirm-modal />
         @stack('scripts')
     </body>
 </html>

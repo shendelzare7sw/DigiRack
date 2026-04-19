@@ -190,7 +190,7 @@
                     </h3>
 
                     @if($wallet->balance >= 10000)
-                        <form method="POST" action="{{ route('seller.wallet.payout') }}" onsubmit="return confirm('Yakin ingin mengajukan pencairan dana?');">
+                        <form method="POST" action="{{ route('seller.wallet.payout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pencairan', message: 'Yakin ingin mengajukan pencairan dana ke rekening Anda? Proses ini akan diteruskan ke Admin.', type: 'info', confirmText: 'Ya, Cairkan' })">
                             @csrf
                             <div class="mb-4">
                                 <label class="block text-sm font-semibold text-gray-700 mb-1">Jumlah Penarikan</label>

@@ -109,7 +109,7 @@
                         </h3>
                         <p class="text-sm text-gray-600 mb-4">Pastikan paket sudah Anda terima dalam kondisi baik. Dana asuransi (escrow) akan dicairkan ke penjual setelah Anda mengklik tombol di bawah ini.</p>
                         
-                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin barang sudah diterima dengan baik?');">
+                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Apakah Anda yakin barang pesanan sudah diterima dengan baik dan sesuai? Dana akan diteruskan ke penjual dan pesanan difinalisasi.', type: 'info', confirmText: 'Ya, Selesai' })">
                             @csrf
                             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
                                 <x-icon name="check-circle" class="w-5 h-5" /> Pesanan Diterima Selesai
