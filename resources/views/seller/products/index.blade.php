@@ -57,7 +57,7 @@
             </form>
         </div>
 
-        {{-- Products Table --}}
+        {{-- Products: Desktop Table + Mobile Cards --}}
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             @if($products->isEmpty())
                 <div class="p-16 text-center">
@@ -71,7 +71,8 @@
                     </a>
                 </div>
             @else
-                <div class="overflow-x-auto">
+                {{-- Desktop Table (hidden on mobile) --}}
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="bg-gray-50/80 border-b border-gray-100">
                             <tr>
@@ -104,7 +105,7 @@
                                     <td class="px-5 py-4 text-right font-semibold text-brand-blue">{{ $product->formatted_price }}</td>
                                     <td class="px-5 py-4">
                                         <div class="text-center">
-                                            <span class="font-semibold {{ $product->stock === 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-blue-500' : 'text-gray-900') }}">
+                                            <span class="font-semibold {{ $product->stock === 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-orange-500' : 'text-gray-900') }}">
                                                 {{ $product->stock }}
                                             </span>
                                         </div>
@@ -126,7 +127,11 @@
                                         @endif
                                     </td>
                                     <td class="px-5 py-4">
-                                        <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <a href="{{ route('products.show', $product->slug) }}" target="_blank"
+                                                class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
+                                                <x-icon name="eye" class="w-4 h-4" />
+                                            </a>
                                             <a href="{{ route('seller.products.edit', $product->id) }}"
                                                 class="p-2 text-gray-400 hover:text-brand-navy hover:bg-brand-navylight rounded-lg transition-colors" title="Edit">
                                                 <x-icon name="pencil-square" class="w-4 h-4" />
@@ -144,6 +149,52 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Mobile Cards (hidden on desktop) --}}
+                <div class="md:hidden divide-y divide-gray-100">
+                    @foreach($products as $product)
+                        <div class="p-4">
+                            <div class="flex items-start gap-3 mb-3">
+                                <img src="{{ $product->primary_image_url }}" alt="{{ $product->name }}"
+                                    class="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <a href="{{ route('products.show', $product->slug) }}" target="_blank" class="font-bold text-sm text-gray-900 hover:text-brand-navy line-clamp-2">{{ $product->name }}</a>
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ $product->category->name ?? '-' }}</p>
+                                    <p class="text-sm font-bold text-brand-blue mt-1">{{ $product->formatted_price }}</p>
+                                </div>
+                                @if($product->status === 'active')
+                                    <span class="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
+                                        <span class="w-1 h-1 bg-green-500 rounded-full"></span> Aktif
+                                    </span>
+                                @elseif($product->status === 'inactive')
+                                    <span class="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">Nonaktif</span>
+                                @else
+                                    <span class="shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Draf</span>
+                                @endif
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4 text-xs text-gray-500">
+                                    <span>Stok: <strong class="{{ $product->stock === 0 ? 'text-red-500' : ($product->stock <= 5 ? 'text-orange-500' : 'text-gray-900') }}">{{ $product->stock }}</strong></span>
+                                    <span>Terjual: <strong class="text-gray-900">{{ $product->sold_count }}</strong></span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <a href="{{ route('products.show', $product->slug) }}" target="_blank" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors" title="Lihat">
+                                        <x-icon name="eye" class="w-4 h-4" />
+                                    </a>
+                                    <a href="{{ route('seller.products.edit', $product->id) }}" class="p-2 bg-brand-navylight text-brand-navy rounded-lg hover:bg-brand-navy hover:text-white transition-colors" title="Edit">
+                                        <x-icon name="pencil-square" class="w-4 h-4" />
+                                    </a>
+                                    <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline" onsubmit="return confirm('Yakin ingin menghapus?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors" title="Hapus">
+                                            <x-icon name="trash" class="w-4 h-4" />
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
 
                 @if($products->hasPages())

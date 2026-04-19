@@ -10,7 +10,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
-                    Dashboard Seller ðŸª
+                    Dashboard Seller
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">
                     @if($store)
@@ -110,24 +110,24 @@
                                 </div>
                                 <span class="text-xs font-semibold text-gray-700 text-center">Tambah Produk</span>
                             </a>
-                            <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
-                                <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+                            <a href="{{ route('seller.orders.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-orange-300 hover:shadow-sm transition-all group">
+                                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
                                     <x-icon name="clipboard-document-list" class="w-6 h-6" />
                                 </div>
-                                <span class="text-xs font-semibold text-gray-400 text-center">Pesanan (Segera)</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
-                                <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
-                                    <x-icon name="star" class="w-6 h-6" />
+                                <span class="text-xs font-semibold text-gray-700 text-center">Pesanan Masuk</span>
+                            </a>
+                            <a href="{{ route('seller.wallet.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
+                                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                                    <x-icon name="banknotes" class="w-6 h-6" />
                                 </div>
-                                <span class="text-xs font-semibold text-gray-400 text-center">Ulasan (Segera)</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
-                                <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
-                                    <x-icon name="chart-bar" class="w-6 h-6" />
+                                <span class="text-xs font-semibold text-gray-700 text-center">Saldo / Wallet</span>
+                            </a>
+                            <a href="{{ route('seller.store.show') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-purple-300 hover:shadow-sm transition-all group">
+                                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                                    <x-icon name="building-storefront" class="w-6 h-6" />
                                 </div>
-                                <span class="text-xs font-semibold text-gray-400 text-center">Laporan (Segera)</span>
-                            </div>
+                                <span class="text-xs font-semibold text-gray-700 text-center">Profil Toko</span>
+                            </a>
                             <a href="{{ route('profile.edit') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all group">
                                 <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                                     <x-icon name="user-circle" class="w-6 h-6" />

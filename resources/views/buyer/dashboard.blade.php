@@ -6,7 +6,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
-                    Selamat Datang, {{ Str::words(Auth::user()->name, 2, '') }}! ðŸ‘‹
+                    Selamat Datang, {{ Str::words(Auth::user()->name, 2, '') }}!
                 </h1>
                 <p class="text-sm text-gray-500 mt-1">Kelola belanja dan aktivitas akun Anda di sini.</p>
             </div>
@@ -50,16 +50,16 @@
             </a>
 
             {{-- Orders --}}
-            <div class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 opacity-70">
+            <a href="{{ route('buyer.orders.index') }}" class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md hover:border-brand-navy/30 transition-all">
                 <div class="flex items-center justify-between mb-3">
-                    <div class="w-11 h-11 bg-brand-navylight rounded-xl flex items-center justify-center text-brand-navy">
+                    <div class="w-11 h-11 bg-brand-navylight rounded-xl flex items-center justify-center group-hover:bg-brand-navy group-hover:text-white text-brand-navy transition-colors">
                         <x-icon name="clipboard-document-list" class="w-6 h-6" />
                     </div>
-                    <span class="text-[10px] bg-gray-100 text-gray-400 font-bold px-2 py-1 rounded-full">SEGERA</span>
+                    <x-icon name="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-brand-navy transition-colors" />
                 </div>
                 <p class="font-display font-bold text-2xl text-gray-900">{{ $orderCount }}</p>
                 <p class="text-xs text-gray-500 font-medium mt-1">Total Pesanan</p>
-            </div>
+            </a>
 
             {{-- Reviews --}}
             <div class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 opacity-70">
@@ -107,12 +107,12 @@
                             </div>
                             <span class="text-xs font-semibold text-gray-700 text-center">Edit Profil</span>
                         </a>
-                        <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
-                            <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+                        <a href="{{ route('buyer.orders.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-navy/30 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-brand-navylight rounded-xl flex items-center justify-center text-brand-navy group-hover:bg-brand-navy group-hover:text-white transition-colors">
                                 <x-icon name="clipboard-document-list" class="w-6 h-6" />
                             </div>
-                            <span class="text-xs font-semibold text-gray-400 text-center">Pesanan Saya</span>
-                        </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Pesanan Saya</span>
+                        </a>
                         <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
                             <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
                                 <x-icon name="map-pin" class="w-6 h-6" />

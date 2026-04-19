@@ -5,7 +5,7 @@
         {{-- Welcome Header --}}
         <div class="mb-8">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
-                Dashboard Admin âš™ï¸
+                Dashboard Admin
             </h1>
             <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Berikut ringkasan sistem DigiRack Enterprise.</p>
         </div>
@@ -69,7 +69,7 @@
                     </h2>
 
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        {{-- Products (Live) --}}
+                        {{-- Lihat Katalog (Live) --}}
                         <a href="{{ route('products.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-navy/30 hover:shadow-sm transition-all group">
                             <div class="w-12 h-12 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
                                 <x-icon name="cube" class="w-6 h-6" />
@@ -85,7 +85,7 @@
                             <span class="text-xs font-semibold text-gray-700 text-center">Pengaturan Sistem</span>
                         </a>
 
-                        {{-- Toko (Live Phase 10) --}}
+                        {{-- Kelola Toko (Live) --}}
                         <a href="{{ route('admin.stores.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 hover:shadow-sm transition-all group">
                             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
                                 <x-icon name="building-storefront" class="w-6 h-6" />
@@ -93,12 +93,28 @@
                             <span class="text-xs font-bold text-purple-900 text-center">Kelola Toko</span>
                         </a>
 
+                        {{-- Pencairan Dana (Live) --}}
+                        <a href="{{ route('admin.payouts.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
+                                <x-icon name="banknotes" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Pencairan Dana</span>
+                        </a>
+
+                        {{-- Biaya Transaksi (Live) --}}
+                        <a href="{{ route('admin.transaction_fees.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-orange-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                                <x-icon name="receipt-percent" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Biaya Transaksi</span>
+                        </a>
+
                         {{-- Coming Soon Items --}}
                         @php
                             $comingSoon = [
                                 ['icon' => 'users', 'label' => 'Kelola Users', 'color' => 'brand-navy', 'bg' => 'brand-navylight'],
-                                ['icon' => 'clipboard-document-check', 'label' => 'Moderasi Produk', 'color' => 'green-600', 'bg' => 'green-50'],
-                                ['icon' => 'tag', 'label' => 'Kelola Kategori', 'color' => 'teal-600', 'bg' => 'teal-50'],
+                                ['icon' => 'clipboard-document-check', 'label' => 'Moderasi Produk', 'color' => 'teal-600', 'bg' => 'teal-50'],
+                                ['icon' => 'tag', 'label' => 'Kelola Kategori', 'color' => 'indigo-600', 'bg' => 'indigo-50'],
                                 ['icon' => 'clipboard-document-list', 'label' => 'Semua Pesanan', 'color' => 'blue-500', 'bg' => 'blue-50'],
                                 ['icon' => 'megaphone', 'label' => 'Kelola Banner', 'color' => 'pink-500', 'bg' => 'pink-50'],
                                 ['icon' => 'fire', 'label' => 'Flash Sale', 'color' => 'red-500', 'bg' => 'red-50'],

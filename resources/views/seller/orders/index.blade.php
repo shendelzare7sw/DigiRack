@@ -21,7 +21,8 @@
 
         <div class="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">
             @if($orders->count() > 0)
-                <div class="overflow-x-auto">
+                {{-- Desktop table --}}
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -72,6 +73,44 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Mobile cards --}}
+                <div class="md:hidden divide-y divide-gray-100">
+                    @foreach($orders as $order)
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-gray-400 font-mono">{{ $order->invoice_number }}</span>
+                                <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
+                                    {{ $order->status_label }}
+                                </span>
+                            </div>
+                            <p class="font-bold text-sm text-gray-900 line-clamp-1">{{ $order->items->first()->product->name ?? 'Produk Terhapus' }}</p>
+                            @if($order->items->count() > 1)
+                                <p class="text-xs text-brand-navy font-semibold">+{{ $order->items->count() - 1 }} produk lainnya</p>
+                            @endif
+                            <div class="flex items-center gap-1.5 mt-1 text-xs text-gray-500">
+                                <x-icon name="user" class="w-3 h-3" /> {{ $order->buyer->name }}
+                                <span>&bull;</span>
+                                {{ $order->created_at->translatedFormat('d M Y') }}
+                            </div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div>
+                                    <span class="font-bold text-brand-blue">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                                    @if($order->shipping_address['courier'] ?? false)
+                                        <span class="text-[10px] text-gray-400 uppercase ml-2">{{ $order->shipping_address['courier'] }}</span>
+                                    @endif
+                                </div>
+                                @if($order->status == 'processing')
+                                    <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                        <x-icon name="truck" class="w-3.5 h-3.5" /> Proses
+                                    </a>
+                                @else
+                                    <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
                 
                 @if($orders->hasPages())
