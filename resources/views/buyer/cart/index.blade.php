@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="title">Keranjang Belanja</x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8"
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 lg:pb-8"
         x-data="{
             selectedItems: [],
             selectAll: false,
@@ -69,7 +69,6 @@
             },
 
             async removeItem(cartId) {
-                if (!confirm('Hapus produk dari keranjang?')) return;
                 try {
                     const res = await fetch(`/buyer/cart/${cartId}`, {
                         method: 'DELETE',
@@ -214,11 +213,11 @@
                 </div>
 
                 {{-- Order Summary Sidebar --}}
-                <div class="lg:w-[340px] shrink-0">
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-28">
-                        <h3 class="font-bold text-lg text-gray-900 mb-5">Ringkasan Belanja</h3>
+                <div class="fixed bottom-0 left-0 right-0 z-40 lg:static lg:w-[340px] shrink-0">
+                    <div class="bg-white lg:rounded-2xl border-t lg:border border-gray-200 lg:border-gray-100 shadow-[0_-8px_30px_rgb(0,0,0,0.08)] lg:shadow-sm p-4 sm:p-6 lg:sticky lg:top-28">
+                        <h3 class="hidden lg:block font-bold text-lg text-gray-900 mb-5">Ringkasan Belanja</h3>
 
-                        <div class="space-y-3 text-sm border-b border-gray-100 pb-5 mb-5">
+                        <div class="hidden lg:block space-y-3 text-sm border-b border-gray-100 pb-5 mb-5">
                             <div class="flex justify-between text-gray-600">
                                 <span>Total Item Terpilih</span>
                                 <span class="font-semibold" x-text="selectedTotalCount + ' pcs'"></span>
@@ -229,23 +228,26 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="font-bold text-gray-900">Total Tagihan</span>
-                            <span class="font-display font-bold text-xl text-brand-blue" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTotalPrice)"></span>
-                        </div>
+                        <div class="flex justify-between items-center lg:mb-6 gap-4">
+                            <div class="flex-1 lg:flex-none">
+                                <span class="hidden lg:block font-bold text-gray-900">Total Tagihan</span>
+                                <span class="block lg:hidden text-[11px] text-gray-500 font-semibold mb-0.5 uppercase tracking-wide">Total Tagihan</span>
+                                <span class="font-display font-bold text-lg sm:text-xl text-brand-blue leading-none" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTotalPrice)"></span>
+                            </div>
 
-                        <button type="submit" :disabled="selectedItems.length === 0" 
-                            class="w-full text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
-                            :class="selectedItems.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-brand-navy hover:bg-brand-navydark'">
-                            Checkout Sekarang
-                        </button>
+                            <button type="submit" :disabled="selectedItems.length === 0" 
+                                class="w-auto lg:w-full text-white font-bold py-3 lg:py-3.5 px-6 lg:px-0 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-sm"
+                                :class="selectedItems.length === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-brand-navy hover:bg-brand-navydark'">
+                                Checkout <span class="hidden lg:inline">Sekarang</span> <span class="lg:hidden" x-show="selectedTotalCount > 0" x-text="'(' + selectedTotalCount + ')'"></span>
+                            </button>
+                        </div>
 
                         @if(session('error'))
                             <p class="text-xs text-red-500 mt-3 text-center border-t border-gray-100 pt-3">{{ session('error') }}</p>
                         @endif
 
-                        <a href="{{ route('products.index') }}" class="block w-full text-center text-sm text-brand-navy hover:text-brand-navydark font-semibold mt-4 py-2 transition-colors">
-                            â† Lanjut Belanja
+                        <a href="{{ route('products.index') }}" class="hidden lg:block w-full text-center text-sm text-brand-navy hover:text-brand-navydark font-semibold mt-4 py-2 transition-colors">
+                            &larr; Lanjut Belanja
                         </a>
                     </div>
                 </div>
