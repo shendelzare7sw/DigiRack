@@ -1,11 +1,11 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="title">Dashboard Admin</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {{-- Welcome Header --}}
         <div class="mb-8">
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
-                Dashboard Admin
+                Dashboard Admin
             </h1>
             <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Berikut ringkasan sistem DigiRack Enterprise.</p>
         </div>
