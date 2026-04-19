@@ -19,12 +19,16 @@ class Address extends Model
         'province',
         'postal_code',
         'is_primary',
+        'latitude',
+        'longitude',
     ];
 
     protected function casts(): array
     {
         return [
             'is_primary' => 'boolean',
+            'latitude' => 'decimal:8',
+            'longitude' => 'decimal:8',
         ];
     }
 

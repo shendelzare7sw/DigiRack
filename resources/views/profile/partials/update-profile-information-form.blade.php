@@ -13,14 +13,34 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
+
+        <div x-data="{ avatarPreview: '{{ $user->avatar_url }}' }">
+            <x-input-label for="avatar" value="Foto Profil" />
+            <div class="mt-2 flex items-center gap-4">
+                <div class="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200">
+                    <img :src="avatarPreview" class="w-full h-full object-cover">
+                </div>
+                <label class="cursor-pointer bg-white mt-1 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm py-1.5 px-3 rounded-lg shadow-sm font-medium transition-colors">
+                    Ubah Foto
+                    <input type="file" name="avatar" class="hidden" accept="image/*" @change="avatarPreview = URL.createObjectURL($event.target.files[0])">
+                </label>
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        </div>
+
+        <div>
+            <x-input-label for="phone" value="Nomor Telepon / WhatsApp" />
+            <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" placeholder="081234..." />
+            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
         </div>
 
         <div>
@@ -56,7 +76,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
+                    class="text-sm text-gray-600 font-bold text-green-600"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

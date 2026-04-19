@@ -79,10 +79,10 @@
                             <template x-if="bannerPreview">
                                 <img :src="bannerPreview" class="absolute inset-0 w-full h-full object-cover z-10">
                             </template>
-                            <label class="cursor-pointer text-center relative z-20" :class="{'opacity-0 hover:opacity-100 absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white': bannerPreview}">
-                                <x-icon name="photo" class="w-8 h-8 mx-auto mb-2 text-gray-400" :class="{'text-white': bannerPreview}" />
-                                <span class="font-bold text-brand-navy" :class="{'text-white': bannerPreview}">Pilih Gambar Banner</span>
-                                <p class="text-xs mt-1" :class="{'text-white': bannerPreview}">Maks 4MB (JPG/PNG/WEBP)</p>
+                            <label class="cursor-pointer text-center relative z-20" x-bind:class="{'opacity-0 hover:opacity-100 absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white': bannerPreview}">
+                                <x-icon name="photo" class="w-8 h-8 mx-auto mb-2 text-gray-400" x-bind:class="{'text-white': bannerPreview}" />
+                                <span class="font-bold text-brand-navy" x-bind:class="{'text-white': bannerPreview}">Pilih Gambar Banner</span>
+                                <p class="text-xs mt-1" x-bind:class="{'text-white': bannerPreview}">Maks 4MB (JPG/PNG/WEBP)</p>
                                 <input type="file" name="banner" class="hidden" accept="image/*" @change="bannerPreview = URL.createObjectURL($event.target.files[0])">
                             </label>
                         </div>

@@ -63,7 +63,7 @@
                     @endphp
                     <x-dropdown align="right" width="w-96" contentClasses="py-0 overflow-hidden bg-white">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none">
+                            <button class="inline-flex items-center text-gray-500 hover:text-brand-navy relative group transition-colors mt-1 focus:outline-none">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                                 @if($unreadCount > 0)
                                     <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white animate-pulse">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>

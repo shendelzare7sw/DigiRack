@@ -50,6 +50,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Address Management
+    Route::post('/profile/addresses', [\App\Http\Controllers\ProfileAddressController::class, 'store'])->name('profile.addresses.store');
+    Route::put('/profile/addresses/{address}', [\App\Http\Controllers\ProfileAddressController::class, 'update'])->name('profile.addresses.update');
+    Route::delete('/profile/addresses/{address}', [\App\Http\Controllers\ProfileAddressController::class, 'destroy'])->name('profile.addresses.destroy');
+    Route::patch('/profile/addresses/{address}/primary', [\App\Http\Controllers\ProfileAddressController::class, 'setPrimary'])->name('profile.addresses.set-primary');
+    
     // Switch Role Endpoint
     Route::get('/switch-role/{role}', [\App\Http\Controllers\RoleSwitchController::class, 'switchRole'])->name('switch.role');
 
