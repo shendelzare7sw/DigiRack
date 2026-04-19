@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="text-center mb-8">
         <h1 class="font-display font-bold text-2xl text-brand-navy">Buat Akun Baru</h1>
-        <p class="text-sm text-gray-500 mt-1">Gabung di ekosistem DigiRack</p>
+        <p class="text-sm text-gray-500 mt-1">Gabung di ekosistem DigiRack — belanja & jualan dalam satu akun</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}">
@@ -17,8 +17,15 @@
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" value="Email Address" class="text-gray-700 font-semibold" />
-            <x-text-input id="email" class="block mt-1 w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="contoh@email.com" />
+            <x-text-input id="email" class="block mt-1 w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl" type="email" name="email" :value="old('email')" required autocomplete="email" placeholder="contoh@email.com" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mt-4">
+            <x-input-label for="phone" value="Nomor Telepon" class="text-gray-700 font-semibold" />
+            <x-text-input id="phone" class="block mt-1 w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl" type="tel" name="phone" :value="old('phone')" required autocomplete="tel" placeholder="08xxxxxxxxxx" />
+            <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
         <!-- Password -->
@@ -40,31 +47,15 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <!-- Role Selection -->
-        <div class="mt-5 pt-3 border-t border-gray-100">
-            <x-input-label value="Daftar sebagai" class="text-gray-700 font-semibold mb-2" />
-            <div class="flex gap-4" x-data="{ role: '{{ old('role', 'buyer') }}' }">
-                <label class="flex-1 cursor-pointer group">
-                    <input type="radio" name="role" value="buyer" x-model="role" class="sr-only peer" />
-                    <div class="p-4 text-center rounded-xl border-2 transition-all duration-200 peer-checked:border-brand-navy peer-checked:bg-brand-navylight border-gray-200 group-hover:border-brand-navy/50 relative overflow-hidden">
-                        <div class="absolute inset-x-0 top-0 h-1 bg-brand-navy transform origin-left transition-transform duration-300 scale-x-0 peer-checked:scale-x-100"></div>
-                        <x-icon name="user" class="w-6 h-6 mx-auto mb-2" x-bind:class="role === 'buyer' ? 'text-brand-navy' : 'text-gray-400'" />
-                        <span class="text-sm font-bold block" x-bind:class="role === 'buyer' ? 'text-brand-navy' : 'text-gray-600'">Pembeli</span>
-                    </div>
-                </label>
-                <label class="flex-1 cursor-pointer group">
-                    <input type="radio" name="role" value="seller" x-model="role" class="sr-only peer" />
-                    <div class="p-4 text-center rounded-xl border-2 transition-all duration-200 peer-checked:border-brand-blue peer-checked:bg-brand-bluelight border-gray-200 group-hover:border-brand-blue/50 relative overflow-hidden">
-                        <div class="absolute inset-x-0 top-0 h-1 bg-brand-blue transform origin-left transition-transform duration-300 scale-x-0 peer-checked:scale-x-100"></div>
-                        <x-icon name="building-storefront" class="w-6 h-6 mx-auto mb-2" x-bind:class="role === 'seller' ? 'text-brand-blue' : 'text-gray-400'" />
-                        <span class="text-sm font-bold block" x-bind:class="role === 'seller' ? 'text-brand-blue' : 'text-gray-600'">Penjual</span>
-                    </div>
-                </label>
-            </div>
-            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        <!-- Info -->
+        <div class="mt-5 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+            <p class="text-xs text-blue-700 flex items-start gap-2">
+                <x-icon name="information-circle" class="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Username akan dibuat otomatis oleh sistem. Anda bisa mengubahnya nanti di halaman Profil. Ingin menjadi Penjual? Aktifkan fitur "Buka Toko" setelah registrasi.</span>
+            </p>
         </div>
 
-        <div class="mt-8">
+        <div class="mt-6">
             <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brand-blue hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue transition-all active:scale-[0.98]">
                 Daftar Sekarang
             </button>

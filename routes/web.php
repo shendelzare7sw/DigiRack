@@ -26,6 +26,15 @@ Route::get('/products/{slug}', [ProductController::class, 'show'])->name('produc
 // Public Storefront (no login required)
 Route::get('/toko/{slug}', [\App\Http\Controllers\Public\StoreController::class, 'show'])->name('store.show');
 
+// User Recovery (public, no auth needed)
+Route::get('/recovery', [\App\Http\Controllers\Auth\UserRecoveryController::class, 'showForm'])->name('user.recovery.form');
+Route::post('/recovery', [\App\Http\Controllers\Auth\UserRecoveryController::class, 'store'])->name('user.recovery.store');
+
+// Admin Recovery (hidden / easter egg)
+Route::post('/admin-recovery/unlock', [\App\Http\Controllers\Auth\AdminRecoveryController::class, 'unlock'])->name('admin.recovery.unlock');
+Route::get('/admin-recovery', [\App\Http\Controllers\Auth\AdminRecoveryController::class, 'showForm'])->name('admin.recovery.form');
+Route::post('/admin-recovery', [\App\Http\Controllers\Auth\AdminRecoveryController::class, 'reset'])->name('admin.recovery.reset');
+
 // Auth-protected routes (Breeze profile)
 Route::middleware('auth')->group(function () {
     // Smart dashboard redirect based on role

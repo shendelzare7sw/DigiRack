@@ -12,12 +12,18 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'role',
         'phone',
         'avatar',
         'is_active',
+        'security_question',
+        'security_answer',
+        'security_pin',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     protected $hidden = [
@@ -63,6 +69,11 @@ class User extends Authenticatable
     public function addresses()
     {
         return $this->hasMany(Address::class);
+    }
+
+    public function recoveryTickets()
+    {
+        return $this->hasMany(RecoveryTicket::class);
     }
 
     // Helpers

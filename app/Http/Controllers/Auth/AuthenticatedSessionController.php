@@ -30,9 +30,25 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        // Track login activity
+        $user->update([
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+        ]);
+
+        // Intended URL check (avoid API/AJAX endpoints)
+        $intendedUrl = redirect()->intended()->getTargetUrl();
+        if (str_contains($intendedUrl, 'api/') || str_contains($intendedUrl, 'check-')) {
+            $intendedUrl = null;
+        }
+
+        if ($intendedUrl && $intendedUrl !== route('dashboard') && $intendedUrl !== url('/')) {
+            return redirect($intendedUrl);
+        }
+
         return match ($user->role) {
-            'admin' => redirect('/admin/dashboard'),
-            'seller' => redirect('/seller/dashboard'),
+            'admin' => redirect()->route('admin.dashboard'),
+            'seller' => redirect()->route('seller.dashboard'),
             default => redirect()->intended('/'),
         };
     }

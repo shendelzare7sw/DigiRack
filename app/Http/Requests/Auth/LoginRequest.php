@@ -9,32 +9,28 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'identifier' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Attempt to authenticate using email, username, or phone.
      *
      * @throws ValidationException
      */
@@ -42,15 +38,45 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $identifier = $this->input('identifier');
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
+
+        // Determine which field the identifier maps to
+        $fieldType = $this->detectIdentifierType($identifier);
+
+        // Find user first
+        $user = User::where($fieldType, $identifier)->first();
+
+        if (!$user || !Auth::attempt([$fieldType => $identifier, 'password' => $password], $remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'identifier' => 'Kredensial yang diberikan tidak cocok dengan data kami.',
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    /**
+     * Detect whether the identifier is an email, phone, or username.
+     */
+    protected function detectIdentifierType(string $identifier): string
+    {
+        // If it contains @, it's an email
+        if (str_contains($identifier, '@')) {
+            return 'email';
+        }
+
+        // If it starts with 0 or +62 and is mostly digits, it's a phone number
+        $cleaned = preg_replace('/[\s\-\(\)]/', '', $identifier);
+        if (preg_match('/^(\+62|62|08)\d{8,}$/', $cleaned)) {
+            return 'phone';
+        }
+
+        // Otherwise treat as username
+        return 'username';
     }
 
     /**
@@ -69,18 +95,15 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
+            'identifier' => trans('auth.throttle', [
                 'seconds' => $seconds,
                 'minutes' => ceil($seconds / 60),
             ]),
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('identifier')).'|'.$this->ip());
     }
 }

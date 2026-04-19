@@ -19,13 +19,18 @@ class RoleSwitchController extends Controller
             return back()->with('error', 'Role tidak valid.');
         }
 
-        // Validasi: hanya bisa switch ke seller jika memang role db nya seller, atau admin
-        if ($role === 'seller' && $user->role !== 'seller') {
-            return back()->with('error', 'Anda harus membuka toko terlebih dahulu untuk beralih ke mode penjual.');
-        }
-
+        // Admin access only for actual admins
         if ($role === 'admin' && $user->role !== 'admin') {
             return back()->with('error', 'Akses ditolak.');
+        }
+
+        // Seller switch: check if user has a store
+        if ($role === 'seller') {
+            if (!$user->store) {
+                // User doesn't have a store yet -> redirect to seller registration
+                return redirect()->route('seller.register.form')
+                    ->with('info', 'Untuk menjadi penjual, Anda perlu mendaftarkan toko terlebih dahulu.');
+            }
         }
 
         Session::put('active_role', $role);

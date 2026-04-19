@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Store;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -27,6 +26,7 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
+     * All users register as 'buyer'. To become seller, activate separately.
      *
      * @throws ValidationException
      */
@@ -35,36 +35,29 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone' => ['required', 'string', 'max:20', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:buyer,seller'],
         ]);
+
+        // Auto-generate unique username
+        $baseUsername = 'user_' . strtolower(Str::random(8));
+        while (User::where('username', $baseUsername)->exists()) {
+            $baseUsername = 'user_' . strtolower(Str::random(8));
+        }
 
         $user = User::create([
             'name' => $request->name,
+            'username' => $baseUsername,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => 'buyer', // Always buyer on registration
         ]);
-
-        // Auto-create empty store for seller
-        if ($user->role === 'seller') {
-            Store::create([
-                'user_id' => $user->id,
-                'name' => 'Toko ' . $user->name,
-                'slug' => Str::slug('toko-' . $user->name) . '-' . Str::random(5),
-                'description' => '',
-                'is_active' => true,
-                'is_verified' => false,
-            ]);
-        }
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return match ($user->role) {
-            'seller' => redirect('/seller/dashboard'),
-            default => redirect('/'),
-        };
+        return redirect('/')->with('success', 'Selamat datang di DigiRack, ' . $user->name . '! Username Anda: ' . $user->username);
     }
 }

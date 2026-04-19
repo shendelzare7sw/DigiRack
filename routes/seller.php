@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Route;
 | middleware: auth, role:seller,admin
 */
 
+// Seller Registration (accessible by any authenticated user, including buyers)
+Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function () {
+    Route::get('/register', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'showForm'])->name('register.form');
+    Route::post('/register', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'register'])->name('register.store');
+});
+
 Route::middleware(['auth', 'role:seller,admin'])->prefix('seller')->name('seller.')->group(function () {
 
     Route::get('/dashboard', function () {
