@@ -13,7 +13,7 @@
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
                 @click.away="open = false" 
-                class="relative transform rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl flex flex-col md:max-h-[90vh]">
+                class="relative transform sm:rounded-2xl bg-white text-left shadow-xl transition-all w-full h-[100dvh] sm:h-auto sm:my-8 sm:max-w-4xl flex flex-col sm:max-h-[90vh]">
                 
                 <!-- HEADER -->
                 <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-2xl shrink-0">
@@ -30,11 +30,11 @@
                     <input type="hidden" name="latitude" x-model="form.lat">
                     <input type="hidden" name="longitude" x-model="form.lng">
 
-                    <div class="px-6 py-5 overflow-y-auto flex-1 custom-scrollbar">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="px-4 sm:px-6 py-5 overflow-y-auto flex-1 custom-scrollbar">
+                        <div class="flex flex-col md:flex-row gap-6 h-full">
                             
                             <!-- Left Column: Form Info -->
-                            <div class="space-y-4">
+                            <div class="space-y-4 flex-1">
                                 <h4 class="font-bold text-gray-900 border-b pb-2 mb-4">Detail Kontak</h4>
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-1">Label Alamat</label>
@@ -84,7 +84,7 @@
                             </div>
                             
                             <!-- Right Column: Map -->
-                            <div class="space-y-3 flex flex-col h-full">
+                            <div class="space-y-3 flex flex-col flex-1 order-first md:order-last border-b border-gray-100 pb-6 md:border-b-0 md:pb-0 mb-2 md:mb-0 shrink-0 min-h-[300px] md:min-h-auto">
                                 <h4 class="font-bold text-gray-900 border-b pb-2 mb-2">Tandai Lokasi Map</h4>
                                 <p class="text-xs text-gray-500">Geser pin merah ke lokasi tujuan untuk mempermudah kurir menemukan alamat Anda.</p>
                                 
