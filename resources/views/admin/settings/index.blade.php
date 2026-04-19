@@ -2,6 +2,11 @@
     <x-slot name="title">Pengaturan Sistem</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Pengaturan Sistem']
+        ]" />
+
         <div class="mb-6 flex justify-between items-center">
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900 flex items-center gap-2">
@@ -16,28 +21,34 @@
             <x-toast type="success" message="{{ session('success') }}" />
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div x-data="{ activeTab: 'payment' }" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- Setting Nav --}}
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-28">
                     <ul class="space-y-2">
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-navylight/30 text-brand-navy font-semibold text-sm transition-colors">
-                                <x-icon name="credit-card" class="w-5 h-5 text-brand-navy" />
+                            <button @click="activeTab = 'payment'" type="button" 
+                                :class="activeTab === 'payment' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
+                                class="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-sm transition-colors text-left focus:outline-none">
+                                <x-icon name="credit-card" class="w-5 h-5" :class="activeTab === 'payment' ? 'text-brand-navy' : 'text-gray-400'" />
                                 Payment Gateway (Midtrans)
-                            </a>
+                            </button>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-600 font-medium text-sm transition-colors opacity-50 cursor-not-allowed">
-                                <x-icon name="truck" class="w-5 h-5" />
-                                Logistik & Ongkir (Akan Datang)
-                            </a>
+                            <button @click="activeTab = 'logistics'" type="button" 
+                                :class="activeTab === 'logistics' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
+                                class="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-sm transition-colors text-left focus:outline-none">
+                                <x-icon name="truck" class="w-5 h-5" :class="activeTab === 'logistics' ? 'text-brand-navy' : 'text-gray-400'" />
+                                Logistik & Ongkir
+                            </button>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-600 font-medium text-sm transition-colors opacity-50 cursor-not-allowed">
-                                <x-icon name="globe-alt" class="w-5 h-5" />
-                                Profil Platform (Akan Datang)
-                            </a>
+                            <button @click="activeTab = 'profile'" type="button" 
+                                :class="activeTab === 'profile' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
+                                class="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-sm transition-colors text-left focus:outline-none">
+                                <x-icon name="globe-alt" class="w-5 h-5" :class="activeTab === 'profile' ? 'text-brand-navy' : 'text-gray-400'" />
+                                Profil Platform
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -45,7 +56,8 @@
 
             {{-- Setting Form --}}
             <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                {{-- Payment Settings (Midtrans) --}}
+                <div x-show="activeTab === 'payment'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                     <div class="mb-6 border-b border-gray-100 pb-4">
                         <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
                             <x-icon name="credit-card" class="w-6 h-6 text-brand-navy" />
@@ -109,7 +121,79 @@
 
                             <div class="pt-4 border-t border-gray-100 flex justify-end">
                                 <button type="submit" class="bg-brand-navy hover:bg-brand-navydark text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors">
-                                    Simpan Pengaturan
+                                    Simpan Pengaturan Pembayaran
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Logistics Settings --}}
+                <div x-show="activeTab === 'logistics'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                    <div class="mb-6 border-b border-gray-100 pb-4">
+                        <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+                            <x-icon name="truck" class="w-6 h-6 text-brand-navy" />
+                            Logistik & Ongkos Kirim
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-2">Konfigurasi API pihak ketiga (contoh: RajaOngkir) untuk mengambil tarif kurir pengiriman secara otomatis.</p>
+                    </div>
+
+                    <form action="{{ route('admin.settings.store') }}" method="POST">
+                        @csrf
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">RajaOngkir API Key</label>
+                                <input type="text" name="rajaongkir_api_key" value="{{ $settings['rajaongkir_api_key'] ?? '' }}"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    placeholder="xxxxxxxxxxxx">
+                                <p class="text-[10px] text-gray-400 mt-1">Dapatkan API Key ini dari akun RajaOngkir PRO Anda.</p>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-100 flex justify-end">
+                                <button type="submit" class="bg-brand-navy hover:bg-brand-navydark text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors">
+                                    Simpan Pengaturan Logistik
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Platform Profile Settings --}}
+                <div x-show="activeTab === 'profile'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                    <div class="mb-6 border-b border-gray-100 pb-4">
+                        <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+                            <x-icon name="globe-alt" class="w-6 h-6 text-brand-navy" />
+                            Profil Platform
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-2">Informasi dasar platform Anda yang akan ditampilkan di halaman kontak dan struk invoice.</p>
+                    </div>
+
+                    <form action="{{ route('admin.settings.store') }}" method="POST">
+                        @csrf
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Platform Lengkap</label>
+                                <input type="text" name="platform_name" value="{{ $settings['platform_name'] ?? 'DigiRack Enterprise' }}"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email Support</label>
+                                    <input type="email" name="platform_email" value="{{ $settings['platform_email'] ?? 'support@digirack.com' }}"
+                                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nomor CS (WhatsApp)</label>
+                                    <input type="text" name="platform_phone" value="{{ $settings['platform_phone'] ?? '081234567890' }}"
+                                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                        placeholder="08xxxxxxxx">
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-100 flex justify-end">
+                                <button type="submit" class="bg-brand-navy hover:bg-brand-navydark text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors">
+                                    Simpan Profil
                                 </button>
                             </div>
                         </div>

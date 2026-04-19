@@ -2,6 +2,11 @@
     <x-slot name="title">Pencairan Dana Seller (IRIS)</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Pencairan Dana']
+        ]" />
+
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
                 <h1 class="text-2xl font-bold font-display text-gray-900">Pencairan Dana Seller</h1>

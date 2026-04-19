@@ -2,6 +2,11 @@
     <x-slot name="title">Biaya Transaksi Pembeli</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Biaya Transaksi']
+        ]" />
+
         <h1 class="text-2xl font-bold mb-4">Biaya Transaksi Pembeli</h1>
         <p class="text-gray-500 mb-6 text-sm">Biaya ini akan ditambahkan ke Grand Total pesanan pembeli secara langsung saat Checkout.</p>
 
