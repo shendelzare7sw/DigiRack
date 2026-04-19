@@ -228,11 +228,11 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-center lg:mb-6 gap-4">
-                            <div class="flex-1 lg:flex-none">
+                        <div class="flex flex-row lg:flex-col justify-between lg:justify-start items-center lg:items-stretch lg:mb-6 gap-3 lg:gap-5">
+                            <div class="flex-1 lg:flex-none flex flex-col lg:flex-row lg:justify-between lg:items-center">
                                 <span class="hidden lg:block font-bold text-gray-900">Total Tagihan</span>
                                 <span class="block lg:hidden text-[11px] text-gray-500 font-semibold mb-0.5 uppercase tracking-wide">Total Tagihan</span>
-                                <span class="font-display font-bold text-lg sm:text-xl text-brand-blue leading-none" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTotalPrice)"></span>
+                                <span class="font-display font-bold text-lg sm:text-xl text-brand-blue leading-none lg:text-right" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedTotalPrice)"></span>
                             </div>
 
                             <button type="submit" :disabled="selectedItems.length === 0" 

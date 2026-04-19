@@ -63,7 +63,7 @@
                     @endphp
                     <x-dropdown align="right" width="w-96" contentClasses="py-0 overflow-hidden bg-white">
                         <x-slot name="trigger">
-                            <button class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none mr-3">
+                            <button class="inline-flex items-center text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                                 @if($unreadCount > 0)
                                     <span class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white animate-pulse">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
@@ -112,7 +112,7 @@
 
                     <!-- Cart -->
                     @if(!Auth::user()->isAdmin())
-                        <a href="{{ route('buyer.cart.index') }}" class="text-gray-500 hover:text-brand-navy relative group transition-colors">
+                        <a href="{{ route('buyer.cart.index') }}" class="inline-flex items-center text-gray-500 hover:text-brand-navy relative group transition-colors">
                             <x-icon name="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7" />
                             <span id="navCartBadge" class="absolute -top-1.5 -right-2 bg-brand-blue text-white text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white {{ ($cartCount ?? 0) == 0 ? 'hidden' : '' }}">
                                 {{ $cartCount ?? 0 }}
@@ -120,7 +120,7 @@
                         </a>
                         
                         <!-- Wishlist -->
-                        <a href="{{ route('buyer.wishlist.index') }}" class="hidden sm:block text-gray-500 hover:text-red-500 transition-colors relative mr-2">
+                        <a href="{{ route('buyer.wishlist.index') }}" class="hidden sm:inline-flex items-center text-gray-500 hover:text-red-500 transition-colors relative mr-2">
                             <x-icon name="heart" class="w-6 h-6 sm:w-7 sm:h-7" />
                             @if(($wishlistCount ?? 0) > 0)
                                 <span class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
