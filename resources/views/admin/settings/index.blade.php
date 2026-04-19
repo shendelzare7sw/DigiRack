@@ -28,25 +28,25 @@
                     <ul class="space-y-2">
                         <li>
                             <button @click="activeTab = 'payment'" type="button" 
-                                :class="activeTab === 'payment' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
+                                x-bind:class="activeTab === 'payment' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
                                 class="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-sm transition-colors text-left focus:outline-none">
-                                <x-icon name="credit-card" class="w-5 h-5" :class="activeTab === 'payment' ? 'text-brand-navy' : 'text-gray-400'" />
+                                <x-icon name="credit-card" class="w-5 h-5" x-bind:class="activeTab === 'payment' ? 'text-brand-navy' : 'text-gray-400'" />
                                 Payment Gateway (Midtrans)
                             </button>
                         </li>
                         <li>
                             <button @click="activeTab = 'logistics'" type="button" 
-                                :class="activeTab === 'logistics' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
+                                x-bind:class="activeTab === 'logistics' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
                                 class="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-sm transition-colors text-left focus:outline-none">
-                                <x-icon name="truck" class="w-5 h-5" :class="activeTab === 'logistics' ? 'text-brand-navy' : 'text-gray-400'" />
+                                <x-icon name="truck" class="w-5 h-5" x-bind:class="activeTab === 'logistics' ? 'text-brand-navy' : 'text-gray-400'" />
                                 Logistik & Ongkir
                             </button>
                         </li>
                         <li>
                             <button @click="activeTab = 'profile'" type="button" 
-                                :class="activeTab === 'profile' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
+                                x-bind:class="activeTab === 'profile' ? 'bg-brand-navylight/30 text-brand-navy font-semibold' : 'text-gray-600 font-medium hover:bg-gray-50'"
                                 class="w-full flex items-center justify-start gap-3 px-4 py-3 rounded-xl text-sm transition-colors text-left focus:outline-none">
-                                <x-icon name="globe-alt" class="w-5 h-5" :class="activeTab === 'profile' ? 'text-brand-navy' : 'text-gray-400'" />
+                                <x-icon name="globe-alt" class="w-5 h-5" x-bind:class="activeTab === 'profile' ? 'text-brand-navy' : 'text-gray-400'" />
                                 Profil Platform
                             </button>
                         </li>
