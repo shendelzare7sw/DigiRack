@@ -164,7 +164,7 @@
                                     Profil Saya
                                 </x-dropdown-link>
                                 <div class="border-t border-gray-100"></div>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })">
                                     @csrf
                                     <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none transition duration-150 ease-in-out font-medium">
                                         Keluar
@@ -271,7 +271,7 @@
                 </div>
 
                 <div class="mt-4 border-t border-gray-100 pt-2 px-2 pb-3">
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })">
                         @csrf
                         <button type="submit" class="block w-full text-left w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 hover:border-red-600 focus:outline-none transition duration-150 ease-in-out">
                             Keluar
