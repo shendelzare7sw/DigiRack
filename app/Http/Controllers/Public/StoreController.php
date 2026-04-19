@@ -25,7 +25,7 @@ class StoreController extends Controller
         // Query Products
         $query = Product::with(['category', 'primaryImage', 'flashSale'])
             ->where('store_id', $store->id)
-            ->where('is_active', true);
+            ->where('status', 'active');
 
         // Sorting
         $sort = $request->query('sort', 'latest');
@@ -42,7 +42,7 @@ class StoreController extends Controller
         $products = $query->paginate(24)->appends($request->query());
 
         // Ambil store products count from db
-        $storeProductCount = Product::where('store_id', $store->id)->where('is_active', true)->count();
+        $storeProductCount = Product::where('store_id', $store->id)->where('status', 'active')->count();
 
         return view('public.seller.storefront', compact('store', 'products', 'storeProductCount', 'sort'));
     }
