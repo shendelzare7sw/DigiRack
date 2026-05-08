@@ -24,7 +24,13 @@
                             >
                             <span class="flex items-center gap-2 flex-1 min-w-0">
                                 <span class="w-7 h-7 bg-brand-navylight rounded-full flex items-center justify-center shrink-0 group-hover:bg-brand-navy group-hover:text-white text-brand-navy transition-colors">
-                                    <span class="w-4 h-4 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full">{!! $cat->icon_svg !!}</span>
+                                    <span class="w-4 h-4 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full">
+                                        @if($cat->icon_svg)
+                                            {!! $cat->icon_svg !!}
+                                        @else
+                                            <x-icon name="tag" class="w-full h-full" />
+                                        @endif
+                                    </span>
                                 </span>
                                 <span class="text-sm text-gray-700 truncate">{{ $cat->name }}</span>
                             </span>

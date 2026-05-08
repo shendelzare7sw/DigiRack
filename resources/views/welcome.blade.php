@@ -48,7 +48,11 @@
             @forelse($categories as $category)
                 <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-navy/30 transition-all duration-300">
                     <div class="w-14 h-14 bg-brand-navylight rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-blue transition-colors duration-300 text-brand-navy group-hover:text-white">
-                        {!! $category->icon_svg !!}
+                        @if($category->icon_svg)
+                            {!! $category->icon_svg !!}
+                        @else
+                            <x-icon name="tag" class="w-7 h-7" />
+                        @endif
                     </div>
                     <span class="text-xs sm:text-sm font-semibold text-gray-700 text-center leading-tight group-hover:text-brand-navy">
                         {{ $category->name }}
