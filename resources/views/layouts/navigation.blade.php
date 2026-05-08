@@ -187,7 +187,7 @@
                     </div>
                 @else
                     <!-- Notification Guest -->
-                    <div class="block relative mr-2" @click.away="notifOpen = false">
+                    <div class="block relative" @click.away="notifOpen = false">
                         <button @click="notifOpen = !notifOpen" class="text-gray-500 hover:text-brand-navy relative group transition-colors focus:outline-none mt-1">
                             <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                         </button>
@@ -207,7 +207,7 @@
                     </div>
 
                     <!-- Cart Guest -->
-                    <a href="{{ route('login') }}" class="text-gray-500 hover:text-brand-navy transition-colors mr-2 sm:mr-4">
+                    <a href="{{ route('login') }}" class="inline-flex items-center text-gray-500 hover:text-brand-navy relative group transition-colors">
                         <x-icon name="shopping-cart" class="w-6 h-6 sm:w-7 sm:h-7" />
                     </a>
 
