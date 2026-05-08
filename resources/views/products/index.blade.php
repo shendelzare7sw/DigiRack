@@ -124,7 +124,7 @@
 
             {{-- Mobile Filter Toggle --}}
             <button @click="filterOpen = true"
-                class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-brand-navy text-white font-bold text-sm px-6 py-3 rounded-full shadow-lg flex items-center gap-2 hover:bg-brand-navydark transition-colors">
+                class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-brand-blue text-white font-bold text-sm px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(59,130,246,0.4)] border-2 border-white flex items-center gap-2 hover:bg-blue-600 transition-all active:scale-95">
                 <x-icon name="funnel" class="w-5 h-5" />
                 Filter Produk
             </button>
