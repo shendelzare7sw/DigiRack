@@ -109,17 +109,25 @@
                 <p class="text-xs text-gray-500 mb-4">Upload 0-5 gambar (JPG, PNG, WebP, maks 10MB per file). Gambar pertama akan jadi foto utama (Opsional).</p>
 
                 <div x-data="{ previews: [] }" class="space-y-4">
-                    <input type="file" name="images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
+                    <input type="file" x-ref="fileInput" name="images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
                         @change="previews = []; for (let f of $event.target.files) { let r = new FileReader(); r.onload = e => { previews.push(e.target.result); previews = [...previews]; }; r.readAsDataURL(f); }"
                         class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-navylight file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors cursor-pointer">
 
-                    <div x-show="previews.length > 0" class="flex gap-3 flex-wrap">
-                        <template x-for="(src, i) in previews" :key="i">
-                            <div class="w-24 h-24 rounded-xl overflow-hidden border-2 relative" :class="i === 0 ? 'border-brand-blue' : 'border-gray-200'">
-                                <img :src="src" class="w-full h-full object-cover">
-                                <span x-show="i === 0" class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">UTAMA</span>
-                            </div>
-                        </template>
+                    <div x-show="previews.length > 0">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Preview Gambar:</span>
+                            <button type="button" @click="$refs.fileInput.value = ''; previews = []" class="text-xs text-red-500 hover:text-red-700 font-semibold transition-colors">
+                                Hapus Pilihan
+                            </button>
+                        </div>
+                        <div class="flex gap-3 flex-wrap">
+                            <template x-for="(src, i) in previews" :key="i">
+                                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 relative" :class="i === 0 ? 'border-brand-blue' : 'border-gray-200'">
+                                    <img :src="src" class="w-full h-full object-cover">
+                                    <span x-show="i === 0" class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">UTAMA</span>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>

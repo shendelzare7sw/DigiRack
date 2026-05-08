@@ -111,21 +111,21 @@
 
                 {{-- Existing Images --}}
                 @if($product->images->count() > 0)
-                    <p class="text-xs text-gray-500 mb-3">Foto saat ini (centang untuk menghapus):</p>
-                    <div class="flex gap-3 flex-wrap mb-5">
+                    <p class="text-xs text-gray-500 mb-3">Foto saat ini:</p>
+                    <div class="flex gap-3 flex-wrap mb-5" x-data="{ deletedImages: [] }">
                         @foreach($product->images as $img)
-                            <label class="relative cursor-pointer group">
-                                <input type="checkbox" name="delete_images[]" value="{{ $img->id }}" class="sr-only peer">
-                                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-200 peer-checked:border-red-500 peer-checked:opacity-40 transition-all {{ $img->is_primary ? 'ring-2 ring-brand-blue ring-offset-2' : '' }}">
-                                    <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover">
-                                </div>
+                            <div class="relative w-24 h-24 rounded-xl border-2 border-gray-200 transition-all {{ $img->is_primary ? 'ring-2 ring-brand-blue ring-offset-2' : '' }}" x-show="!deletedImages.includes({{ $img->id }})">
+                                <img src="{{ asset('storage/' . $img->image_path) }}" class="w-full h-full object-cover rounded-lg">
                                 @if($img->is_primary)
                                     <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5 rounded-b-lg">UTAMA</span>
                                 @endif
-                                <div class="absolute inset-0 bg-red-500/20 rounded-xl hidden peer-checked:flex items-center justify-center">
-                                    <x-icon name="trash" class="w-6 h-6 text-red-600" />
-                                </div>
-                            </label>
+                                <button type="button" @click="deletedImages.push({{ $img->id }})" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full shadow-sm transition-colors z-10" title="Hapus foto">
+                                    <x-icon name="x-mark" class="w-3 h-3" />
+                                </button>
+                                <template x-if="deletedImages.includes({{ $img->id }})">
+                                    <input type="hidden" name="delete_images[]" value="{{ $img->id }}">
+                                </template>
+                            </div>
                         @endforeach
                     </div>
                 @endif
@@ -133,17 +133,25 @@
                 {{-- Upload New Images --}}
                 <p class="text-xs text-gray-500 mb-3">Tambah foto baru (opsional, maks 10MB per file):</p>
                 <div x-data="{ previews: [] }" class="space-y-4">
-                    <input type="file" name="new_images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
+                    <input type="file" x-ref="fileInput" name="new_images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
                         @change="previews = []; for (let f of $event.target.files) { let r = new FileReader(); r.onload = e => { previews.push(e.target.result); previews = [...previews]; }; r.readAsDataURL(f); }"
                         class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-navylight file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors cursor-pointer">
 
-                    <div x-show="previews.length > 0" class="flex gap-3 flex-wrap">
-                        <template x-for="(src, i) in previews" :key="i">
-                            <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-blue relative">
-                                <img :src="src" class="w-full h-full object-cover">
-                                <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">BARU</span>
-                            </div>
-                        </template>
+                    <div x-show="previews.length > 0">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Preview Gambar Baru:</span>
+                            <button type="button" @click="$refs.fileInput.value = ''; previews = []" class="text-xs text-red-500 hover:text-red-700 font-semibold transition-colors">
+                                Batal Upload
+                            </button>
+                        </div>
+                        <div class="flex gap-3 flex-wrap">
+                            <template x-for="(src, i) in previews" :key="i">
+                                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-blue relative">
+                                    <img :src="src" class="w-full h-full object-cover">
+                                    <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">BARU</span>
+                                </div>
+                            </template>
+                        </div>
                     </div>
                 </div>
             </div>

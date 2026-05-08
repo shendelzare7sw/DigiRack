@@ -1,5 +1,14 @@
 <nav x-data="{ mobileMenuOpen: false, searchOpen: false, notifOpen: false }" class="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
-    
+    <style>
+        .mobile-dropdown-notif {
+            max-width: calc(100vw - 2rem);
+        }
+        @media (max-width: 639px) {
+            .mobile-dropdown-right {
+                right: -1rem !important;
+            }
+        }
+    </style>
     <!-- Top Bar (Desktop Only) -->
     <div class="bg-gray-100 border-b border-gray-200 hidden md:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-9 text-xs text-gray-500 font-medium">
@@ -61,7 +70,7 @@
                         $unreadNotifs = Auth::user()->unreadNotifications->take(8);
                         $unreadCount = Auth::user()->unreadNotifications->count();
                     @endphp
-                    <x-dropdown align="right" width="w-80 sm:w-96" contentClasses="py-0 overflow-hidden bg-white">
+                    <x-dropdown align="right" width="w-80 sm:w-96" contentClasses="py-0 overflow-hidden bg-white" class="mobile-dropdown-notif mobile-dropdown-right">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center text-gray-500 hover:text-brand-navy relative group transition-colors mt-2 focus:outline-none">
                                 <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
@@ -180,7 +189,7 @@
                             <x-icon name="bell" class="w-6 h-6 sm:w-7 sm:h-7" />
                         </button>
                         
-                        <div x-show="notifOpen" x-transition x-cloak class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 z-50 overflow-hidden">
+                        <div x-show="notifOpen" x-transition x-cloak class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 z-50 overflow-hidden mobile-dropdown-notif mobile-dropdown-right">
                             <div class="p-6 text-center">
                                 <div class="w-20 h-20 bg-brand-bluelight rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
                                     <x-icon name="user" class="w-8 h-8 text-brand-blue" />
