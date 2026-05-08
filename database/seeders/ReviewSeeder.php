@@ -34,6 +34,7 @@ class ReviewSeeder extends Seeder
 
                 // Create a completed order for context
                 $order = Order::create([
+                    'invoice_number' => 'INV-REV-' . time() . '-' . $orderNumber,
                     'buyer_id' => $buyer->id,
                     'store_id' => $product->store_id,
                     'status' => 'completed',
