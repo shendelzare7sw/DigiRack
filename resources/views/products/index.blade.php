@@ -48,7 +48,7 @@
                 </button>
 
                 <div x-show="sortOpen" x-transition x-cloak
-                    class="absolute right-0 mt-2 w-52 bg-white rounded-xl border border-gray-100 shadow-lg z-30 overflow-hidden py-1">
+                    class="absolute left-0 sm:left-auto sm:right-0 mt-2 w-52 bg-white rounded-xl border border-gray-100 shadow-lg z-30 overflow-hidden py-1">
                     @php
                         $sortOptions = [
                             'newest' => 'Terbaru',
