@@ -41,14 +41,30 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                        <div>
+                        <div x-data="{ isNew: {{ old('new_category') ? 'true' : 'false' }} }">
                             <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-1.5">Kategori <span class="text-red-500">*</span></label>
-                            <select name="category_id" id="category_id" required
-                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
+                            
+                            <div class="flex gap-2 w-full">
+                                <select x-show="!isNew" name="category_id" id="category_id"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    :required="!isNew"
+                                    @change="if($event.target.value === 'new') { isNew = true; $event.target.value = ''; setTimeout(() => $refs.newCat.focus(), 50); }">
+                                    <option value="">Pilih Kategori</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                    @endforeach
+                                    <option value="new" class="font-bold text-brand-blue">+ Tambah Kategori Baru</option>
+                                </select>
+                                
+                                <div x-show="isNew" style="display: none;" class="flex w-full gap-2">
+                                    <input type="text" x-ref="newCat" name="new_category" placeholder="Nama Kategori Baru"
+                                        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                        :required="isNew" value="{{ old('new_category') }}">
+                                    <button type="button" @click="isNew = false; $refs.newCat.value = ''" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shrink-0">
+                                        Batal
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label for="condition" class="block text-sm font-semibold text-gray-700 mb-1.5">Kondisi <span class="text-red-500">*</span></label>

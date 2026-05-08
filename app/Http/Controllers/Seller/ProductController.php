@@ -84,7 +84,8 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required_without:new_category|nullable|exists:categories,id',
+            'new_category' => 'required_without:category_id|nullable|string|max:100',
             'description' => 'required|string|min:20',
             'price' => 'required|integer|min:1000',
             'stock' => 'required|integer|min:0',
@@ -114,9 +115,19 @@ class ProductController extends Controller
             }
         }
 
+        // Handle New Category
+        $categoryId = $validated['category_id'];
+        if (empty($categoryId) && !empty($validated['new_category'])) {
+            $cat = Category::firstOrCreate(
+                ['slug' => Str::slug($validated['new_category'])],
+                ['name' => $validated['new_category'], 'is_active' => true]
+            );
+            $categoryId = $cat->id;
+        }
+
         $product = Product::create([
             'store_id' => $store->id,
-            'category_id' => $validated['category_id'],
+            'category_id' => $categoryId,
             'name' => $validated['name'],
             'slug' => $slug,
             'description' => $validated['description'],
@@ -167,7 +178,8 @@ class ProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required_without:new_category|nullable|exists:categories,id',
+            'new_category' => 'required_without:category_id|nullable|string|max:100',
             'description' => 'required|string|min:20',
             'price' => 'required|integer|min:1000',
             'stock' => 'required|integer|min:0',
@@ -203,8 +215,18 @@ class ProductController extends Controller
             }
         }
 
+        // Handle New Category
+        $categoryId = $validated['category_id'];
+        if (empty($categoryId) && !empty($validated['new_category'])) {
+            $cat = Category::firstOrCreate(
+                ['slug' => Str::slug($validated['new_category'])],
+                ['name' => $validated['new_category'], 'is_active' => true]
+            );
+            $categoryId = $cat->id;
+        }
+
         $product->update([
-            'category_id' => $validated['category_id'],
+            'category_id' => $categoryId,
             'name' => $validated['name'],
             'slug' => $slug,
             'description' => $validated['description'],

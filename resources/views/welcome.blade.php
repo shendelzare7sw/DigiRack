@@ -81,9 +81,12 @@
                         <p class="text-red-100 font-medium">Diskon spesial waktu terbatas, jangan sampai kehabisan!</p>
                     </div>
                     
-                    <div class="mt-4 sm:mt-0 flex items-center gap-2 bg-black/20 backdrop-blur px-4 py-2 rounded-xl text-white font-mono font-bold text-xl">
+                    @php
+                        $endTime = $flashSales->min('end_time');
+                    @endphp
+                    <div x-data="countdownTimer('{{ $endTime->toIso8601String() }}')" class="mt-4 sm:mt-0 flex items-center gap-2 bg-black/20 backdrop-blur px-4 py-2 rounded-xl text-white font-mono font-bold text-xl">
                         <x-icon name="clock" class="w-5 h-5 text-white/70" />
-                        <span>02</span> : <span>45</span> : <span>18</span>
+                        <span x-text="hours">00</span> : <span x-text="minutes">00</span> : <span x-text="seconds">00</span>
                     </div>
                 </div>
 
@@ -151,6 +154,45 @@
     </section>
 
     @push('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('countdownTimer', (endTimeStr) => ({
+                hours: '00',
+                minutes: '00',
+                seconds: '00',
+                endTime: new Date(endTimeStr).getTime(),
+                timer: null,
+
+                init() {
+                    this.updateTimer();
+                    this.timer = setInterval(() => {
+                        this.updateTimer();
+                    }, 1000);
+                },
+
+                updateTimer() {
+                    const now = new Date().getTime();
+                    const distance = this.endTime - now;
+
+                    if (distance < 0) {
+                        clearInterval(this.timer);
+                        this.hours = '00';
+                        this.minutes = '00';
+                        this.seconds = '00';
+                        return;
+                    }
+
+                    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    this.hours = String(h).padStart(2, '0');
+                    this.minutes = String(m).padStart(2, '0');
+                    this.seconds = String(s).padStart(2, '0');
+                }
+            }));
+        });
+    </script>
     <style>
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
