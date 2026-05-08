@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <x-slot name="title">Dashboard Admin</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -109,25 +109,53 @@
                             <span class="text-xs font-semibold text-gray-700 text-center">Biaya Transaksi</span>
                         </a>
 
-                        {{-- Coming Soon Items --}}
-                        @php
-                            $comingSoon = [
-                                ['icon' => 'users', 'label' => 'Kelola Users', 'color' => 'brand-navy', 'bg' => 'brand-navylight'],
-                                ['icon' => 'clipboard-document-check', 'label' => 'Moderasi Produk', 'color' => 'teal-600', 'bg' => 'teal-50'],
-                                ['icon' => 'tag', 'label' => 'Kelola Kategori', 'color' => 'indigo-600', 'bg' => 'indigo-50'],
-                                ['icon' => 'clipboard-document-list', 'label' => 'Semua Pesanan', 'color' => 'blue-500', 'bg' => 'blue-50'],
-                                ['icon' => 'megaphone', 'label' => 'Kelola Banner', 'color' => 'pink-500', 'bg' => 'pink-50'],
-                                ['icon' => 'fire', 'label' => 'Flash Sale', 'color' => 'red-500', 'bg' => 'red-50'],
-                            ];
-                        @endphp
-                        @foreach($comingSoon as $item)
-                            <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
-                                <div class="w-12 h-12 bg-{{ $item['bg'] }} rounded-xl flex items-center justify-center text-{{ $item['color'] }}">
-                                    <x-icon name="{{ $item['icon'] }}" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-400 text-center">{{ $item['label'] }}</span>
+                        {{-- Kelola Users --}}
+                        <a href="{{ route('admin.users.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-navy/30 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-brand-navylight rounded-xl flex items-center justify-center text-brand-navy group-hover:bg-brand-navy group-hover:text-white transition-colors">
+                                <x-icon name="users" class="w-6 h-6" />
                             </div>
-                        @endforeach
+                            <span class="text-xs font-semibold text-gray-700 text-center">Kelola Users</span>
+                        </a>
+
+                        {{-- Moderasi Produk --}}
+                        <a href="{{ route('admin.products.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-teal-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                                <x-icon name="clipboard-document-check" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Moderasi Produk</span>
+                        </a>
+
+                        {{-- Kelola Kategori --}}
+                        <a href="{{ route('admin.categories.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-indigo-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                                <x-icon name="tag" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Kelola Kategori</span>
+                        </a>
+
+                        {{-- Semua Pesanan --}}
+                        <a href="{{ route('admin.orders.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                <x-icon name="clipboard-document-list" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Semua Pesanan</span>
+                        </a>
+
+                        {{-- Kelola Banner --}}
+                        <a href="{{ route('admin.banners.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-pink-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-colors">
+                                <x-icon name="megaphone" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Kelola Banner</span>
+                        </a>
+
+                        {{-- Flash Sale --}}
+                        <a href="{{ route('admin.flash-sales.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-red-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <x-icon name="fire" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Flash Sale</span>
+                        </a>
                     </div>
                 </div>
 

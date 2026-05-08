@@ -113,12 +113,12 @@
                             </div>
                             <span class="text-xs font-semibold text-gray-700 text-center">Pesanan Saya</span>
                         </a>
-                        <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-dashed border-gray-200 opacity-50">
-                            <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+                        <a href="{{ route('profile.edit') }}#address-section" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-gray-300 hover:shadow-sm transition-all group">
+                            <div class="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-500 group-hover:bg-gray-100 group-hover:text-gray-700 transition-colors">
                                 <x-icon name="map-pin" class="w-6 h-6" />
                             </div>
-                            <span class="text-xs font-semibold text-gray-400 text-center">Alamat Saya</span>
-                        </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Alamat Saya</span>
+                        </a>
                     </div>
                 </div>
             </div>

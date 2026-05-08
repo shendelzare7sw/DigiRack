@@ -2,12 +2,10 @@
     <x-slot name="title">Pengaturan Sistem</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <x-breadcrumb :items="[
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Pengaturan Sistem']
-        ]" />
-
-        <div class="mb-6 flex justify-between items-center">
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
+            </a>
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900 flex items-center gap-2">
                     Pengaturan Sistem

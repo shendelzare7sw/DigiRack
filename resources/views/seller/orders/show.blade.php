@@ -2,17 +2,18 @@
     <x-slot name="title">Kelola Pesanan #{{ $order->invoice_number }}</x-slot>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Breadcrumb --}}
-        <x-breadcrumb :items="[
-            ['label' => 'Pesanan Masuk', 'url' => route('seller.orders.index')],
-            ['label' => '#' . $order->invoice_number]
-        ]" />
-
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Pesanan #{{ $order->invoice_number }}</h1>
-            <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
-                {{ $order->status_label }}
-            </span>
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
+            </a>
+            <div class="flex-1">
+                <div class="flex items-center justify-between">
+                    <h1 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Pesanan #{{ $order->invoice_number }}</h1>
+                    <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
+                        {{ $order->status_label }}
+                    </span>
+                </div>
+            </div>
         </div>
 
         @if(session('success'))

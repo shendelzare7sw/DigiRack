@@ -2,15 +2,14 @@
     <x-slot name="title">Tambah Produk Baru</x-slot>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {{-- Breadcrumb --}}
-        <x-breadcrumb :items="[
-            ['label' => 'Kelola Produk', 'url' => route('seller.products.index')],
-            ['label' => 'Tambah Produk Baru']
-        ]" />
-
-        {{-- Header --}}
-        <div class="flex items-center gap-3 mb-6">
-            <h1 class="font-display font-bold text-2xl text-gray-900">Tambah Produk Baru</h1>
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('seller.products.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
+            </a>
+            <div>
+                <h1 class="font-display font-bold text-2xl text-gray-900">Tambah Produk Baru</h1>
+                <p class="text-sm text-gray-500 mt-1">Isi informasi produk yang ingin dijual di toko Anda.</p>
+            </div>
         </div>
 
         @if($errors->any())

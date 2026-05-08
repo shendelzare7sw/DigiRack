@@ -2,10 +2,15 @@
     <x-slot name="title">Riwayat Pesanan</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {{-- Breadcrumb --}}
-        <x-breadcrumb :items="[['label' => 'Riwayat Pesanan']]" />
-
-        <h1 class="text-2xl font-bold font-display text-gray-900 mb-6">Riwayat Pesanan Saya</h1>
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('buyer.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold font-display text-gray-900">Riwayat Pesanan Saya</h1>
+                <p class="text-gray-500 text-sm mt-1">Daftar semua transaksi dan status pesanan Anda.</p>
+            </div>
+        </div>
 
         @if(session('success'))
             <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">

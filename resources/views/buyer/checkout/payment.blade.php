@@ -8,11 +8,16 @@
         $clientKey = \App\Models\SystemSetting::val('midtrans_client_key', env('MIDTRANS_CLIENT_KEY'));
     @endphp
 
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 text-center">
-        <x-breadcrumb :items="[
-            ['label' => 'Riwayat Pesanan', 'url' => route('buyer.orders.index')],
-            ['label' => 'Pembayaran']
-        ]" />
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('buyer.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold font-display text-gray-900">Pembayaran</h1>
+                <p class="text-gray-500 text-sm mt-1">Selesaikan pembayaran untuk pesanan Anda.</p>
+            </div>
+        </div>
         <div class="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden p-8 sm:p-12 text-center relative z-10">
             <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
                 <x-icon name="check-circle" class="w-10 h-10 text-green-500" />

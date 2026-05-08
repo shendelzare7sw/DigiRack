@@ -4,6 +4,10 @@
     {{-- Store Header / Banner --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div class="relative rounded-2xl overflow-hidden bg-gray-100 h-48 sm:h-64 md:h-80 shadow-inner">
+            {{-- Back Button (floating over banner) --}}
+            <a href="javascript:history.back()" class="absolute top-4 left-4 z-10 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 hover:bg-white text-gray-700 hover:text-brand-navy transition-all shadow-lg" title="Kembali">
+                <x-icon name="arrow-left" class="w-5 h-5" />
+            </a>
             @if($store->banner)
                 <img src="{{ $store->banner_url }}" alt="Banner {{ $store->name }}" class="w-full h-full object-cover">
             @else

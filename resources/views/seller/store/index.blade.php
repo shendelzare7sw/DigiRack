@@ -2,20 +2,22 @@
     <x-slot name="title">Pengaturan Profil Toko</x-slot>
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <x-breadcrumb :items="[
-            ['label' => 'Dashboard', 'url' => route('seller.dashboard')],
-            ['label' => 'Profil Toko']
-        ]" />
-
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-bold font-display text-gray-900">Profil Toko</h1>
-                <p class="text-gray-500 text-sm mt-1">Kelola identitas etalase publik dan rekening bank Anda.</p>
-            </div>
-            <a href="{{ route('store.show', $store->slug) }}" target="_blank" class="bg-white border border-gray-200 text-brand-navy hover:bg-gray-50 font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2 transition-colors">
-                <x-icon name="arrow-top-right-on-square" class="w-4 h-4" />
-                Lihat Etalase Publik
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
             </a>
+            <div class="flex-1">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl font-bold font-display text-gray-900">Profil Toko</h1>
+                        <p class="text-gray-500 text-sm mt-1">Kelola identitas etalase publik dan rekening bank Anda.</p>
+                    </div>
+                    <a href="{{ route('store.show', $store->slug) }}" target="_blank" class="bg-white border border-gray-200 text-brand-navy hover:bg-gray-50 font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2 transition-colors shrink-0">
+                        <x-icon name="arrow-top-right-on-square" class="w-4 h-4" />
+                        Lihat Etalase Publik
+                    </a>
+                </div>
+            </div>
         </div>
 
         @if(session('success'))

@@ -2,13 +2,15 @@
     <x-slot name="title">Biaya Transaksi Pembeli</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <x-breadcrumb :items="[
-            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Biaya Transaksi']
-        ]" />
-
-        <h1 class="text-2xl font-bold mb-4">Biaya Transaksi Pembeli</h1>
-        <p class="text-gray-500 mb-6 text-sm">Biaya ini akan ditambahkan ke Grand Total pesanan pembeli secara langsung saat Checkout.</p>
+        <div class="flex items-start gap-3 mb-6">
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <x-icon name="arrow-left" class="w-4 h-4" />
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold font-display text-gray-900">Biaya Transaksi Pembeli</h1>
+                <p class="text-gray-500 text-sm mt-1">Biaya ini akan ditambahkan ke Grand Total pesanan pembeli secara langsung saat Checkout.</p>
+            </div>
+        </div>
 
         @if(session('success')) <div class="bg-green-100 text-green-700 p-3 rounded mb-4">{{ session('success') }}</div> @endif
 
