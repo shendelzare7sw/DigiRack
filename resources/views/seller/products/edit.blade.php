@@ -131,9 +131,21 @@
                 @endif
 
                 {{-- Upload New Images --}}
-                <p class="text-xs text-gray-500 mb-3">Tambah foto baru (opsional):</p>
-                <input type="file" name="new_images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
-                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-navylight file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors cursor-pointer">
+                <p class="text-xs text-gray-500 mb-3">Tambah foto baru (opsional, maks 10MB per file):</p>
+                <div x-data="{ previews: [] }" class="space-y-4">
+                    <input type="file" name="new_images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
+                        @change="previews = []; for (let f of $event.target.files) { let r = new FileReader(); r.onload = e => { previews.push(e.target.result); previews = [...previews]; }; r.readAsDataURL(f); }"
+                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-navylight file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors cursor-pointer">
+
+                    <div x-show="previews.length > 0" class="flex gap-3 flex-wrap">
+                        <template x-for="(src, i) in previews" :key="i">
+                            <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-blue relative">
+                                <img :src="src" class="w-full h-full object-cover">
+                                <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">BARU</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
 
             {{-- Spesifikasi --}}

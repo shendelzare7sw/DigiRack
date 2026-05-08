@@ -106,10 +106,10 @@
                     <x-icon name="photo" class="w-5 h-5 text-brand-navy" />
                     Foto Produk
                 </h2>
-                <p class="text-xs text-gray-500 mb-4">Upload 1-5 gambar (JPG, PNG, WebP, maks 2MB per file). Gambar pertama akan jadi foto utama.</p>
+                <p class="text-xs text-gray-500 mb-4">Upload 0-5 gambar (JPG, PNG, WebP, maks 10MB per file). Gambar pertama akan jadi foto utama (Opsional).</p>
 
                 <div x-data="{ previews: [] }" class="space-y-4">
-                    <input type="file" name="images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp" required
+                    <input type="file" name="images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
                         @change="previews = []; for (let f of $event.target.files) { let r = new FileReader(); r.onload = e => { previews.push(e.target.result); previews = [...previews]; }; r.readAsDataURL(f); }"
                         class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-navylight file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors cursor-pointer">
 

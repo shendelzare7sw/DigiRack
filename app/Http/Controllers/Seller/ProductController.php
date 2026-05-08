@@ -93,8 +93,8 @@ class ProductController extends Controller
             'specs' => 'nullable|array',
             'specs.*.label' => 'nullable|string|max:100',
             'specs.*.value' => 'nullable|string|max:255',
-            'images' => 'required|array|min:1|max:5',
-            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
 
         // Generate slug
@@ -178,7 +178,7 @@ class ProductController extends Controller
             'specs.*.label' => 'nullable|string|max:100',
             'specs.*.value' => 'nullable|string|max:255',
             'new_images' => 'nullable|array|max:5',
-            'new_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+            'new_images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'exists:product_images,id',
         ]);
