@@ -55,7 +55,10 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            Category::create(array_merge($cat, ['is_active' => true]));
+            Category::updateOrCreate(
+                ['slug' => $cat['slug']],
+                array_merge($cat, ['is_active' => true])
+            );
         }
     }
 }

@@ -53,13 +53,15 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $p) {
-            Product::create(array_merge($p, [
-                'slug' => Str::slug($p['name']),
-                'condition' => 'new',
-                'status' => 'active',
-                'sold_count' => rand(5, 50),
-                'avg_rating' => round(rand(35, 50) / 10, 1),
-            ]));
+            Product::updateOrCreate(
+                ['slug' => Str::slug($p['name'])],
+                array_merge($p, [
+                    'condition' => 'new',
+                    'status' => 'active',
+                    'sold_count' => rand(5, 50),
+                    'avg_rating' => round(rand(35, 50) / 10, 1),
+                ])
+            );
         }
     }
 }
