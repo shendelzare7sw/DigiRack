@@ -106,6 +106,11 @@
 
                 {{-- Action Card --}}
                 @if($order->status === 'pending_payment')
+                    @php
+                        $isProduction = \App\Models\SystemSetting::val('midtrans_is_production', env('MIDTRANS_IS_PRODUCTION', false)) === 'true';
+                        $snapScriptUrl = $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+                        $clientKey = \App\Models\SystemSetting::val('midtrans_client_key', env('MIDTRANS_CLIENT_KEY'));
+                    @endphp
                     <div class="bg-yellow-50/50 rounded-2xl shadow-sm border border-yellow-200 p-6 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
                         <h3 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
@@ -115,40 +120,17 @@
                         <p class="text-sm text-gray-600 mb-4">Selesaikan pembayaran Anda agar pesanan bisa segera diproses oleh penjual.</p>
 
                         @if($order->payment_token)
-                            {{-- Midtrans payment --}}
-                            <a href="{{ route('buyer.orders.show', $order->id) }}" 
-                                id="pay-again-btn"
-                                class="w-full bg-brand-blue hover:bg-blue-600 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3">
-                                <x-icon name="credit-card" class="w-5 h-5" /> Bayar via Midtrans
-                            </a>
-                        @endif
-
-                        {{-- Upload / Show Payment Proof --}}
-                        @if($order->payment_proof)
-                            <div class="bg-white rounded-xl border border-green-200 p-4 mb-3">
-                                <p class="text-xs font-semibold text-green-700 mb-2 flex items-center gap-1">
-                                    <x-icon name="check-circle" class="w-4 h-4" />
-                                    Bukti transfer sudah diunggah
-                                </p>
-                                <img src="{{ Storage::url($order->payment_proof) }}" alt="Bukti Transfer" class="w-full rounded-lg border border-gray-200 max-h-48 object-contain bg-gray-50">
-                                <p class="text-[10px] text-gray-400 mt-2">Menunggu verifikasi dari penjual/admin.</p>
-                            </div>
-                        @endif
-
-                        <form action="{{ route('buyer.orders.upload-proof', $order->id) }}" method="POST" enctype="multipart/form-data" class="space-y-3">
-                            @csrf
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 mb-1">
-                                    {{ $order->payment_proof ? 'Upload Ulang Bukti Transfer' : 'Upload Bukti Transfer' }}
-                                </label>
-                                <input type="file" name="payment_proof" accept="image/*" required
-                                    class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-navy file:text-white hover:file:bg-brand-navydark cursor-pointer">
-                            </div>
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 text-xs rounded-xl transition-all flex items-center justify-center gap-2">
-                                <x-icon name="arrow-up-tray" class="w-4 h-4" />
-                                Kirim Bukti
+                            <button type="button" id="pay-now-btn"
+                                class="w-full bg-brand-blue hover:bg-blue-600 text-white font-bold py-3.5 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                                <x-icon name="credit-card" class="w-5 h-5" /> Bayar Sekarang
                             </button>
-                        </form>
+                            <p class="text-[10px] text-gray-400 mt-3 text-center">Anda dapat menutup halaman dan kembali membayar kapan saja sebelum kadaluarsa.</p>
+                        @else
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700 flex items-start gap-2">
+                                <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
+                                <p>Token pembayaran tidak tersedia. Hubungi admin jika masalah berlanjut.</p>
+                            </div>
+                        @endif
                     </div>
                 @elseif($order->status === 'shipped')
                     <div class="bg-brand-navylight/20 rounded-2xl shadow-sm border border-brand-navy/30 p-6 relative overflow-hidden">
@@ -156,12 +138,12 @@
                         <h3 class="font-bold text-brand-navy mb-2 flex items-center gap-2">
                             <x-icon name="gift" class="w-5 h-5" /> Pesanan Tiba?
                         </h3>
-                        <p class="text-sm text-gray-600 mb-4">Pastikan paket sudah Anda terima dalam kondisi baik. Dana asuransi (escrow) akan dicairkan ke penjual setelah Anda mengklik tombol di bawah ini.</p>
+                        <p class="text-sm text-gray-600 mb-4">Pastikan paket sudah Anda terima dalam kondisi baik. Dana akan dicairkan ke penjual setelah konfirmasi.</p>
                         
                         <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Apakah Anda yakin barang pesanan sudah diterima dengan baik dan sesuai? Dana akan diteruskan ke penjual dan pesanan difinalisasi.', type: 'info', confirmText: 'Ya, Selesai' })">
                             @csrf
                             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                                <x-icon name="check-circle" class="w-5 h-5" /> Pesanan Diterima Selesai
+                                <x-icon name="check-circle" class="w-5 h-5" /> Pesanan Diterima & Selesai
                             </button>
                         </form>
                     </div>
@@ -170,17 +152,42 @@
                         <x-icon name="check-badge" class="w-10 h-10 text-green-500 mx-auto mb-2" />
                         <h3 class="font-bold text-green-900 mb-1">Transaksi Selesai</h3>
                         <p class="text-sm text-green-700">Terima kasih telah berbelanja! Dana telah diteruskan ke pihak toko.</p>
-                        {{-- FUTURE: Add Review Button Here --}}
                     </div>
                 @elseif($order->status === 'processing')
                     <div class="bg-orange-50 rounded-2xl p-6 border border-orange-100 text-center">
                         <x-icon name="clock" class="w-10 h-10 text-brand-orange mx-auto mb-2" />
-                        <h3 class="font-bold text-orange-900 mb-1">Menunggu Dikirim</h3>
-                        <p class="text-sm text-orange-700">Penjual sedang menyiapkan pesanan Anda.</p>
+                        <h3 class="font-bold text-orange-900 mb-1">Sedang Diproses Penjual</h3>
+                        <p class="text-sm text-orange-700">Pembayaran berhasil! Penjual sedang menyiapkan pesanan Anda untuk dikirim.</p>
                     </div>
                 @endif
             </div>
 
         </div>
     </div>
+
+    {{-- Midtrans Snap JS (only if pending payment with token) --}}
+    @if($order->status === 'pending_payment' && $order->payment_token)
+    @push('scripts')
+    <script type="text/javascript" src="{{ $snapScriptUrl }}" data-client-key="{{ $clientKey }}"></script>
+    <script type="text/javascript">
+        document.getElementById('pay-now-btn')?.addEventListener('click', function() {
+            snap.pay('{{ $order->payment_token }}', {
+                onSuccess: function(result) {
+                    window.location.reload();
+                },
+                onPending: function(result) {
+                    window.location.reload();
+                },
+                onError: function(result) {
+                    alert('Pembayaran gagal. Silakan coba lagi.');
+                    window.location.reload();
+                },
+                onClose: function() {
+                    // User menutup popup — tidak masalah, bisa bayar lagi nanti
+                }
+            });
+        });
+    </script>
+    @endpush
+    @endif
 </x-app-layout>
