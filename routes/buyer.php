@@ -37,6 +37,7 @@ Route::middleware(['auth', 'role:buyer,seller,admin', \App\Http\Middleware\Enfor
     Route::post('/checkout/init', [\App\Http\Controllers\Buyer\CheckoutController::class, 'init'])->name('checkout.init');
     Route::post('/checkout', [\App\Http\Controllers\Buyer\CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [\App\Http\Controllers\Buyer\CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/orders/{id}/upload-proof', [\App\Http\Controllers\Buyer\CheckoutController::class, 'uploadProof'])->name('orders.upload-proof');
 
     // Reviews
     // Route::get('/reviews', [App\Http\Controllers\Buyer\ReviewController::class, 'index'])->name('reviews.index');

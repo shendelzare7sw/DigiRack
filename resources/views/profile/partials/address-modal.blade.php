@@ -55,12 +55,27 @@
                                 <h4 class="font-bold text-gray-900 border-b pb-2 mb-4 mt-6">Lokasi</h4>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Provinsi</label>
-                                        <input type="text" name="province" x-model="form.province" required class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Provinsi <span class="text-red-500">*</span></label>
+                                        <select name="province_id" x-model="form.province_id" @change="onProvinceChange()" required
+                                            class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3 bg-white">
+                                            <option value="">Pilih Provinsi</option>
+                                            <template x-for="prov in provincesList" :key="prov.id">
+                                                <option :value="prov.id" x-text="prov.name"></option>
+                                            </template>
+                                        </select>
+                                        {{-- Hidden text field auto-filled --}}
+                                        <input type="hidden" name="province" :value="selectedProvinceName">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kota/Kabupaten</label>
-                                        <input type="text" name="city" x-model="form.city" required class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kota/Kabupaten <span class="text-red-500">*</span></label>
+                                        <select name="city_id" x-model="form.city_id" @change="onCityChange()" :disabled="citiesList.length === 0" required
+                                            class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3 bg-white disabled:bg-gray-100">
+                                            <option value="">Pilih Kota</option>
+                                            <template x-for="c in citiesList" :key="c.id">
+                                                <option :value="c.id" x-text="c.type + ' ' + c.name"></option>
+                                            </template>
+                                        </select>
+                                        <input type="hidden" name="city" :value="selectedCityName">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
@@ -124,21 +139,58 @@
             map: null,
             marker: null,
             formAction: '{{ route('profile.addresses.store') }}',
+            provincesList: [],
+            citiesList: [],
             form: {
                 id: null,
                 label: '',
                 recipient_name: '{{ Auth::user()->name }}',
                 phone: '{{ Auth::user()->phone }}',
                 province: '',
+                province_id: '',
                 city: '',
+                city_id: '',
                 postal_code: '',
                 full_address: '',
                 is_primary: false,
-                lat: '-6.200000', // Default Jakarta
+                lat: '-6.200000',
                 lng: '106.816666'
             },
 
-            handleModalOpen(detail) {
+            get selectedProvinceName() {
+                const p = this.provincesList.find(x => x.id == this.form.province_id);
+                return p ? p.name : this.form.province;
+            },
+
+            get selectedCityName() {
+                const c = this.citiesList.find(x => x.id == this.form.city_id);
+                return c ? (c.type + ' ' + c.name) : this.form.city;
+            },
+
+            async loadProvinces() {
+                try {
+                    const res = await fetch('/api/locations/provinces');
+                    this.provincesList = await res.json();
+                } catch(e) { console.error('Gagal load provinsi'); }
+            },
+
+            async onProvinceChange() {
+                this.citiesList = [];
+                this.form.city_id = '';
+                if (!this.form.province_id) return;
+                try {
+                    const res = await fetch(`/api/locations/cities/${this.form.province_id}`);
+                    this.citiesList = await res.json();
+                } catch(e) { console.error('Gagal load kota'); }
+            },
+
+            onCityChange() {
+                // Auto-fill text fields for backward compat
+            },
+
+            async handleModalOpen(detail) {
+                await this.loadProvinces();
+
                 this.isEdit = detail.isEdit;
                 if (this.isEdit) {
                     this.formAction = `/profile/addresses/${detail.address.id}`;
@@ -148,13 +200,21 @@
                         recipient_name: detail.address.recipient_name,
                         phone: detail.address.phone,
                         province: detail.address.province,
+                        province_id: detail.address.province_id || '',
                         city: detail.address.city,
+                        city_id: detail.address.city_id || '',
                         postal_code: detail.address.postal_code,
                         full_address: detail.address.full_address,
                         is_primary: detail.address.is_primary,
                         lat: detail.address.latitude || '-6.200000',
                         lng: detail.address.longitude || '106.816666'
                     };
+                    // Load cities for the saved province
+                    if (this.form.province_id) {
+                        await this.onProvinceChange();
+                        // Re-set city_id after cities load
+                        this.form.city_id = detail.address.city_id || '';
+                    }
                 } else {
                     this.formAction = '{{ route('profile.addresses.store') }}';
                     this.form = {
@@ -163,15 +223,17 @@
                         recipient_name: '{{ Auth::user()->name }}',
                         phone: '{{ Auth::user()->phone }}',
                         province: '',
+                        province_id: '',
                         city: '',
+                        city_id: '',
                         postal_code: '',
                         full_address: '',
                         is_primary: false,
                         lat: '-6.200000',
                         lng: '106.816666'
                     };
+                    this.citiesList = [];
                     
-                    // Try to get user's current location once
                     if("geolocation" in navigator) {
                         navigator.geolocation.getCurrentPosition((pos) => {
                             this.form.lat = pos.coords.latitude;
@@ -186,16 +248,12 @@
                 }
                 
                 this.open = true;
-                
-                // wait for modal to render map div, then initialize map
-                setTimeout(() => {
-                    this.initMap();
-                }, 300);
+                setTimeout(() => { this.initMap(); }, 300);
             },
 
             initMap() {
                 if (this.map) {
-                    this.map.remove(); // Reset map on every open
+                    this.map.remove();
                 }
 
                 this.map = L.map('leafletMap').setView([this.form.lat, this.form.lng], 15);
@@ -208,14 +266,12 @@
                     draggable: true
                 }).addTo(this.map);
 
-                // Update input on drag end
                 this.marker.on('dragend', (e) => {
                     const pos = e.target.getLatLng();
                     this.form.lat = pos.lat.toFixed(6);
                     this.form.lng = pos.lng.toFixed(6);
                 });
 
-                // Move pin to clicked location
                 this.map.on('click', (e) => {
                     const pos = e.latlng;
                     this.marker.setLatLng(pos);
@@ -223,7 +279,6 @@
                     this.form.lng = pos.lng.toFixed(6);
                 });
 
-                // Fix map container size sizing issue common in Modals
                 this.map.invalidateSize();
             }
         }));

@@ -20,6 +20,7 @@ class Order extends Model
         'payment_status',
         'payment_token',
         'payment_reference',
+        'payment_proof',
         'shipping_address',
         'applied_buyer_fees',
         'shipping_tracking_number',

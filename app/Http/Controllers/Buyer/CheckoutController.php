@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Models\Cart;
 use App\Models\City;
 use App\Models\Order;
@@ -13,6 +14,7 @@ use App\Services\RajaOngkirService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Midtrans\Config;
 use Midtrans\Snap;
 
@@ -73,6 +75,16 @@ class CheckoutController extends Controller
             return redirect()->route('buyer.cart.index')->with('error', 'Item tidak ditemukan.');
         }
 
+        // Get user saved addresses (with city_id for ongkir)
+        $addresses = Auth::user()->addresses()->orderByDesc('is_primary')->get();
+
+        // If no addresses, redirect to profile to create one
+        if ($addresses->isEmpty()) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Anda belum memiliki alamat pengiriman. Silakan tambahkan alamat terlebih dahulu.')
+                ->withFragment('address-section');
+        }
+
         $storesData = [];
         $totalPrice = 0;
 
@@ -94,28 +106,32 @@ class CheckoutController extends Controller
             $totalPrice += ($item->product->price * $item->quantity);
         }
 
-        $provinces = Province::orderBy('name')->get();
         $buyerFees = \App\Models\BuyerTransactionFee::where('is_active', true)->get();
         $totalBuyerFees = $buyerFees->sum('amount');
 
-        return view('buyer.checkout.index', compact('storesData', 'totalPrice', 'provinces', 'selectedItems', 'buyerFees', 'totalBuyerFees'));
+        // Check if Midtrans is configured
+        $midtransReady = !empty(SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY')));
+
+        return view('buyer.checkout.index', compact(
+            'storesData', 'totalPrice', 'selectedItems', 'buyerFees', 'totalBuyerFees',
+            'addresses', 'midtransReady'
+        ));
     }
 
     /**
-     * Proses pembuatan Order dari form Checkout, lalu get SNAP Token Midtrans.
+     * Proses pembuatan Order dari form Checkout, lalu get SNAP Token Midtrans atau manual transfer.
      */
     public function process(Request $request, RajaOngkirService $rajaOngkir)
     {
         $request->validate([
             'selected_items' => 'required|string',
-            'recipient_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'province_id' => 'required|exists:provinces,id',
-            'city_id' => 'required|exists:cities,id',
-            'postal_code' => 'required|string|max:10',
-            'address' => 'required|string',
-            'couriers' => 'required|array', // key: store_id, value: courier string (e.g. "jne")
+            'address_id' => 'required|exists:addresses,id',
+            'payment_method' => 'required|in:midtrans,manual_transfer',
+            'couriers' => 'required|array',
         ]);
+
+        // Verify address belongs to user
+        $address = Address::where('user_id', Auth::id())->findOrFail($request->address_id);
 
         $selectedItemIds = json_decode($request->selected_items, true);
 
@@ -132,12 +148,11 @@ class CheckoutController extends Controller
         // Group by Store
         $storesData = [];
         foreach ($cartItems as $item) {
-            // Verifikasi stok dan harga valid
             if ($item->product->stock < $item->quantity) {
                 return redirect()->route('buyer.cart.index')->with('error', 'Stok untuk produk ' . $item->product->name . ' tidak mencukupi.');
             }
             if ($item->product->price <= 0) {
-                return redirect()->route('buyer.cart.index')->with('error', 'Terdapat produk dengan harga tidak valid (Rp 0). Harap lepas centang produk ini.');
+                return redirect()->route('buyer.cart.index')->with('error', 'Terdapat produk dengan harga tidak valid (Rp 0).');
             }
             
             $storeId = $item->product->store_id;
@@ -154,22 +169,20 @@ class CheckoutController extends Controller
             $storesData[$storeId]['subtotal'] += ($item->product->price * $item->quantity);
         }
 
-        $city = City::with('province')->find($request->city_id);
-        $fullAddress = $request->address . ', ' . $city->type . ' ' . $city->name . ', ' . $city->province->name . ', ' . $request->postal_code;
+        // Build full address string
+        $fullAddress = $address->full_address . ', ' . $address->city . ', ' . $address->province . ', ' . $address->postal_code;
 
         $paymentReference = 'PAY/' . date('Ymd') . '/' . strtoupper(uniqid());
         $grandTotalGross = 0;
         $createdOrders = [];
+        $paymentMethod = $request->payment_method;
 
         try {
             DB::beginTransaction();
 
             $index = 1;
             foreach ($storesData as $storeId => $data) {
-                // Determine courier
                 $courierCode = $request->couriers[$storeId] ?? 'jne';
-                
-                // Calculate actual shipping cost
                 $shippingCost = 0;
 
                 if (str_starts_with($courierCode, 'toko_')) {
@@ -180,14 +193,14 @@ class CheckoutController extends Controller
                         $courierCode = 'toko_' . $storeCourier->name;
                     }
                 } else {
-                    $originCityId = $data['store']->city_id ?? 153; // default jakarta selatan if not set
-                    $ongkirResponse = $rajaOngkir->getCost($originCityId, $city->id, $data['totalWeight'], $courierCode);
+                    $originCityId = $data['store']->city_id ?? 153;
+                    $destCityId = $address->city_id ?? 153;
+                    $ongkirResponse = $rajaOngkir->getCost($originCityId, $destCityId, $data['totalWeight'], $courierCode);
                     
                     if (isset($ongkirResponse['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value'])) {
                         $shippingCost = $ongkirResponse['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value'];
                     } else {
-                        // Fallback
-                        $shippingCost = 25000;
+                        $shippingCost = 25000; // Fallback
                     }
                 }
 
@@ -195,10 +208,9 @@ class CheckoutController extends Controller
                 $grandTotalGross += $totalOrderPrice;
 
                 if ($totalOrderPrice <= 0) {
-                    throw new \Exception("Pesanan ditolak karena total akhir Rp 0. Tidak ada nilai transaksi yang valid.");
+                    throw new \Exception("Pesanan ditolak karena total akhir Rp 0.");
                 }
 
-                // Check active buyer fees only on the first order to avoid duplicate charging
                 $appliedFeesJson = null;
                 if ($index === 1) {
                     $buyerFees = \App\Models\BuyerTransactionFee::where('is_active', true)->get();
@@ -206,16 +218,12 @@ class CheckoutController extends Controller
                         $feeRecords = [];
                         foreach ($buyerFees as $fee) {
                             $grandTotalGross += $fee->amount;
-                            $feeRecords[] = [
-                                'name' => $fee->name,
-                                'amount' => $fee->amount
-                            ];
+                            $feeRecords[] = ['name' => $fee->name, 'amount' => $fee->amount];
                         }
                         $appliedFeesJson = json_encode($feeRecords);
                     }
                 }
 
-                // Create Order
                 $order = Order::create([
                     'invoice_number' => 'INV/' . date('Ymd') . '/' . strtoupper(uniqid()) . '-' . $index,
                     'buyer_id' => Auth::id(),
@@ -223,20 +231,19 @@ class CheckoutController extends Controller
                     'status' => 'pending_payment',
                     'total_price' => $totalOrderPrice,
                     'shipping_cost' => $shippingCost,
-                    'payment_method' => 'midtrans',
+                    'payment_method' => $paymentMethod === 'midtrans' ? 'transfer' : 'transfer',
                     'payment_status' => 'unpaid',
                     'payment_reference' => $paymentReference,
                     'shipping_address' => [
-                        'name' => $request->recipient_name,
-                        'phone' => $request->phone,
+                        'name' => $address->recipient_name,
+                        'phone' => $address->phone,
                         'full_address' => $fullAddress,
                         'courier' => strtoupper($courierCode),
-                        'destination_city_id' => $city->id
+                        'destination_city_id' => $address->city_id
                     ],
                     'applied_buyer_fees' => $appliedFeesJson ? json_decode($appliedFeesJson, true) : null
                 ]);
 
-                // Create Order Items
                 foreach ($data['items'] as $item) {
                     OrderItem::create([
                         'order_id' => $order->id,
@@ -245,7 +252,6 @@ class CheckoutController extends Controller
                         'price' => $item->product->price,
                         'subtotal' => $item->product->price * $item->quantity,
                     ]);
-
                     Cart::destroy($item->id);
                 }
 
@@ -253,44 +259,91 @@ class CheckoutController extends Controller
                 $index++;
             }
 
-            // Setup Midtrans
-            $serverKey = SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY'));
-            $isProduction = SystemSetting::val('midtrans_is_production', env('MIDTRANS_IS_PRODUCTION', false)) === 'true';
+            // --- Payment Method Handling ---
+            if ($paymentMethod === 'midtrans') {
+                $serverKey = SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY'));
+                
+                if (empty($serverKey)) {
+                    // Midtrans not configured - fallback to manual
+                    DB::commit();
+                    $order = $createdOrders[0];
+                    return view('buyer.checkout.manual-transfer', compact('order', 'grandTotalGross', 'paymentReference'));
+                }
 
-            Config::$serverKey = $serverKey;
-            Config::$isProduction = $isProduction;
-            Config::$isSanitized = true;
-            Config::$is3ds = true;
+                $isProduction = SystemSetting::val('midtrans_is_production', env('MIDTRANS_IS_PRODUCTION', false)) === 'true';
+                Config::$serverKey = $serverKey;
+                Config::$isProduction = $isProduction;
+                Config::$isSanitized = true;
+                Config::$is3ds = true;
 
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $paymentReference, // Use single token for all grouped orders
-                    'gross_amount' => $grandTotalGross,
-                ],
-                'customer_details' => [
-                    'first_name' => Auth::user()->name,
-                    'email' => Auth::user()->email,
-                    'phone' => Auth::user()->phone ?? $request->phone,
-                ],
-            ];
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $paymentReference,
+                        'gross_amount' => $grandTotalGross,
+                    ],
+                    'customer_details' => [
+                        'first_name' => Auth::user()->name,
+                        'email' => Auth::user()->email,
+                        'phone' => Auth::user()->phone ?? $address->phone,
+                    ],
+                ];
 
-            // Get Snap Token
-            $snapToken = Snap::getSnapToken($params);
-            
-            // Save token to all created orders
-            foreach ($createdOrders as $ord) {
-                $ord->update(['payment_token' => $snapToken]);
+                $snapToken = Snap::getSnapToken($params);
+                
+                foreach ($createdOrders as $ord) {
+                    $ord->update(['payment_token' => $snapToken]);
+                }
+
+                DB::commit();
+                $order = $createdOrders[0];
+                return view('buyer.checkout.payment', compact('order', 'snapToken', 'grandTotalGross', 'paymentReference'));
+
+            } else {
+                // Manual Transfer
+                DB::commit();
+                $order = $createdOrders[0];
+                return view('buyer.checkout.manual-transfer', compact('order', 'grandTotalGross', 'paymentReference'));
             }
-
-            DB::commit();
-
-            // Pass the first order just to render the view
-            $order = $createdOrders[0];
-            return view('buyer.checkout.payment', compact('order', 'snapToken', 'grandTotalGross', 'paymentReference'));
 
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('buyer.cart.index')->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Upload bukti transfer manual
+     */
+    public function uploadProof(Request $request, $orderId)
+    {
+        $request->validate([
+            'payment_proof' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        $order = Order::where('buyer_id', Auth::id())->findOrFail($orderId);
+
+        if ($order->payment_status === 'paid') {
+            return back()->with('error', 'Pembayaran sudah diverifikasi sebelumnya.');
+        }
+
+        // Store the file
+        $path = $request->file('payment_proof')->store('payment-proofs', 'public');
+
+        // Delete old proof if exists
+        if ($order->payment_proof) {
+            Storage::disk('public')->delete($order->payment_proof);
+        }
+
+        $order->update(['payment_proof' => $path]);
+
+        // Also update all orders with same payment_reference
+        if ($order->payment_reference) {
+            Order::where('payment_reference', $order->payment_reference)
+                ->where('id', '!=', $order->id)
+                ->update(['payment_proof' => $path]);
+        }
+
+        return redirect()->route('buyer.orders.show', $order->id)
+            ->with('success', 'Bukti transfer berhasil diunggah. Menunggu verifikasi dari penjual/admin.');
     }
 }

@@ -5,7 +5,20 @@
             storesCount: {{ count($storesData) }},
             stores: {{ json_encode(collect($storesData)->map(fn($data, $id) => ['id' => $id, 'weight' => $data['totalWeight'], 'subtotal' => $data['subtotal'], 'origin_city_id' => $data['store']['city_id'] ?? 153])->values()) }},
             productSubtotal: {{ $totalPrice }},
-            totalBuyerFees: {{ $totalBuyerFees }}
+            totalBuyerFees: {{ $totalBuyerFees }},
+            midtransReady: {{ $midtransReady ? 'true' : 'false' }},
+            addresses: {{ json_encode($addresses->map(fn($a) => [
+                'id' => $a->id,
+                'label' => $a->label,
+                'recipient_name' => $a->recipient_name,
+                'phone' => $a->phone,
+                'full_address' => $a->full_address,
+                'city' => $a->city,
+                'province' => $a->province,
+                'postal_code' => $a->postal_code,
+                'city_id' => $a->city_id,
+                'is_primary' => $a->is_primary,
+            ])) }}
         })">
         <div class="flex items-start gap-3 mb-6">
             <a href="{{ route('buyer.cart.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
@@ -13,16 +26,18 @@
             </a>
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Checkout Pesanan</h1>
-                <p class="text-sm text-gray-500 mt-1">Lengkapi data pengiriman untuk memproses transaksi Anda.</p>
+                <p class="text-sm text-gray-500 mt-1">Pilih alamat pengiriman dan metode pembayaran.</p>
             </div>
         </div>
 
         <form method="POST" action="{{ route('buyer.checkout.process') }}" class="flex flex-col lg:flex-row gap-8">
             @csrf
             <input type="hidden" name="selected_items" value="{{ json_encode($selectedItems) }}">
+            <input type="hidden" name="address_id" :value="selectedAddressId">
 
             <div class="flex-1 min-w-0 space-y-6">
-                {{-- Form Pengiriman --}}
+
+                {{-- Pilih Alamat Pengiriman --}}
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h2 class="font-bold text-lg text-gray-900 mb-5 flex items-center gap-2">
                         <x-icon name="map-pin" class="w-6 h-6 text-brand-blue" />
@@ -39,54 +54,42 @@
                         </div>
                     @endif
 
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama Penerima <span class="text-red-500">*</span></label>
-                                <input type="text" name="recipient_name" value="{{ old('recipient_name', Auth::user()->name) }}" required
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nomor Telepon <span class="text-red-500">*</span></label>
-                                <input type="text" name="phone" value="{{ old('phone', Auth::user()->phone) }}" required
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
-                            </div>
-                        </div>
+                    <div class="space-y-3">
+                        <template x-for="addr in addresses" :key="addr.id">
+                            <label class="flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all"
+                                :class="selectedAddressId == addr.id ? 'border-brand-navy bg-brand-navylight/10 shadow-sm' : 'border-gray-200 hover:border-gray-300'">
+                                <input type="radio" name="address_radio" :value="addr.id" x-model="selectedAddressId" @change="onAddressChange()" class="mt-1 text-brand-navy focus:ring-brand-navy">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-bold text-sm text-gray-900" x-text="addr.label"></span>
+                                        <template x-if="addr.is_primary">
+                                            <span class="text-[10px] font-bold bg-brand-blue text-white px-2 py-0.5 rounded-full">UTAMA</span>
+                                        </template>
+                                        <template x-if="!addr.city_id">
+                                            <span class="text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full border border-yellow-300">Perlu diperbarui</span>
+                                        </template>
+                                    </div>
+                                    <p class="text-sm font-semibold text-gray-700" x-text="addr.recipient_name + ' (' + addr.phone + ')'"></p>
+                                    <p class="text-sm text-gray-600 mt-1 line-clamp-2" x-text="addr.full_address"></p>
+                                    <p class="text-xs text-gray-400 mt-1" x-text="addr.city + ', ' + addr.province + ' ' + addr.postal_code"></p>
+                                </div>
+                            </label>
+                        </template>
+                    </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Provinsi <span class="text-red-500">*</span></label>
-                                <select name="province_id" x-model="selectedProvince" @change="fetchCities()" required
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
-                                    <option value="">Pilih Provinsi</option>
-                                    @foreach($provinces as $prov)
-                                        <option value="{{ $prov->id }}">{{ $prov->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kota / Kabupaten <span class="text-red-500">*</span></label>
-                                <select name="city_id" x-model="selectedCity" @change="onCityChange()" :disabled="!selectedProvince || isCityLoading" required
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white disabled:bg-gray-100">
-                                    <option value="">Pilih Kota/Kabupaten</option>
-                                    <template x-for="city in cities" :key="city.id">
-                                        <option :value="city.id" x-text="city.type + ' ' + city.name"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </div>
+                    <div class="mt-4 flex items-center gap-3">
+                        <a href="{{ route('profile.edit') }}#address-section" class="text-sm font-semibold text-brand-blue hover:text-blue-700 transition-colors flex items-center gap-1">
+                            <x-icon name="plus" class="w-4 h-4" />
+                            Tambah / Ubah Alamat
+                        </a>
+                    </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-4 mt-4">
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Alamat Lengkap <span class="text-red-500">*</span></label>
-                                <textarea name="address" rows="2" required placeholder="Nama jalan, gedung, patokan, dll..."
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">{{ old('address') }}</textarea>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kode Pos <span class="text-red-500">*</span></label>
-                                <input type="text" name="postal_code" value="{{ old('postal_code') }}" required
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
-                            </div>
+                    {{-- Warning if selected address has no city_id --}}
+                    <div x-show="selectedAddressId && !selectedAddress?.city_id" class="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-700 p-3 rounded-xl text-sm flex items-start gap-2">
+                        <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
+                        <div>
+                            Alamat ini belum memiliki data kota yang valid untuk menghitung ongkir. 
+                            <a href="{{ route('profile.edit') }}#address-section" class="font-bold underline">Edit alamat ini</a> dan pilih provinsi/kota dari dropdown.
                         </div>
                     </div>
                 </div>
@@ -124,11 +127,11 @@
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p class="text-sm font-semibold text-gray-700 mb-3 block">Metode Pengiriman</p>
                         
-                        <div x-show="!selectedCity" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                            Silakan pilih Kota/Kabupaten tujuan terlebih dahulu.
+                        <div x-show="!selectedAddress?.city_id" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            Pilih alamat dengan data kota valid terlebih dahulu untuk menghitung ongkir.
                         </div>
 
-                        <div x-show="selectedCity" class="space-y-3">
+                        <div x-show="selectedAddress?.city_id" class="space-y-3">
                             <select name="couriers[{{ $storeId }}]" x-model="selectedCouriers[{{ $storeId }}]" @change="calculateShipping({{ $storeId }})" required
                                 class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
                                 <option value="">Pilih Kurir</option>
@@ -196,16 +199,40 @@
                         <span class="font-bold text-gray-900">Total Tagihan</span>
                         <span class="font-display font-bold text-xl text-brand-blue" x-text="grandTotal > 0 ? 'Rp ' + formatRupiah(grandTotal) : 'Rp {{ number_format($totalPrice, 0, ',', '.') }}'"></span>
                     </div>
-                    <p class="text-xs text-gray-400 mb-6 text-right">Termasuk PPN jika ada</p>
+                    <p class="text-xs text-gray-400 mb-5 text-right">Termasuk PPN jika ada</p>
+
+                    {{-- Payment Method --}}
+                    <div class="border-t border-gray-100 pt-5 mb-5">
+                        <p class="text-sm font-semibold text-gray-700 mb-3">Metode Pembayaran</p>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                                :class="paymentMethod === 'midtrans' ? 'border-brand-navy bg-brand-navylight/10' : 'border-gray-200'"
+                                x-show="midtransReady">
+                                <input type="radio" name="payment_method" value="midtrans" x-model="paymentMethod" class="text-brand-navy focus:ring-brand-navy">
+                                <div>
+                                    <span class="text-sm font-semibold text-gray-900">Midtrans (Otomatis)</span>
+                                    <p class="text-xs text-gray-500">VA, E-Wallet, Kartu Kredit</p>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
+                                :class="paymentMethod === 'manual_transfer' ? 'border-brand-navy bg-brand-navylight/10' : 'border-gray-200'">
+                                <input type="radio" name="payment_method" value="manual_transfer" x-model="paymentMethod" class="text-brand-navy focus:ring-brand-navy">
+                                <div>
+                                    <span class="text-sm font-semibold text-gray-900">Transfer Manual</span>
+                                    <p class="text-xs text-gray-500">Transfer bank, lalu upload bukti</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
 
                     <button type="submit" :disabled="!canSubmit" class="w-full bg-brand-navy hover:bg-brand-navydark disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-sm">
                         <x-icon name="shield-check" class="w-5 h-5" />
-                        Lanjut ke Pembayaran
+                        <span x-text="paymentMethod === 'midtrans' ? 'Lanjut ke Pembayaran' : 'Buat Pesanan'"></span>
                     </button>
 
                     <div class="mt-5 flex items-center justify-center gap-2 text-xs text-gray-400">
                         <x-icon name="lock-closed" class="w-4 h-4" />
-                        Pembayaran dijamin aman via Midtrans
+                        Pembayaran dijamin aman
                     </div>
                 </div>
             </div>
@@ -217,69 +244,48 @@
         function checkoutPage(config) {
             return {
                 stores: config.stores,
+                addresses: config.addresses,
                 productSubtotal: config.productSubtotal,
                 totalBuyerFees: config.totalBuyerFees,
+                midtransReady: config.midtransReady,
+                paymentMethod: config.midtransReady ? 'midtrans' : 'manual_transfer',
                 customCouriersData: {!! json_encode(collect($storesData)->mapWithKeys(function($data, $id) {
                     return [$id => $data['custom_couriers']->map(fn($c) => ['id' => 'toko_'.$c->id, 'price' => $c->price])];
                 })) !!},
                 
-                provinces: [],
-                cities: [],
-                selectedProvince: "{{ old('province_id', '') }}",
-                selectedCity: "{{ old('city_id', '') }}",
-                isCityLoading: false,
+                selectedAddressId: config.addresses.find(a => a.is_primary)?.id || config.addresses[0]?.id || '',
                 
                 selectedCouriers: {},
                 shippingCosts: {},
                 isCalculating: {},
                 ongkirError: {},
 
+                get selectedAddress() {
+                    return this.addresses.find(a => a.id == this.selectedAddressId) || null;
+                },
+
                 init() {
-                    // Initialize empty states per store
                     this.stores.forEach(store => {
                         this.selectedCouriers[store.id] = "";
                         this.shippingCosts[store.id] = 0;
                         this.isCalculating[store.id] = false;
                         this.ongkirError[store.id] = null;
                     });
-
-                    if (this.selectedProvince) {
-                        this.fetchCities();
-                    }
                 },
 
-                async fetchCities() {
-                    if (!this.selectedProvince) {
-                        this.cities = [];
-                        return;
-                    }
-                    this.isCityLoading = true;
-                    try {
-                        const res = await fetch(`/api/locations/cities/${this.selectedProvince}`);
-                        this.cities = await res.json();
-                        
-                        if (!this.cities.some(c => c.id == this.selectedCity)) {
-                            this.selectedCity = "";
-                        }
-                    } catch (e) {
-                        console.error("Gagal load kota");
-                    } finally {
-                        this.isCityLoading = false;
-                    }
-                },
-
-                onCityChange() {
-                    // Jika kota ganti, hitung ulang semua ongkir yang sudah pilih kurir
+                onAddressChange() {
+                    // Reset all shipping when address changes
                     this.stores.forEach(store => {
-                        if (this.selectedCouriers[store.id]) {
-                            this.calculateShipping(store.id);
-                        }
+                        this.selectedCouriers[store.id] = "";
+                        this.shippingCosts[store.id] = 0;
+                        this.ongkirError[store.id] = null;
                     });
                 },
 
                 async calculateShipping(storeId) {
                     const courier = this.selectedCouriers[storeId];
-                    if (!courier || !this.selectedCity) return;
+                    const addr = this.selectedAddress;
+                    if (!courier || !addr?.city_id) return;
 
                     const store = this.stores.find(s => s.id == storeId);
                     
@@ -287,7 +293,6 @@
                     this.ongkirError[storeId] = null;
                     this.shippingCosts[storeId] = 0;
 
-                    // Handle Kurir Toko (Internal)
                     if (courier.startsWith('toko_')) {
                         let customCouriers = this.customCouriersData[storeId] || [];
                         let customItem = customCouriers.find(c => c.id === courier);
@@ -311,7 +316,7 @@
                             },
                             body: JSON.stringify({
                                 origin: store.origin_city_id,
-                                destination: this.selectedCity,
+                                destination: addr.city_id,
                                 weight: store.weight,
                                 courier: courier
                             })
@@ -319,7 +324,6 @@
 
                         const data = await res.json();
                         if (data.success && data.data.length > 0) {
-                            // Ambil elemen cost pertama (biasanya layanan REG)
                             this.shippingCosts[storeId] = data.data[0].cost[0].value;
                         } else {
                             this.ongkirError[storeId] = data.message || "Layanan tidak didukung untuk rute ini.";
@@ -345,8 +349,8 @@
                 },
 
                 get canSubmit() {
-                    // Pastikan semua store sudah dicentang dan ada harganya
-                    if (!this.selectedCity) return false;
+                    if (!this.selectedAddressId) return false;
+                    if (!this.paymentMethod) return false;
                     
                     for (const store of this.stores) {
                         if (!this.selectedCouriers[store.id] || this.shippingCosts[store.id] === 0) {

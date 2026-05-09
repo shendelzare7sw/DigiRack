@@ -59,6 +59,20 @@ class OrderController extends Controller
             return back()->with('error', 'Pesanan yang sudah selesai atau dibatalkan tidak dapat diubah statusnya.');
         }
 
+        // Handle payment verification (manual transfer)
+        if ($request->status == 'processing' && $request->has('verify_payment')) {
+            if ($order->status != 'pending_payment') {
+                return back()->with('error', 'Hanya pesanan yang menunggu pembayaran yang bisa diverifikasi.');
+            }
+            $order->payment_status = 'paid';
+            // Also mark all orders with same payment_reference as paid
+            if ($order->payment_reference) {
+                Order::where('payment_reference', $order->payment_reference)
+                    ->where('id', '!=', $order->id)
+                    ->update(['payment_status' => 'paid', 'status' => 'processing']);
+            }
+        }
+
         if ($request->status == 'shipped') {
             if ($order->status != 'processing') {
                 return back()->with('error', 'Hanya pesanan yang diproses (sudah dibayar) yang bisa dikirim.');

@@ -134,6 +134,12 @@
                                 </div>
                                 <span class="text-xs font-semibold text-gray-700 text-center">Edit Profil</span>
                             </a>
+                            <a href="{{ route('seller.couriers.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-teal-300 hover:shadow-sm transition-all group">
+                                <div class="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-500 group-hover:bg-teal-500 group-hover:text-white transition-colors">
+                                    <x-icon name="truck" class="w-6 h-6" />
+                                </div>
+                                <span class="text-xs font-semibold text-gray-700 text-center">Kelola Kurir</span>
+                            </a>
                         </div>
                     </div>
                 </div>

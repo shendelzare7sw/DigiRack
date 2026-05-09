@@ -102,7 +102,41 @@
                 </div>
 
                 {{-- Action Card --}}
-                @if($order->status === 'processing')
+                @if($order->status === 'pending_payment')
+                    <div class="bg-yellow-50/50 rounded-2xl shadow-sm border border-yellow-200 p-6 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
+                        <h3 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                            <x-icon name="clock" class="w-5 h-5" />
+                            Menunggu Pembayaran
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">Pesanan ini menunggu pembayaran dari pembeli.</p>
+
+                        @if($order->payment_proof)
+                            <div class="bg-white rounded-xl border border-blue-200 p-4 mb-3">
+                                <p class="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
+                                    <x-icon name="photo" class="w-4 h-4" />
+                                    Bukti Transfer dari Pembeli
+                                </p>
+                                <img src="{{ Storage::url($order->payment_proof) }}" alt="Bukti Transfer" class="w-full rounded-lg border border-gray-200 max-h-52 object-contain bg-gray-50 cursor-pointer" onclick="window.open(this.src)">
+                            </div>
+
+                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Verifikasi Pembayaran', message: 'Apakah Anda yakin bukti transfer valid? Pesanan akan berubah status menjadi Diproses dan Anda harus segera menyiapkan pengiriman.', type: 'info', confirmText: 'Ya, Verifikasi' })">
+                                @csrf
+                                <input type="hidden" name="status" value="processing">
+                                <input type="hidden" name="verify_payment" value="1">
+                                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                                    <x-icon name="check-circle" class="w-5 h-5" />
+                                    Verifikasi & Proses Pesanan
+                                </button>
+                            </form>
+                        @else
+                            <div class="bg-gray-100 rounded-xl p-4 text-center text-sm text-gray-500">
+                                <x-icon name="photo" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                                Pembeli belum mengunggah bukti transfer.
+                            </div>
+                        @endif
+                    </div>
+                @elseif($order->status === 'processing')
                     <div class="bg-white rounded-2xl shadow-sm border border-brand-orange/30 p-6 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-orange"></div>
                         <h3 class="font-bold text-gray-900 mb-2">Tindakan Diperlukan</h3>

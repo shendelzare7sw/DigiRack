@@ -105,7 +105,52 @@
                 </div>
 
                 {{-- Action Card --}}
-                @if($order->status === 'shipped')
+                @if($order->status === 'pending_payment')
+                    <div class="bg-yellow-50/50 rounded-2xl shadow-sm border border-yellow-200 p-6 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
+                        <h3 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                            <x-icon name="clock" class="w-5 h-5" />
+                            Menunggu Pembayaran
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">Selesaikan pembayaran Anda agar pesanan bisa segera diproses oleh penjual.</p>
+
+                        @if($order->payment_token)
+                            {{-- Midtrans payment --}}
+                            <a href="{{ route('buyer.orders.show', $order->id) }}" 
+                                id="pay-again-btn"
+                                class="w-full bg-brand-blue hover:bg-blue-600 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 mb-3">
+                                <x-icon name="credit-card" class="w-5 h-5" /> Bayar via Midtrans
+                            </a>
+                        @endif
+
+                        {{-- Upload / Show Payment Proof --}}
+                        @if($order->payment_proof)
+                            <div class="bg-white rounded-xl border border-green-200 p-4 mb-3">
+                                <p class="text-xs font-semibold text-green-700 mb-2 flex items-center gap-1">
+                                    <x-icon name="check-circle" class="w-4 h-4" />
+                                    Bukti transfer sudah diunggah
+                                </p>
+                                <img src="{{ Storage::url($order->payment_proof) }}" alt="Bukti Transfer" class="w-full rounded-lg border border-gray-200 max-h-48 object-contain bg-gray-50">
+                                <p class="text-[10px] text-gray-400 mt-2">Menunggu verifikasi dari penjual/admin.</p>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('buyer.orders.upload-proof', $order->id) }}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                            @csrf
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">
+                                    {{ $order->payment_proof ? 'Upload Ulang Bukti Transfer' : 'Upload Bukti Transfer' }}
+                                </label>
+                                <input type="file" name="payment_proof" accept="image/*" required
+                                    class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-navy file:text-white hover:file:bg-brand-navydark cursor-pointer">
+                            </div>
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 text-xs rounded-xl transition-all flex items-center justify-center gap-2">
+                                <x-icon name="arrow-up-tray" class="w-4 h-4" />
+                                Kirim Bukti
+                            </button>
+                        </form>
+                    </div>
+                @elseif($order->status === 'shipped')
                     <div class="bg-brand-navylight/20 rounded-2xl shadow-sm border border-brand-navy/30 p-6 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-navy"></div>
                         <h3 class="font-bold text-brand-navy mb-2 flex items-center gap-2">

@@ -18,6 +18,8 @@ class Address extends Model
         'city',
         'province',
         'postal_code',
+        'province_id',
+        'city_id',
         'is_primary',
         'latitude',
         'longitude',
@@ -35,6 +37,16 @@ class Address extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function cityRelation()
+    {
+        return $this->belongsTo(\App\Models\City::class, 'city_id');
+    }
+
+    public function provinceRelation()
+    {
+        return $this->belongsTo(\App\Models\Province::class, 'province_id');
     }
 
     public function getFullLabelAttribute(): string
