@@ -487,20 +487,20 @@
             @touchstart.passive="lbTouchX = $event.touches[0].clientX"
             @touchend="const d = lbTouchX - $event.changedTouches[0].clientX; if(Math.abs(d) > 50) { d > 0 ? next() : prev(); }">
 
-            {{-- Close --}}
-            <button @click="lbOpen = false" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
-                <x-icon name="x-mark" class="w-6 h-6" />
+            {{-- Close Button — top right, very prominent --}}
+            <button @click="lbOpen = false" class="absolute top-4 right-4 z-50 w-12 h-12 bg-white hover:bg-gray-100 rounded-full shadow-xl flex items-center justify-center text-gray-800 transition-all active:scale-90 touch-manipulation border border-gray-200">
+                <x-icon name="x-mark" class="w-7 h-7" />
             </button>
 
             {{-- Prev --}}
-            <button x-show="lbIndex > 0" @click="prev()"
-                class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+            <button x-show="lbIndex > 0" @click.stop="prev()"
+                class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white/90 hover:bg-white backdrop-blur rounded-full shadow-lg flex items-center justify-center text-gray-700 transition-colors touch-manipulation">
                 <x-icon name="chevron-left" class="w-6 h-6" />
             </button>
 
             {{-- Next --}}
-            <button x-show="lbIndex < lbImages.length - 1" @click="next()"
-                class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+            <button x-show="lbIndex < lbImages.length - 1" @click.stop="next()"
+                class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white/90 hover:bg-white backdrop-blur rounded-full shadow-lg flex items-center justify-center text-gray-700 transition-colors touch-manipulation">
                 <x-icon name="chevron-right" class="w-6 h-6" />
             </button>
 
@@ -508,7 +508,7 @@
             <img :src="lbImages[lbIndex]" alt="" class="max-w-[90vw] max-h-[85vh] object-contain select-none rounded-lg shadow-2xl" @click.stop>
 
             {{-- Counter --}}
-            <div x-show="lbImages.length > 1" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/15 backdrop-blur text-white text-sm font-medium px-4 py-1.5 rounded-full">
+            <div x-show="lbImages.length > 1" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur text-gray-800 text-sm font-bold px-4 py-1.5 rounded-full shadow-lg">
                 <span x-text="lbIndex + 1"></span> / <span x-text="lbImages.length"></span>
             </div>
         </div>
