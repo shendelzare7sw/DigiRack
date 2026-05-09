@@ -253,9 +253,6 @@ class CheckoutController extends Controller
                         'quantity' => $item->quantity,
                     ]);
 
-                    // Kurangi stok produk
-                    $item->product->decrement('stock', $item->quantity);
-
                     Cart::destroy($item->id);
                 }
 
