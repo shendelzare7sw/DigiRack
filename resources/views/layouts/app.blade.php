@@ -187,5 +187,92 @@
         <x-toast />
         <x-confirm-modal />
         @stack('scripts')
+
+        {{-- Global AJAX interceptor for cart & wishlist forms (no page refresh) --}}
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('submit', function(e) {
+                var form = e.target;
+
+                // Only intercept cart and wishlist forms
+                var action = form.getAttribute('action') || '';
+                var isCart = action.indexOf('/buyer/cart') !== -1 && form.method.toLowerCase() === 'post';
+                var isWishlist = action.indexOf('/buyer/wishlist/toggle') !== -1;
+
+                if (!isCart && !isWishlist) return;
+
+                e.preventDefault();
+
+                var btn = form.querySelector('button[type="submit"]');
+                if (btn && btn.disabled) return;
+                if (btn) btn.disabled = true;
+
+                var formData = new FormData(form);
+                var body = {};
+                formData.forEach(function(val, key) {
+                    if (key !== '_token') body[key] = val;
+                });
+
+                var csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (!csrfToken) { form.submit(); return; }
+
+                fetch(action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken.content,
+                    },
+                    body: JSON.stringify(body)
+                })
+                .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+                .then(function(result) {
+                    var data = result.data;
+
+                    if (result.ok) {
+                        // Show success toast
+                        window.dispatchEvent(new CustomEvent('show-toast', {
+                            detail: { message: data.message || 'Berhasil!', type: 'success' }
+                        }));
+
+                        // Update cart badge
+                        if (isCart && data.cartCount !== undefined) {
+                            var badge = document.getElementById('navCartBadge');
+                            if (badge) {
+                                badge.textContent = data.cartCount;
+                                badge.classList.remove('hidden');
+                            }
+                        }
+
+                        // Toggle wishlist heart visual
+                        if (isWishlist) {
+                            var heart = form.querySelector('svg');
+                            var heartBtn = form.querySelector('button');
+                            if (heart && data.status === 'added') {
+                                heart.setAttribute('fill', 'currentColor');
+                                if (heartBtn) heartBtn.classList.remove('text-gray-400');
+                                if (heartBtn) heartBtn.classList.add('text-red-500');
+                            } else if (heart && data.status === 'removed') {
+                                heart.setAttribute('fill', 'none');
+                                if (heartBtn) heartBtn.classList.remove('text-red-500');
+                                if (heartBtn) heartBtn.classList.add('text-gray-400');
+                            }
+                        }
+                    } else {
+                        window.dispatchEvent(new CustomEvent('show-toast', {
+                            detail: { message: data.message || 'Gagal.', type: 'error' }
+                        }));
+                    }
+                })
+                .catch(function() {
+                    // JS failed — fall back to native form submit
+                    form.submit();
+                })
+                .finally(function() {
+                    if (btn) btn.disabled = false;
+                });
+            });
+        });
+        </script>
     </body>
 </html>
