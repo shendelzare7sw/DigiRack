@@ -204,35 +204,34 @@
                     {{-- Payment Method --}}
                     <div class="border-t border-gray-100 pt-5 mb-5">
                         <p class="text-sm font-semibold text-gray-700 mb-3">Metode Pembayaran</p>
-                        <div class="space-y-2">
-                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                                :class="paymentMethod === 'midtrans' ? 'border-brand-navy bg-brand-navylight/10' : 'border-gray-200'"
-                                x-show="midtransReady">
-                                <input type="radio" name="payment_method" value="midtrans" x-model="paymentMethod" class="text-brand-navy focus:ring-brand-navy">
+                        @if($midtransReady)
+                            <div class="flex items-center gap-3 p-3 rounded-xl border-2 border-brand-navy bg-brand-navylight/10">
+                                <x-icon name="shield-check" class="w-6 h-6 text-green-500 shrink-0" />
                                 <div>
-                                    <span class="text-sm font-semibold text-gray-900">Midtrans (Otomatis)</span>
-                                    <p class="text-xs text-gray-500">VA, E-Wallet, Kartu Kredit</p>
+                                    <span class="text-sm font-semibold text-gray-900">Midtrans Payment Gateway</span>
+                                    <p class="text-xs text-gray-500">Virtual Account, E-Wallet (GoPay, OVO, DANA), Kartu Kredit, QRIS</p>
                                 </div>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                                :class="paymentMethod === 'manual_transfer' ? 'border-brand-navy bg-brand-navylight/10' : 'border-gray-200'">
-                                <input type="radio" name="payment_method" value="manual_transfer" x-model="paymentMethod" class="text-brand-navy focus:ring-brand-navy">
+                            </div>
+                            <input type="hidden" name="payment_method" value="midtrans">
+                        @else
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700 flex items-start gap-2">
+                                <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
                                 <div>
-                                    <span class="text-sm font-semibold text-gray-900">Transfer Manual</span>
-                                    <p class="text-xs text-gray-500">Transfer bank, lalu upload bukti</p>
+                                    <p class="font-bold">Payment Gateway belum dikonfigurasi</p>
+                                    <p class="text-xs mt-1">Hubungi admin untuk mengaktifkan Midtrans agar checkout dapat dilakukan.</p>
                                 </div>
-                            </label>
-                        </div>
+                            </div>
+                        @endif
                     </div>
 
                     <button type="submit" :disabled="!canSubmit" class="w-full bg-brand-navy hover:bg-brand-navydark disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-sm">
                         <x-icon name="shield-check" class="w-5 h-5" />
-                        <span x-text="paymentMethod === 'midtrans' ? 'Lanjut ke Pembayaran' : 'Buat Pesanan'"></span>
+                        Lanjut ke Pembayaran
                     </button>
 
                     <div class="mt-5 flex items-center justify-center gap-2 text-xs text-gray-400">
                         <x-icon name="lock-closed" class="w-4 h-4" />
-                        Pembayaran dijamin aman
+                        Pembayaran dijamin aman via Midtrans
                     </div>
                 </div>
             </div>
@@ -247,8 +246,6 @@
                 addresses: config.addresses,
                 productSubtotal: config.productSubtotal,
                 totalBuyerFees: config.totalBuyerFees,
-                midtransReady: config.midtransReady,
-                paymentMethod: config.midtransReady ? 'midtrans' : 'manual_transfer',
                 customCouriersData: {!! json_encode(collect($storesData)->mapWithKeys(function($data, $id) {
                     return [$id => $data['custom_couriers']->map(fn($c) => ['id' => 'toko_'.$c->id, 'price' => $c->price])];
                 })) !!},
@@ -350,14 +347,13 @@
 
                 get canSubmit() {
                     if (!this.selectedAddressId) return false;
-                    if (!this.paymentMethod) return false;
                     
                     for (const store of this.stores) {
                         if (!this.selectedCouriers[store.id] || this.shippingCosts[store.id] === 0) {
                             return false;
                         }
                     }
-                    return true;
+                    return {{ $midtransReady ? 'true' : 'false' }};
                 },
 
                 formatRupiah(number) {

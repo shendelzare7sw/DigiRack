@@ -10,7 +10,7 @@
             $backUrl = match(Auth::user()->role) {
                 'admin' => route('admin.dashboard'),
                 'seller' => route('seller.dashboard'),
-                default => route('buyer.dashboard'),
+                default => route('home'),
             };
         @endphp
         <div class="flex items-start gap-3 mb-6">

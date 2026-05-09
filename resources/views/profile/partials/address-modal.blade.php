@@ -185,7 +185,10 @@
             },
 
             onCityChange() {
-                // Auto-fill text fields for backward compat
+                const c = this.citiesList.find(x => x.id == this.form.city_id);
+                if (c && c.postal_code) {
+                    this.form.postal_code = c.postal_code;
+                }
             },
 
             async handleModalOpen(detail) {
