@@ -91,10 +91,19 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">IRIS Approver Key (Untuk Payout) <span class="text-red-500">*</span></label>
-                                <input type="text" name="midtrans_iris_api_key" value="{{ $settings['midtrans_iris_api_key'] ?? '' }}" required
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Merchant ID</label>
+                                <input type="text" name="midtrans_merchant_id" value="{{ $settings['midtrans_merchant_id'] ?? '' }}"
                                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
-                                    placeholder="Midtrans IRIS API Key">
+                                    placeholder="Contoh: G123456789">
+                                <p class="text-[10px] text-gray-400 mt-1">Merchant ID Anda dari dashboard Midtrans (Settings > General). Wajib untuk production.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">IRIS API Key (Untuk Payout) <span class="text-[10px] text-gray-400 font-normal">— Opsional</span></label>
+                                <input type="text" name="midtrans_iris_api_key" value="{{ $settings['midtrans_iris_api_key'] ?? '' }}"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    placeholder="Kosongkan jika belum punya">
+                                <p class="text-[10px] text-gray-400 mt-1">Jika dikosongkan, payout akan diproses secara manual oleh Admin (transfer manual ke rekening seller).</p>
                             </div>
 
                             <hr class="my-6 border-gray-100">

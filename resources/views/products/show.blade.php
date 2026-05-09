@@ -20,6 +20,7 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"
         x-data="{
             activeImage: 0,
+            touchStartX: 0,
             images: {{ Js::from($product->images->count() > 0 ? $product->images->pluck('url')->toArray() : [$product->primary_image_url]) }},
             quantity: 1,
             maxStock: {{ $product->stock }},
@@ -103,7 +104,16 @@
             <div class="w-full lg:w-[480px] xl:w-[540px] shrink-0">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     {{-- Main Image --}}
-                    <div class="relative aspect-square bg-gray-50 overflow-hidden">
+                    <div class="relative aspect-square bg-gray-50 overflow-hidden cursor-zoom-in"
+                        @click="$dispatch('open-lightbox', { index: activeImage })"
+                        @touchstart.passive="touchStartX = $event.touches[0].clientX"
+                        @touchend="
+                            const diff = touchStartX - $event.changedTouches[0].clientX;
+                            if (Math.abs(diff) > 50) {
+                                if (diff > 0 && activeImage < images.length - 1) activeImage++;
+                                else if (diff < 0 && activeImage > 0) activeImage--;
+                            }
+                        ">
                         <template x-for="(img, idx) in images" :key="idx">
                             <img :src="img" :alt="'{{ $product->name }} - gambar ' + (idx+1)"
                                 x-show="activeImage === idx"
@@ -119,6 +129,21 @@
                                 -{{ $product->flashSale->discount_percent }}%
                             </div>
                         @endif
+
+                        {{-- Nav arrows on main image --}}
+                        <button x-show="images.length > 1 && activeImage > 0" @click.stop="activeImage--"
+                            class="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur rounded-full shadow flex items-center justify-center text-gray-600 hover:bg-white transition-all">
+                            <x-icon name="chevron-left" class="w-5 h-5" />
+                        </button>
+                        <button x-show="images.length > 1 && activeImage < images.length - 1" @click.stop="activeImage++"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur rounded-full shadow flex items-center justify-center text-gray-600 hover:bg-white transition-all">
+                            <x-icon name="chevron-right" class="w-5 h-5" />
+                        </button>
+
+                        {{-- Image counter --}}
+                        <div x-show="images.length > 1" class="absolute bottom-3 right-3 bg-black/50 text-white text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
+                            <span x-text="activeImage + 1"></span>/<span x-text="images.length"></span>
+                        </div>
                     </div>
 
                     {{-- Thumbnail Row --}}
@@ -440,6 +465,54 @@
         </div>
     </section>
     @endif
+
+    {{-- Lightbox Modal --}}
+    <div x-data="{
+            lbOpen: false,
+            lbIndex: 0,
+            lbImages: {{ Js::from($product->images->count() > 0 ? $product->images->pluck('url')->toArray() : [$product->primary_image_url]) }},
+            lbTouchX: 0,
+            next() { if (this.lbIndex < this.lbImages.length - 1) this.lbIndex++; },
+            prev() { if (this.lbIndex > 0) this.lbIndex--; },
+        }"
+        @open-lightbox.window="lbIndex = $event.detail.index; lbOpen = true"
+        @keydown.escape.window="lbOpen = false"
+        @keydown.right.window="if(lbOpen) next()"
+        @keydown.left.window="if(lbOpen) prev()">
+
+        <div x-show="lbOpen" x-cloak
+            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-[999] bg-black/90 flex items-center justify-center"
+            @touchstart.passive="lbTouchX = $event.touches[0].clientX"
+            @touchend="const d = lbTouchX - $event.changedTouches[0].clientX; if(Math.abs(d) > 50) { d > 0 ? next() : prev(); }">
+
+            {{-- Close --}}
+            <button @click="lbOpen = false" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+                <x-icon name="x-mark" class="w-6 h-6" />
+            </button>
+
+            {{-- Prev --}}
+            <button x-show="lbIndex > 0" @click="prev()"
+                class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+                <x-icon name="chevron-left" class="w-6 h-6" />
+            </button>
+
+            {{-- Next --}}
+            <button x-show="lbIndex < lbImages.length - 1" @click="next()"
+                class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-10 w-11 h-11 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white transition-colors">
+                <x-icon name="chevron-right" class="w-6 h-6" />
+            </button>
+
+            {{-- Image --}}
+            <img :src="lbImages[lbIndex]" alt="" class="max-w-[90vw] max-h-[85vh] object-contain select-none rounded-lg shadow-2xl" @click.stop>
+
+            {{-- Counter --}}
+            <div x-show="lbImages.length > 1" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/15 backdrop-blur text-white text-sm font-medium px-4 py-1.5 rounded-full">
+                <span x-text="lbIndex + 1"></span> / <span x-text="lbImages.length"></span>
+            </div>
+        </div>
+    </div>
 
     @push('scripts')
     <style>
