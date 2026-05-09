@@ -19,6 +19,7 @@ class SettingController extends Controller
         $request->validate([
             'midtrans_server_key' => 'nullable|string',
             'midtrans_client_key' => 'nullable|string',
+            'midtrans_merchant_id' => 'nullable|string',
             'midtrans_iris_api_key' => 'nullable|string',
             'midtrans_is_production' => 'nullable|in:true,false',
             'platform_fee_per_item' => 'nullable|numeric|min:0',
@@ -30,8 +31,9 @@ class SettingController extends Controller
         ]);
 
         $keys = [
-            'midtrans_server_key', 'midtrans_client_key', 'midtrans_iris_api_key', 
-            'midtrans_is_production', 'platform_fee_per_item', 'withdrawal_fee_percentage',
+            'midtrans_server_key', 'midtrans_client_key', 'midtrans_merchant_id',
+            'midtrans_iris_api_key', 'midtrans_is_production', 
+            'platform_fee_per_item', 'withdrawal_fee_percentage',
             'rajaongkir_api_key', 'platform_name', 'platform_email', 'platform_phone'
         ];
 
