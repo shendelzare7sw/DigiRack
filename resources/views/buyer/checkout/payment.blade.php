@@ -37,7 +37,7 @@
                 </div>
                 <div class="border-t border-gray-200 my-3 pt-3 flex justify-between items-center">
                     <span class="font-bold text-gray-900 text-sm">Total Tagihan</span>
-                    <span class="font-display font-bold text-xl text-brand-navy">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                    <span class="font-display font-bold text-xl text-brand-navy">Rp {{ number_format($grandTotalGross, 0, ',', '.') }}</span>
                 </div>
             </div>
 
@@ -46,8 +46,8 @@
                 Bayar Sekarang
             </button>
             
-            <a href="{{ route('buyer.dashboard') }}" class="block mt-6 text-sm text-gray-400 hover:text-brand-navy font-medium transition-colors">
-                Bayar Nanti (Kembali ke Dashboard)
+            <a href="{{ route('buyer.orders.index') }}" class="block mt-6 text-sm text-gray-400 hover:text-brand-navy font-medium transition-colors">
+                Bayar Nanti (Lihat Pesanan Saya)
             </a>
         </div>
     </div>
@@ -58,13 +58,13 @@
         document.getElementById('pay-button').onclick = function () {
             snap.pay('{{ $snapToken }}', {
                 onSuccess: function(result) {
-                    window.location.href = "{{ route('buyer.dashboard') }}?payment=success";
+                    window.location.href = "{{ route('buyer.orders.index') }}?payment=success";
                 },
                 onPending: function(result) {
-                    window.location.href = "{{ route('buyer.dashboard') }}?payment=pending";
+                    window.location.href = "{{ route('buyer.orders.index') }}?payment=pending";
                 },
                 onError: function(result) {
-                    window.location.href = "{{ route('buyer.dashboard') }}?payment=error";
+                    window.location.href = "{{ route('buyer.orders.index') }}?payment=error";
                 },
                 onClose: function() {
                     alert('Anda menutup popup sebelum menyelesaikan pembayaran.');

@@ -126,7 +126,7 @@ class CheckoutController extends Controller
         $request->validate([
             'selected_items' => 'required|string',
             'address_id' => 'required|exists:addresses,id',
-            'payment_method' => 'required|in:midtrans,manual_transfer',
+            'payment_method' => 'required|in:midtrans',
             'couriers' => 'required|array',
         ]);
 
@@ -248,10 +248,14 @@ class CheckoutController extends Controller
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product->id,
+                        'product_name_snapshot' => $item->product->name,
+                        'price_snapshot' => $item->product->price,
                         'quantity' => $item->quantity,
-                        'price' => $item->product->price,
-                        'subtotal' => $item->product->price * $item->quantity,
                     ]);
+
+                    // Kurangi stok produk
+                    $item->product->decrement('stock', $item->quantity);
+
                     Cart::destroy($item->id);
                 }
 
@@ -298,16 +302,12 @@ class CheckoutController extends Controller
                 $order = $createdOrders[0];
                 return view('buyer.checkout.payment', compact('order', 'snapToken', 'grandTotalGross', 'paymentReference'));
 
-            } else {
-                // Manual Transfer
-                DB::commit();
-                $order = $createdOrders[0];
-                return view('buyer.checkout.manual-transfer', compact('order', 'grandTotalGross', 'paymentReference'));
             }
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('buyer.cart.index')->with('error', $e->getMessage());
+            \Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->route('buyer.cart.index')->with('error', 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi atau hubungi admin.');
         }
     }
 

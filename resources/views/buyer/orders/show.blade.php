@@ -55,7 +55,7 @@
                             <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-100">
                             <div class="flex-1">
                                 <h4 class="font-bold text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
-                                <p class="text-sm text-gray-500 mt-1">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                                <p class="text-sm text-gray-500 mt-1">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
                             </div>
                             <div class="text-right">
                                 <p class="font-bold text-brand-orange">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
