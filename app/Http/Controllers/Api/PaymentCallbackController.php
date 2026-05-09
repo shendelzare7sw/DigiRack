@@ -20,6 +20,11 @@ class PaymentCallbackController extends Controller
         // Verifikasi Signature Key Midtrans agar mencegah Request Palsu
         $serverKey = SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY'));
         
+        // Handle Midtrans Test Notification (URL Test dari Dashboard)
+        if (!isset($payload['order_id']) || !isset($payload['status_code']) || !isset($payload['gross_amount']) || !isset($payload['signature_key'])) {
+            return response()->json(['message' => 'Test notification received or invalid payload'], 200);
+        }
+
         $orderId = $payload['order_id'];
         $statusCode = $payload['status_code'];
         $grossAmount = $payload['gross_amount'];
