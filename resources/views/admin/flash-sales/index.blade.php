@@ -143,9 +143,9 @@
                                             <div class="text-xs font-bold text-green-600">{{ $fs->formatted_sale_price }}</div>
                                         </td>
                                         <td class="px-5 py-4 text-xs text-gray-600">
-                                            <div>{{ $fs->start_time->format('d M Y H:i') }}</div>
+                                            <div>{{ $fs->start_time->translatedFormat('d M Y H:i') }}</div>
                                             <div class="text-gray-400">s/d</div>
-                                            <div>{{ $fs->end_time->format('d M Y H:i') }}</div>
+                                            <div>{{ $fs->end_time->translatedFormat('d M Y H:i') }}</div>
                                         </td>
                                         <td class="px-5 py-4">
                                             @if($isOngoing)

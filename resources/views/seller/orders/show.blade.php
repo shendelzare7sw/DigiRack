@@ -137,6 +137,9 @@
                         @endif
                     </div>
                 @elseif($order->status === 'processing')
+                    @php
+                        $isToko = str_starts_with(strtolower($order->shipping_address['courier'] ?? ''), 'toko_');
+                    @endphp
                     <div class="bg-white rounded-2xl shadow-sm border border-brand-orange/30 p-6 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-orange"></div>
                         <h3 class="font-bold text-gray-900 mb-2">Tindakan Diperlukan</h3>

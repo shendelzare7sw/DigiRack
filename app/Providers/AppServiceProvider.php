@@ -27,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        // Set locale to Indonesian for all date/time formatting
+        \Carbon\Carbon::setLocale('id');
+        setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'Indonesian');
+
         // Share cart & wishlist counts to navbar
         View::composer('layouts.navigation', CartComposer::class);
     }
