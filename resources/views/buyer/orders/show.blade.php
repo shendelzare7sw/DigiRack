@@ -74,7 +74,7 @@
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-600">No. Invoice</span>
-                            <span class="font-bold text-gray-900">{{ $order->invoice_number }}</span>
+                            <span class="font-bold text-gray-900 break-all text-right">{{ $order->invoice_number }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Tanggal</span>
@@ -95,7 +95,7 @@
                         <div class="flex justify-between items-center py-2 border-t border-b border-gray-200 my-2">
                             <span class="text-gray-600">No. Resi</span>
                             @if($order->shipping_tracking_number)
-                                <span class="font-mono text-sm font-bold bg-white px-2 py-1 border border-gray-300 rounded">{{ $order->shipping_tracking_number }}</span>
+                                <span class="font-mono text-sm font-bold bg-white px-2 py-1 border border-gray-300 rounded break-all text-right">{{ $order->shipping_tracking_number }}</span>
                             @else
                                 <span class="text-gray-400 italic">Belum Diinput</span>
                             @endif
