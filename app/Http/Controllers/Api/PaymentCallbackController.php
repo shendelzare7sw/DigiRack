@@ -16,6 +16,7 @@ class PaymentCallbackController extends Controller
     public function midtransCallback(Request $request)
     {
         $payload = $request->all();
+        \Log::info('Midtrans Webhook Payload: ', $payload);
 
         // Verifikasi Signature Key Midtrans agar mencegah Request Palsu
         $serverKey = SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY'));
@@ -43,7 +44,9 @@ class PaymentCallbackController extends Controller
             ->get();
 
         if ($orders->isEmpty()) {
-            return response()->json(['message' => 'Orders not found'], 404);
+            // Midtrans Test Notification mengirim order_id dummy yang tidak ada di DB.
+            // Wajib return 200 OK agar tombol "Tes" di dashboard Midtrans sukses.
+            return response()->json(['message' => 'Order not found (or Test Notification)'], 200);
         }
 
         $transactionStatus = $payload['transaction_status'];

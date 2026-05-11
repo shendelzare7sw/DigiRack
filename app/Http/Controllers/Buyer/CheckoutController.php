@@ -287,6 +287,9 @@ class CheckoutController extends Controller
                         'email' => Auth::user()->email,
                         'phone' => Auth::user()->phone ?? $address->phone,
                     ],
+                    'callbacks' => [
+                        'finish' => route('buyer.orders.index') . '?payment=success',
+                    ],
                 ];
 
                 $snapToken = Snap::getSnapToken($params);

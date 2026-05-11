@@ -83,8 +83,8 @@
                         <div class="flex justify-between">
                             <span class="text-gray-600">Ekspedisi</span>
                             @php
-                                $isToko = str_starts_with(strtolower($order->shipping_address['courier']), 'toko_');
-                                $kurirName = $isToko ? str_replace('toko_', 'Kurir Toko (', $order->shipping_address['courier']) . ')' : strtoupper($order->shipping_address['courier']);
+                                $rawCourier = $order->shipping_address['courier'] ?? '-';
+                                $kurirName = str_starts_with(strtolower($rawCourier), 'toko_') ? 'Kurir Toko' : strtoupper($rawCourier);
                             @endphp
                             <span class="font-bold text-gray-900">{{ $kurirName }}</span>
                         </div>

@@ -6,10 +6,10 @@
             <a href="{{ route('buyer.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                 <x-icon name="arrow-left" class="w-4 h-4" />
             </a>
-            <div class="flex-1">
-                <div class="flex items-center justify-between">
-                    <h1 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Pesanan #{{ $order->invoice_number }}</h1>
-                    <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <h1 class="font-display font-bold text-lg sm:text-2xl text-gray-900 break-all">Pesanan <span class="text-base sm:text-xl text-gray-500 font-semibold">#{{ $order->invoice_number }}</span></h1>
+                    <span class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200 shrink-0 w-fit">
                         {{ $order->status_label }}
                     </span>
                 </div>
@@ -83,9 +83,12 @@
                         <div class="flex justify-between">
                             <span class="text-gray-600">Kurir</span>
                             @php
-                                $kurirName = str_starts_with(strtolower($order->shipping_address['courier']), 'toko_') 
-                                    ? str_replace('toko_', 'Kurir Toko (', $order->shipping_address['courier']) . ')' 
-                                    : strtoupper($order->shipping_address['courier']);
+                                $rawCourier = $order->shipping_address['courier'] ?? '-';
+                                if (str_starts_with(strtolower($rawCourier), 'toko_')) {
+                                    $kurirName = 'Kurir Toko';
+                                } else {
+                                    $kurirName = strtoupper($rawCourier);
+                                }
                             @endphp
                             <span class="font-bold text-gray-900">{{ $kurirName }}</span>
                         </div>
