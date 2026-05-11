@@ -63,7 +63,8 @@ class PayoutController extends Controller
                 return back()->with('error', 'Gagal mengirim instruksi ke IRIS: ' . ($response['message'] ?? 'Unknown Error'));
             }
         } catch (\Exception $e) {
-            return back()->with('error', 'Server Error saat menghubungi IRIS: ' . $e->getMessage());
+            \Log::error('IRIS payout error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menghubungi layanan pencairan. Silakan coba lagi.');
         }
     }
 
@@ -72,7 +73,7 @@ class PayoutController extends Controller
         $payout = PayoutRequest::with('store.wallet')->findOrFail($id);
 
         if ($payout->status !== 'pending') {
-            return back()->with('error', 'Payout request is not pending.');
+            return back()->with('error', 'Pencairan ini sudah tidak berstatus menunggu.');
         }
 
         try {
@@ -111,8 +112,8 @@ class PayoutController extends Controller
 
             return back()->with('success', 'Pencairan ditolak dan dana dikembalikan ke wallet Seller.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal menolak pencairan: ' . $e->getMessage());
+            \Log::error('Payout reject error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menolak pencairan. Silakan coba lagi.');
         }
     }
 }

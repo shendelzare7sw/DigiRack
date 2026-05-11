@@ -77,8 +77,8 @@ class WalletController extends Controller
 
             return back()->with('success', 'Permintaan pencairan dana berhasil dibuat. Menunggu persetujuan Admin.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal membuat request pencairan dana: ' . $e->getMessage());
+            \Log::error('Payout request error: ' . $e->getMessage());
+            return back()->with('error', 'Gagal membuat permintaan pencairan dana. Silakan coba lagi.');
         }
     }
 }

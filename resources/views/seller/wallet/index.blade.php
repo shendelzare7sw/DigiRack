@@ -40,7 +40,7 @@
                     <div class="shrink-0">
                         <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
                             <x-icon name="banknotes" class="w-10 h-10 text-white/70 mx-auto mb-2" />
-                            <p class="text-center text-xs text-white/80 font-bold">Escrow System</p>
+                            <p class="text-center text-xs text-white/80 font-bold">Sistem Escrow</p>
                         </div>
                     </div>
                 </div>

@@ -47,7 +47,7 @@
 
                 <select name="status" class="border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
                     <option value="">Semua Status</option>
-                    <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Pending Payment</option>
+                    <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Menunggu Bayar</option>
                     <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Diproses</option>
                     <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Dikirim</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
@@ -105,10 +105,10 @@
                                     </span>
                                     @if($order->payment_status === 'paid')
                                         <div class="text-[10px] text-green-600 font-semibold mt-1 flex items-center gap-0.5">
-                                            <x-icon name="check-circle" class="w-3 h-3" /> Paid
+                                            <x-icon name="check-circle" class="w-3 h-3" /> Lunas
                                         </div>
                                     @else
-                                        <div class="text-[10px] text-yellow-600 font-semibold mt-1">Unpaid</div>
+                                        <div class="text-[10px] text-yellow-600 font-semibold mt-1">Belum Bayar</div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-xs text-gray-500">

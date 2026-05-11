@@ -12,14 +12,29 @@
             </div>
         </div>
 
+        @if(request('payment') === 'success')
+            <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2" x-data="{ show: true }" x-show="show" x-transition>
+                <x-icon name="check-circle" class="w-5 h-5 shrink-0" /> Pembayaran berhasil! Status pesanan akan diperbarui secara otomatis.
+                <button @click="show = false" class="ml-auto text-green-400 hover:text-green-600"><x-icon name="x-mark" class="w-4 h-4" /></button>
+            </div>
+        @elseif(request('payment') === 'pending')
+            <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-xl mb-6 flex items-center gap-2">
+                <x-icon name="clock" class="w-5 h-5 shrink-0" /> Pembayaran Anda masih menunggu konfirmasi. Status akan diperbarui otomatis setelah pembayaran dikonfirmasi.
+            </div>
+        @elseif(request('payment') === 'error')
+            <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-2">
+                <x-icon name="x-circle" class="w-5 h-5 shrink-0" /> Pembayaran gagal. Silakan coba bayar kembali melalui halaman detail pesanan.
+            </div>
+        @endif
+
         @if(session('success'))
             <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">
-                <x-icon name="check-circle" class="w-5 h-5" /> {{ session('success') }}
+                <x-icon name="check-circle" class="w-5 h-5 shrink-0" /> {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
             <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-2">
-                <x-icon name="x-circle" class="w-5 h-5" /> {{ session('error') }}
+                <x-icon name="x-circle" class="w-5 h-5 shrink-0" /> {{ session('error') }}
             </div>
         @endif
 

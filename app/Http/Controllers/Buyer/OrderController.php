@@ -112,8 +112,8 @@ class OrderController extends Controller
             return back()->with('success', 'Pesanan telah selesai! Dana telah diteruskan ke penjual. Jangan lupa berikan ulasan Anda!');
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal merubah status pesanan: ' . $e->getMessage());
+            \Log::error('Order confirm error: ' . $e->getMessage(), ['order_id' => $id]);
+            return back()->with('error', 'Terjadi kesalahan saat menyelesaikan pesanan. Silakan coba lagi.');
         }
     }
 }
