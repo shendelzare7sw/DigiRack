@@ -83,7 +83,7 @@
                             @foreach($orders as $order)
                             <tr class="hover:bg-gray-50/50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <div class="font-bold text-brand-navy font-mono text-xs">{{ $order->invoice_number }}</div>
+                                    <div class="font-bold text-brand-navy font-mono text-xs break-all">{{ $order->invoice_number }}</div>
                                     <div class="text-[10px] text-gray-400 mt-0.5">
                                         {{ $order->items->count() }} item
                                     </div>

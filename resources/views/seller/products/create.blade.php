@@ -157,13 +157,13 @@
 
                 <div class="space-y-3">
                     <template x-for="(spec, i) in specs" :key="i">
-                        <div class="flex gap-3 items-start">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-start relative">
                             <input type="text" :name="'specs['+i+'][label]'" x-model="spec.label" placeholder="Label (misal: Processor)"
-                                class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                                class="w-full sm:flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20 min-w-0">
                             <input type="text" :name="'specs['+i+'][value]'" x-model="spec.value" placeholder="Nilai (misal: MIPS-BE 880MHz)"
-                                class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                                class="w-full sm:flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20 min-w-0">
                             <button type="button" @click="specs.splice(i, 1)" x-show="specs.length > 1"
-                                class="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0">
+                                class="self-end sm:self-auto p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors shrink-0">
                                 <x-icon name="x-mark" class="w-4 h-4" />
                             </button>
                         </div>

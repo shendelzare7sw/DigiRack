@@ -81,7 +81,7 @@
                     @foreach($orders as $order)
                         <div class="p-4">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs text-gray-400 font-mono">{{ $order->invoice_number }}</span>
+                                <span class="text-xs text-gray-400 font-mono break-all truncate max-w-[55%]">{{ $order->invoice_number }}</span>
                                 <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
                                     {{ $order->status_label }}
                                 </span>
