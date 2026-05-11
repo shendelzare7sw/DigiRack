@@ -28,13 +28,15 @@ class SettingController extends Controller
             'platform_name' => 'nullable|string',
             'platform_email' => 'nullable|email',
             'platform_phone' => 'nullable|string',
+            'auto_complete_hours' => 'nullable|integer|min:0|max:168',
         ]);
 
         $keys = [
             'midtrans_server_key', 'midtrans_client_key', 'midtrans_merchant_id',
             'midtrans_iris_api_key', 'midtrans_is_production', 
             'platform_fee_per_item', 'withdrawal_fee_percentage',
-            'rajaongkir_api_key', 'platform_name', 'platform_email', 'platform_phone'
+            'rajaongkir_api_key', 'platform_name', 'platform_email', 'platform_phone',
+            'auto_complete_hours'
         ];
 
         foreach ($request->only($keys) as $key => $value) {

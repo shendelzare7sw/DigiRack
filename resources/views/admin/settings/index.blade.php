@@ -126,6 +126,21 @@
                                 <p class="text-[10px] text-gray-400 mt-1">Persentase potongan saat seller melakukan Tarik Dana ke rekening bank.</p>
                             </div>
 
+                            <hr class="my-6 border-gray-100">
+
+                            <h2 class="font-bold text-lg text-gray-900 mt-6 mb-2 flex items-center gap-2">
+                                <x-icon name="clock" class="w-5 h-5 text-brand-navy" />
+                                Auto-Complete Pesanan
+                            </h2>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Batas Waktu Konfirmasi Buyer (Jam)</label>
+                                <input type="number" name="auto_complete_hours" value="{{ $settings['auto_complete_hours'] ?? '24' }}" min="0" max="168"
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
+                                    placeholder="24">
+                                <p class="text-[10px] text-gray-400 mt-1">Pesanan berstatus <strong>Dikirim</strong> akan otomatis selesai dan dana dicairkan ke seller jika buyer tidak mengkonfirmasi dalam waktu ini. Set <strong>0</strong> untuk menonaktifkan fitur ini.</p>
+                            </div>
+
                             <div class="pt-4 border-t border-gray-100 flex justify-end">
                                 <button type="submit" class="bg-brand-navy hover:bg-brand-navydark text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors">
                                     Simpan Pengaturan Pembayaran
