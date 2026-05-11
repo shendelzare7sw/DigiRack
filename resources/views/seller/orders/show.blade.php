@@ -1,15 +1,16 @@
 <x-app-layout>
-    <x-slot name="title">Kelola Pesanan #{{ $order->invoice_number }}</x-slot>
+    <x-slot name="title">Kelola Pesanan</x-slot>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {{-- Header --}}
         <div class="flex items-start gap-3 mb-6">
             <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                 <x-icon name="arrow-left" class="w-4 h-4" />
             </a>
-            <div class="flex-1">
-                <div class="flex items-center justify-between">
-                    <h1 class="font-display font-bold text-xl sm:text-2xl text-gray-900">Pesanan #{{ $order->invoice_number }}</h1>
-                    <span class="px-4 py-1.5 rounded-full text-sm font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
+            <div class="flex-1 min-w-0">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <h1 class="font-display font-bold text-lg sm:text-2xl text-gray-900">Pesanan <span class="text-sm sm:text-lg text-gray-500 font-semibold break-all">#{{ $order->invoice_number }}</span></h1>
+                    <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200 shrink-0 w-fit">
                         {{ $order->status_label }}
                     </span>
                 </div>
@@ -18,12 +19,12 @@
 
         @if(session('success'))
             <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">
-                <x-icon name="check-circle" class="w-5 h-5" /> {{ session('success') }}
+                <x-icon name="check-circle" class="w-5 h-5 shrink-0" /> {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
             <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-2">
-                <x-icon name="x-circle" class="w-5 h-5" /> {{ session('error') }}
+                <x-icon name="x-circle" class="w-5 h-5 shrink-0" /> {{ session('error') }}
             </div>
         @endif
 
@@ -31,21 +32,21 @@
             
             {{-- Kiri: Detail & Item --}}
             <div class="lg:col-span-2 space-y-6">
-                {{-- Info Pembeli --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
+                {{-- Rincian Invoice --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+                    <h3 class="text-base font-bold text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
                         <x-icon name="document-text" class="w-5 h-5 text-brand-navy" /> Rincian Invoice
                     </h3>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <p class="text-gray-500 mb-1">Nomor Invoice</p>
-                            <p class="font-bold text-gray-900">{{ $order->invoice_number }}</p>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+                            <span class="text-gray-500">Nomor Invoice</span>
+                            <span class="font-bold text-gray-900 break-all">{{ $order->invoice_number }}</span>
                         </div>
-                        <div>
-                            <p class="text-gray-500 mb-1">Tanggal Pesanan</p>
-                            <p class="font-semibold text-gray-800">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</p>
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-1">
+                            <span class="text-gray-500">Tanggal Pesanan</span>
+                            <span class="font-semibold text-gray-800">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</span>
                         </div>
-                        <div class="col-span-2 mt-2">
+                        <div class="border-t border-gray-100 pt-3 mt-3">
                             <p class="text-gray-500 mb-1">Data Pengiriman</p>
                             <p class="font-bold text-gray-900 mb-1">{{ $order->shipping_address['name'] }} <span class="font-normal text-gray-600">({{ $order->shipping_address['phone'] }})</span></p>
                             <p class="text-gray-700 leading-relaxed">{{ $order->shipping_address['full_address'] }}</p>
@@ -54,20 +55,20 @@
                 </div>
 
                 {{-- Item Produk --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+                    <h3 class="text-base font-bold text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
                         <x-icon name="shopping-bag" class="w-5 h-5 text-brand-orange" /> Produk Dibeli
                     </h3>
                     <div class="divide-y divide-gray-100">
                         @foreach($order->items as $item)
-                        <div class="py-4 flex gap-4 items-center">
-                            <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-100">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
-                                <p class="text-sm text-gray-500 mt-1">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
+                        <div class="py-3 flex gap-3 items-center">
+                            <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-14 h-14 rounded-lg object-cover border border-gray-100 shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $item->product->name }}</h4>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
                             </div>
-                            <div class="text-right">
-                                <p class="font-bold text-brand-orange">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                            <div class="text-right shrink-0">
+                                <p class="font-bold text-brand-orange text-sm">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
                             </div>
                         </div>
                         @endforeach
@@ -75,110 +76,99 @@
                 </div>
             </div>
 
-            {{-- Kanan: Aksi & Kurir --}}
+            {{-- Kanan: Info Kurir & Aksi --}}
             <div class="space-y-6">
-                <div class="bg-brand-navylight/30 rounded-2xl p-6 border border-brand-navy/10">
-                    <h3 class="text-lg font-bold text-brand-navy mb-4 border-b border-brand-navy/20 pb-2">Informasi Kurir</h3>
+                {{-- Info Kurir --}}
+                @php
+                    $rawCourier = $order->shipping_address['courier'] ?? '-';
+                    $isToko = str_starts_with(strtolower($rawCourier), 'toko_');
+                    $kurirName = $isToko ? 'Kurir Toko' : strtoupper($rawCourier);
+                @endphp
+                <div class="bg-brand-navylight/30 rounded-2xl p-5 border border-brand-navy/10">
+                    <h3 class="text-base font-bold text-brand-navy mb-4 border-b border-brand-navy/20 pb-2">Informasi Kurir</h3>
                     <div class="space-y-3 text-sm">
                         <div class="flex justify-between">
                             <span class="text-gray-600">Ekspedisi</span>
-                            @php
-                                $rawCourier = $order->shipping_address['courier'] ?? '-';
-                                $kurirName = str_starts_with(strtolower($rawCourier), 'toko_') ? 'Kurir Toko' : strtoupper($rawCourier);
-                            @endphp
                             <span class="font-bold text-gray-900">{{ $kurirName }}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Ongkos Kirim</span>
                             <span class="font-bold text-gray-900">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex flex-col mt-4 pt-4 border-t border-brand-navy/20">
-                            <span class="text-gray-600 mb-1">Nomor Resi</span>
-                            <span class="font-mono text-lg font-bold {{ $order->shipping_tracking_number ? 'text-gray-900' : 'text-gray-400' }}">
-                                {{ $order->shipping_tracking_number ?? 'Belum Diinput' }}
-                            </span>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total Pesanan</span>
+                            <span class="font-bold text-brand-orange text-lg">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex flex-col mt-3 pt-3 border-t border-brand-navy/20">
+                            <span class="text-gray-600 mb-1 text-xs">Nomor Resi</span>
+                            @if($order->shipping_tracking_number)
+                                <span class="font-mono text-sm font-bold text-gray-900 bg-white px-3 py-2 rounded-lg border border-gray-200 break-all">{{ $order->shipping_tracking_number }}</span>
+                            @else
+                                <span class="text-gray-400 italic text-sm">Belum diinput</span>
+                            @endif
                         </div>
                     </div>
                 </div>
 
                 {{-- Action Card --}}
                 @if($order->status === 'pending_payment')
-                    <div class="bg-yellow-50/50 rounded-2xl shadow-sm border border-yellow-200 p-6 relative overflow-hidden">
+                    <div class="bg-yellow-50/50 rounded-2xl shadow-sm border border-yellow-200 p-5 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
-                        <h3 class="font-bold text-yellow-800 mb-2 flex items-center gap-2">
+                        <h3 class="font-bold text-yellow-800 mb-2 flex items-center gap-2 text-sm">
                             <x-icon name="clock" class="w-5 h-5" />
-                            Menunggu Pembayaran
+                            Menunggu Pembayaran Buyer
                         </h3>
-                        <p class="text-sm text-gray-600 mb-4">Pesanan ini menunggu pembayaran dari pembeli.</p>
-
-                        @if($order->payment_proof)
-                            <div class="bg-white rounded-xl border border-blue-200 p-4 mb-3">
-                                <p class="text-xs font-semibold text-blue-700 mb-2 flex items-center gap-1">
-                                    <x-icon name="photo" class="w-4 h-4" />
-                                    Bukti Transfer dari Pembeli
-                                </p>
-                                <img src="{{ Storage::url($order->payment_proof) }}" alt="Bukti Transfer" class="w-full rounded-lg border border-gray-200 max-h-52 object-contain bg-gray-50 cursor-pointer" onclick="window.open(this.src)">
-                            </div>
-
-                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Verifikasi Pembayaran', message: 'Apakah Anda yakin bukti transfer valid? Pesanan akan berubah status menjadi Diproses dan Anda harus segera menyiapkan pengiriman.', type: 'info', confirmText: 'Ya, Verifikasi' })">
-                                @csrf
-                                <input type="hidden" name="status" value="processing">
-                                <input type="hidden" name="verify_payment" value="1">
-                                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                                    <x-icon name="check-circle" class="w-5 h-5" />
-                                    Verifikasi & Proses Pesanan
-                                </button>
-                            </form>
-                        @else
-                            <div class="bg-gray-100 rounded-xl p-4 text-center text-sm text-gray-500">
-                                <x-icon name="photo" class="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                                Pembeli belum mengunggah bukti transfer.
-                            </div>
-                        @endif
+                        <p class="text-xs text-gray-600">Pesanan ini sedang menunggu pembayaran dari pembeli via Midtrans.</p>
                     </div>
                 @elseif($order->status === 'processing')
-                    @php
-                        $isToko = str_starts_with(strtolower($order->shipping_address['courier'] ?? ''), 'toko_');
-                    @endphp
-                    <div class="bg-white rounded-2xl shadow-sm border border-brand-orange/30 p-6 relative overflow-hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-brand-orange/30 p-5 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-orange"></div>
-                        <h3 class="font-bold text-gray-900 mb-2">Tindakan Diperlukan</h3>
+                        <h3 class="font-bold text-gray-900 mb-2 flex items-center gap-2 text-sm">
+                            <x-icon name="exclamation-circle" class="w-5 h-5 text-brand-orange" />
+                            Tindakan Diperlukan
+                        </h3>
                         
                         @if($isToko)
-                            <p class="text-sm text-gray-600 mb-4">Pembeli memilih opsi **Kurir Internal Toko**. Pastikan armada Anda segera mengirimkan paket. Klik tombol di bawah jika barang sudah di perjalanan.</p>
-                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST">
+                            <p class="text-xs text-gray-600 mb-4">Pembeli memilih <strong>Kurir Toko</strong>. Segera kirimkan paket. Klik tombol di bawah jika barang sudah dikirim.</p>
+                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Kirim', message: 'Apakah paket sudah dikirim menggunakan Kurir Toko? Status pesanan akan berubah menjadi Dikirim.', type: 'info', confirmText: 'Ya, Sudah Dikirim' })">
                                 @csrf
                                 <input type="hidden" name="status" value="shipped">
-                                <input type="hidden" name="shipping_tracking_number" value="DIKIRIM-KURIR-TOKO">
-                                <button type="submit" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm">
-                                    Tandai Sedang Dikirim
+                                <input type="hidden" name="shipping_tracking_number" value="KURIR-TOKO">
+                                <button type="submit" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+                                    <x-icon name="truck" class="w-5 h-5" /> Tandai Sudah Dikirim
                                 </button>
                             </form>
                         @else
-                            <p class="text-sm text-gray-600 mb-4">Silakan input nomor resi pengiriman asli setelah paket diserahkan ke pihak ekspedisi.</p>
-                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST">
+                            <p class="text-xs text-gray-600 mb-4">Input nomor resi pengiriman setelah paket diserahkan ke ekspedisi.</p>
+                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Kirim', message: 'Apakah paket sudah diserahkan ke kurir dan nomor resi sudah benar? Status pesanan akan berubah menjadi Dikirim.', type: 'info', confirmText: 'Ya, Kirim Sekarang' })">
                                 @csrf
                                 <input type="hidden" name="status" value="shipped">
                                 <div class="mb-3">
-                                    <input type="text" name="shipping_tracking_number" required class="w-full border-gray-300 focus:border-brand-orange focus:ring-brand-orange rounded-lg text-sm" placeholder="Input No Resi Valid...">
+                                    <input type="text" name="shipping_tracking_number" required class="w-full border-gray-300 focus:border-brand-orange focus:ring-brand-orange rounded-xl text-sm py-2.5" placeholder="Masukkan Nomor Resi...">
                                 </div>
-                                <button type="submit" class="w-full bg-brand-navy hover:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm">
-                                    Kirim Pesanan
+                                <button type="submit" class="w-full bg-brand-navy hover:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all shadow-lg shadow-brand-navy/20 flex items-center justify-center gap-2">
+                                    <x-icon name="paper-airplane" class="w-5 h-5" /> Kirim Pesanan
                                 </button>
                             </form>
                         @endif
                     </div>
                 @elseif($order->status === 'shipped')
-                    <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100 text-center">
+                    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 text-center">
                         <x-icon name="truck" class="w-10 h-10 text-blue-400 mx-auto mb-2" />
-                        <h3 class="font-bold text-blue-900 mb-1">Pesanan Dalam Perjalanan</h3>
-                        <p class="text-sm text-blue-700">Menunggu pembeli melakukan konfirmasi penerimaan barang ("Pesanan Diterima") untuk mencairkan saldo Anda.</p>
+                        <h3 class="font-bold text-blue-900 mb-1 text-sm">Pesanan Dalam Perjalanan</h3>
+                        <p class="text-xs text-blue-700">Menunggu pembeli konfirmasi penerimaan barang. Saldo akan otomatis cair setelah dikonfirmasi.</p>
                     </div>
                 @elseif($order->status === 'completed')
-                    <div class="bg-green-50 rounded-2xl p-6 border border-green-100 text-center">
+                    <div class="bg-green-50 rounded-2xl p-5 border border-green-100 text-center">
                         <x-icon name="check-badge" class="w-10 h-10 text-green-500 mx-auto mb-2" />
-                        <h3 class="font-bold text-green-900 mb-1">Selesai Berhasil</h3>
-                        <p class="text-sm text-green-700">Dana telah dimasukkan ke dalam Saldo Dompet Toko Anda.</p>
+                        <h3 class="font-bold text-green-900 mb-1 text-sm">Transaksi Selesai</h3>
+                        <p class="text-xs text-green-700">Dana telah dimasukkan ke Saldo Dompet Toko Anda.</p>
+                    </div>
+                @elseif($order->status === 'cancelled')
+                    <div class="bg-red-50 rounded-2xl p-5 border border-red-100 text-center">
+                        <x-icon name="x-circle" class="w-10 h-10 text-red-400 mx-auto mb-2" />
+                        <h3 class="font-bold text-red-900 mb-1 text-sm">Pesanan Dibatalkan</h3>
+                        <p class="text-xs text-red-700">Pesanan ini telah dibatalkan atau kadaluarsa.</p>
                     </div>
                 @endif
             </div>

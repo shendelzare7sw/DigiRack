@@ -51,7 +51,8 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="font-bold text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</div>
-                                    <div class="text-xs text-gray-500 mt-1 uppercase">{{ $order->shipping_address['courier'] ?? '' }}</div>
+                                    @php $c = $order->shipping_address['courier'] ?? ''; @endphp
+                                    <div class="text-xs text-gray-500 mt-1">{{ str_starts_with(strtolower($c), 'toko_') ? 'Kurir Toko' : strtoupper($c) }}</div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
@@ -98,7 +99,8 @@
                                 <div>
                                     <span class="font-bold text-brand-blue">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                     @if($order->shipping_address['courier'] ?? false)
-                                        <span class="text-[10px] text-gray-400 uppercase ml-2">{{ $order->shipping_address['courier'] }}</span>
+                                        @php $mc = $order->shipping_address['courier']; @endphp
+                                        <span class="text-[10px] text-gray-400 ml-2">{{ str_starts_with(strtolower($mc), 'toko_') ? 'Kurir Toko' : strtoupper($mc) }}</span>
                                     @endif
                                 </div>
                                 @if($order->status == 'processing')
