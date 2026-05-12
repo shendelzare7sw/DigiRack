@@ -22,6 +22,9 @@
             activeImage: 0,
             touchStartX: 0,
             images: {{ Js::from($product->images->count() > 0 ? $product->images->pluck('url')->toArray() : [$product->primary_image_url]) }},
+            lightboxOpen: false,
+            lightboxIndex: 0,
+            lightboxTouchStartX: 0,
             quantity: 1,
             maxStock: {{ $product->stock }},
             isWishlisted: {{ $isWishlisted ? 'true' : 'false' }},
@@ -30,6 +33,30 @@
 
             incrementQty() { if (this.quantity < this.maxStock) this.quantity++ },
             decrementQty() { if (this.quantity > 1) this.quantity-- },
+            galleryNext() { if (this.activeImage < this.images.length - 1) this.activeImage++ },
+            galleryPrev() { if (this.activeImage > 0) this.activeImage-- },
+            lightboxNext() { if (this.lightboxIndex < this.images.length - 1) this.lightboxIndex++ },
+            lightboxPrev() { if (this.lightboxIndex > 0) this.lightboxIndex-- },
+            openLightbox(index) {
+                this.lightboxIndex = index;
+                this.lightboxOpen = true;
+            },
+            closeLightbox() {
+                this.activeImage = this.lightboxIndex;
+                this.lightboxOpen = false;
+            },
+            handleGallerySwipe(endX) {
+                const diff = this.touchStartX - endX;
+                if (Math.abs(diff) > 50) {
+                    diff > 0 ? this.galleryNext() : this.galleryPrev();
+                }
+            },
+            handleLightboxSwipe(endX) {
+                const diff = this.lightboxTouchStartX - endX;
+                if (Math.abs(diff) > 50) {
+                    diff > 0 ? this.lightboxNext() : this.lightboxPrev();
+                }
+            },
 
             async addToCart() {
                 @guest
@@ -97,7 +124,11 @@
                 // Dispatch custom event for toast component
                 window.dispatchEvent(new CustomEvent('show-toast', { detail: { message, type } }));
             },
-        }">
+        }"
+        x-effect="document.body.classList.toggle('overflow-hidden', lightboxOpen)"
+        @keydown.escape.window="if (lightboxOpen) closeLightbox()"
+        @keydown.right.window="if (lightboxOpen) lightboxNext()"
+        @keydown.left.window="if (lightboxOpen) lightboxPrev()">
         <div class="flex flex-col lg:flex-row gap-8">
 
             {{-- Left: Image Gallery --}}
@@ -105,15 +136,9 @@
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     {{-- Main Image --}}
                     <div class="relative aspect-square bg-gray-50 overflow-hidden cursor-zoom-in"
-                        @click="$dispatch('open-lightbox', { index: activeImage })"
+                        @click="openLightbox(activeImage)"
                         @touchstart.passive="touchStartX = $event.touches[0].clientX"
-                        @touchend="
-                            const diff = touchStartX - $event.changedTouches[0].clientX;
-                            if (Math.abs(diff) > 50) {
-                                if (diff > 0 && activeImage < images.length - 1) activeImage++;
-                                else if (diff < 0 && activeImage > 0) activeImage--;
-                            }
-                        ">
+                        @touchend="handleGallerySwipe($event.changedTouches[0].clientX)">
                         <template x-for="(img, idx) in images" :key="idx">
                             <img :src="img" :alt="'{{ $product->name }} - gambar ' + (idx+1)"
                                 x-show="activeImage === idx"
@@ -131,11 +156,11 @@
                         @endif
 
                         {{-- Nav arrows on main image --}}
-                        <button x-show="images.length > 1 && activeImage > 0" @click.stop="activeImage--"
+                        <button x-show="images.length > 1 && activeImage > 0" @click.stop="galleryPrev()"
                             class="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur rounded-full shadow flex items-center justify-center text-gray-600 hover:bg-white transition-all">
                             <x-icon name="chevron-left" class="w-5 h-5" />
                         </button>
-                        <button x-show="images.length > 1 && activeImage < images.length - 1" @click.stop="activeImage++"
+                        <button x-show="images.length > 1 && activeImage < images.length - 1" @click.stop="galleryNext()"
                             class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur rounded-full shadow flex items-center justify-center text-gray-600 hover:bg-white transition-all">
                             <x-icon name="chevron-right" class="w-5 h-5" />
                         </button>
@@ -298,6 +323,69 @@
                         </button>
                     </div>
                 @endif
+            </div>
+        </div>
+
+        {{-- Product Image Lightbox --}}
+        <div x-show="lightboxOpen" x-cloak
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-3 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Preview gambar produk"
+            @click.self="closeLightbox()"
+            @touchstart.passive="lightboxTouchStartX = $event.touches[0].clientX"
+            @touchend="handleLightboxSwipe($event.changedTouches[0].clientX)">
+
+            <div class="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 flex items-center gap-2">
+                <div x-show="images.length > 1" class="hidden sm:block rounded-full bg-white/10 px-3 py-1.5 text-sm font-bold text-white backdrop-blur">
+                    <span x-text="lightboxIndex + 1"></span> / <span x-text="images.length"></span>
+                </div>
+                <button type="button" @click="closeLightbox()"
+                    class="rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-lg hover:bg-gray-100 active:scale-95 transition-all">
+                    Tutup gambar
+                </button>
+            </div>
+
+            <button type="button" x-show="images.length > 1 && lightboxIndex > 0" @click.stop="lightboxPrev()"
+                class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 text-gray-800 shadow-lg flex items-center justify-center hover:bg-white active:scale-95 transition-all"
+                aria-label="Gambar sebelumnya">
+                <x-icon name="chevron-left" class="w-6 h-6" />
+            </button>
+
+            <button type="button" x-show="images.length > 1 && lightboxIndex < images.length - 1" @click.stop="lightboxNext()"
+                class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 text-gray-800 shadow-lg flex items-center justify-center hover:bg-white active:scale-95 transition-all"
+                aria-label="Gambar berikutnya">
+                <x-icon name="chevron-right" class="w-6 h-6" />
+            </button>
+
+            <div class="relative w-full h-full flex flex-col items-center justify-center gap-4 pointer-events-none">
+                <template x-for="(img, idx) in images" :key="'lightbox-'+idx">
+                    <img :src="img" :alt="'{{ $product->name }} - gambar besar ' + (idx+1)"
+                        x-show="lightboxIndex === idx"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        class="max-w-[94vw] max-h-[78vh] sm:max-h-[82vh] object-contain select-none rounded-lg shadow-2xl pointer-events-auto"
+                        @click.stop>
+                </template>
+
+                <div x-show="images.length > 1" class="pointer-events-auto max-w-full overflow-x-auto hide-scroll px-2">
+                    <div class="flex gap-2 rounded-2xl bg-black/30 p-2 backdrop-blur">
+                        <template x-for="(img, idx) in images" :key="'lightbox-thumb-'+idx">
+                            <button type="button" @click.stop="lightboxIndex = idx"
+                                class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 shrink-0 bg-white/10 transition-all"
+                                :class="lightboxIndex === idx ? 'border-white opacity-100' : 'border-transparent opacity-60 hover:opacity-100'">
+                                <img :src="img" alt="" class="w-full h-full object-cover">
+                            </button>
+                        </template>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

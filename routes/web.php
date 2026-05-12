@@ -38,6 +38,11 @@ Route::get('/toko/{slug}', [\App\Http\Controllers\Public\StoreController::class,
 Route::get('/recovery', [\App\Http\Controllers\Auth\UserRecoveryController::class, 'showForm'])->name('user.recovery.form');
 Route::post('/recovery', [\App\Http\Controllers\Auth\UserRecoveryController::class, 'store'])->name('user.recovery.store');
 
+// Signed contact changes from verified email
+Route::get('/profile/phone/confirm/{user}/{token}', [ProfileController::class, 'confirmPhoneChange'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('profile.phone.confirm');
+
 // Admin Recovery (hidden / easter egg)
 Route::post('/admin-recovery/unlock', [\App\Http\Controllers\Auth\AdminRecoveryController::class, 'unlock'])->name('admin.recovery.unlock');
 Route::get('/admin-recovery', [\App\Http\Controllers\Auth\AdminRecoveryController::class, 'showForm'])->name('admin.recovery.form');

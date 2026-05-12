@@ -68,8 +68,10 @@
                                         <div>
                                             <div class="font-bold text-gray-900 group">
                                                 {{ $store->name }}
-                                                @if(!$store->is_active)
+                                                @if($store->is_verified && !$store->is_active)
                                                     <span class="ml-1 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold uppercase">Banned</span>
+                                                @elseif(!$store->is_verified && $verificationStatus === 'pending')
+                                                    <span class="ml-1 text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold uppercase">Menunggu</span>
                                                 @endif
                                             </div>
                                             <div class="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
@@ -117,6 +119,10 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.stores.show', $store->id) }}" class="p-2 bg-white border border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white rounded-lg transition-colors" title="Review Identitas Toko">
+                                        <x-icon name="document-magnifying-glass" class="w-4 h-4" />
+                                    </a>
+
                                     {{-- Tombol Toggle Verification --}}
                                     @if($store->is_verified)
                                         <form action="{{ route('admin.stores.verify', $store->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Cabut Verifikasi', message: 'Cabut status Verified toko ini? Toko mungkin tidak dapat mencairkan dana lagi.', type: 'danger', confirmText: 'Cabut Verifikasi' })">
@@ -141,21 +147,23 @@
                                         </form>
                                     @endif
 
-                                    {{-- Tombol Banner / Toggle Active --}}
-                                    @if($store->is_active)
-                                        <form action="{{ route('admin.stores.toggle', $store->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Banned Toko', message: 'Toko akan dibanned dan disembunyikan dari publik, Anda yakin?', type: 'danger', confirmText: 'Ya, Banned' })">
-                                            @csrf
-                                            <button type="submit" class="p-2 bg-white border border-gray-200 hover:border-red-500 hover:text-red-600 text-gray-500 rounded-lg transition-colors" title="Banned Toko">
-                                                <x-icon name="no-symbol" class="w-4 h-4" />
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('admin.stores.toggle', $store->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Pulihkan Toko', message: 'Pulihkan toko ini agar aktif kembali?', type: 'success', confirmText: 'Ya, Pulihkan' })">
-                                            @csrf
-                                            <button type="submit" class="p-2 bg-white border border-gray-200 hover:border-green-500 hover:text-green-600 text-red-500 rounded-lg transition-colors" title="Pulihkan Toko">
-                                                <x-icon name="arrow-path" class="w-4 h-4" />
-                                            </button>
-                                        </form>
+                                    {{-- Tombol Banned / Pulihkan hanya untuk toko yang sudah lolos verifikasi --}}
+                                    @if($store->is_verified)
+                                        @if($store->is_active)
+                                            <form action="{{ route('admin.stores.toggle', $store->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Banned Toko', message: 'Toko akan dibanned dan disembunyikan dari publik, Anda yakin?', type: 'danger', confirmText: 'Ya, Banned' })">
+                                                @csrf
+                                                <button type="submit" class="p-2 bg-white border border-gray-200 hover:border-red-500 hover:text-red-600 text-gray-500 rounded-lg transition-colors" title="Banned Toko">
+                                                    <x-icon name="no-symbol" class="w-4 h-4" />
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admin.stores.toggle', $store->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Pulihkan Toko', message: 'Pulihkan toko ini agar aktif kembali?', type: 'success', confirmText: 'Ya, Pulihkan' })">
+                                                @csrf
+                                                <button type="submit" class="p-2 bg-white border border-gray-200 hover:border-green-500 hover:text-green-600 text-red-500 rounded-lg transition-colors" title="Pulihkan Toko">
+                                                    <x-icon name="arrow-path" class="w-4 h-4" />
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                     
                                     {{-- Kunjungi Etalase --}}

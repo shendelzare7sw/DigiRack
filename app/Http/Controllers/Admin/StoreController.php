@@ -43,7 +43,7 @@ class StoreController extends Controller
 
     public function show($id)
     {
-        $store = Store::with(['user', 'products'])->findOrFail($id);
+        $store = Store::with('user')->withCount('products')->findOrFail($id);
         return view('admin.stores.show', compact('store'));
     }
 
@@ -147,6 +147,11 @@ class StoreController extends Controller
     public function toggleActive(Request $request, $id)
     {
         $store = Store::findOrFail($id);
+
+        if (! $store->is_verified) {
+            return back()->with('success', 'Toko belum lolos verifikasi, jadi status aktif belum bisa diubah.');
+        }
+
         $store->is_active = !$store->is_active;
         $store->save();
 

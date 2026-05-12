@@ -1,11 +1,11 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
+            Informasi Profil
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
+            Kelola nama, email, dan nomor kontak akun DigiRack Anda.
         </p>
     </header>
 
@@ -32,7 +32,7 @@
         </div>
 
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" value="Nama" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
@@ -41,26 +41,57 @@
             <x-input-label for="phone" value="Nomor Telepon / WhatsApp" />
             <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" placeholder="081234..." />
             <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+
+            @if ($user->pending_phone)
+                <p class="mt-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    Perubahan ke nomor {{ $user->pending_phone }} menunggu konfirmasi dari email terverifikasi Anda.
+                </p>
+            @endif
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
+            <div class="flex items-center justify-between gap-3">
+                <x-input-label for="email" value="Email" />
+                @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && $user->hasVerifiedEmail())
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 border border-green-200">
+                        <x-icon name="check-circle" class="w-4 h-4" />
+                        Terverifikasi
+                    </span>
+                @endif
+            </div>
+
+            <div class="relative mt-1">
+                <x-text-input
+                    id="email"
+                    name="email"
+                    type="email"
+                    class="block w-full {{ $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && $user->hasVerifiedEmail() ? 'border-green-300 bg-green-50/70 text-green-950 focus:border-green-500 focus:ring-green-500 pr-11' : '' }}"
+                    :value="old('email', $user->email)"
+                    required
+                    autocomplete="username"
+                />
+
+                @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && $user->hasVerifiedEmail())
+                    <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-green-600">
+                        <x-icon name="check-circle" class="w-5 h-5" />
+                    </div>
+                @endif
+            </div>
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
+                        Email Anda belum terverifikasi.
 
                         <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
+                            Kirim ulang email verifikasi.
                         </button>
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
                         <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
+                            Link verifikasi baru sudah dikirim ke email Anda.
                         </p>
                     @endif
                 </div>
@@ -68,16 +99,24 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button>Simpan</x-primary-button>
 
-            @if (session('status') === 'profile-updated')
+            @if (in_array(session('status'), ['profile-updated', 'phone-change-verification-sent', 'phone-updated'], true))
                 <p
                     x-data="{ show: true }"
                     x-show="show"
                     x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
+                    x-init="setTimeout(() => show = false, 4500)"
                     class="text-sm text-gray-600 font-bold text-green-600"
-                >{{ __('Saved.') }}</p>
+                >
+                    @if (session('status') === 'phone-change-verification-sent')
+                        Link konfirmasi nomor telepon sudah dikirim ke email lama yang terverifikasi.
+                    @elseif (session('status') === 'phone-updated')
+                        Nomor telepon berhasil diperbarui.
+                    @else
+                        Tersimpan.
+                    @endif
+                </p>
             @endif
         </div>
     </form>

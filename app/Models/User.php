@@ -20,6 +20,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'phone',
+        'pending_phone',
+        'pending_phone_token',
+        'pending_phone_expires_at',
         'avatar',
         'is_active',
         'security_question',
@@ -38,6 +41,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'pending_phone_expires_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
