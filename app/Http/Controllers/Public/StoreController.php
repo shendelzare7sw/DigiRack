@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Store;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StoreController extends Controller
 {
@@ -17,8 +18,8 @@ class StoreController extends Controller
     {
         $store = Store::withCount('products')->where('slug', $slug)->firstOrFail();
 
-        // If inactive/banned and user is not admin, they might be blocked. But let's just allow for now or return 404 if inactive.
-        if (!$store->is_active) {
+        // Public visitors cannot open pending/banned stores. Admins may preview a store from the review page.
+        if (!$store->is_active && ! Auth::user()?->isAdmin()) {
             abort(404, 'Toko ini sedang tidak aktif.');
         }
 

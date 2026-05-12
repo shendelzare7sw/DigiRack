@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use App\Models\User;
+use App\Notifications\StoreStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -51,7 +53,7 @@ class SellerRegistrationController extends Controller
         $identityPath = $request->file('identity_document')->store('store-identities', 'public');
 
         // Create the store as pending. Admin approval will activate seller access.
-        Store::create([
+        $store = Store::create([
             'user_id' => $user->id,
             'name' => $request->store_name,
             'slug' => $slug,
@@ -64,6 +66,24 @@ class SellerRegistrationController extends Controller
             'verification_notes' => null,
             'verified_at' => null,
         ]);
+
+        User::where('role', 'admin')->get()->each(function (User $admin) use ($store, $user) {
+            $admin->notify(new StoreStatusNotification(
+                'store_registration_submitted',
+                'Pengajuan toko baru',
+                'Toko "' . $store->name . '" diajukan oleh ' . $user->name . '. Periksa dokumen identitas sebelum verifikasi.',
+                route('admin.stores.show', $store->id),
+                'ID'
+            ));
+        });
+
+        $user->notify(new StoreStatusNotification(
+            'store_registration_received',
+            'Pengajuan toko diterima',
+            'Toko "' . $store->name . '" sudah masuk antrean verifikasi admin. Anda akan mendapat notifikasi setelah diproses.',
+            route('seller.dashboard'),
+            'OK'
+        ));
 
         return redirect()->route('seller.dashboard')
             ->with('success', 'Toko "' . $request->store_name . '" berhasil diajukan. Anda bisa masuk dashboard seller, tetapi menu penjualan aktif setelah verifikasi admin.');
