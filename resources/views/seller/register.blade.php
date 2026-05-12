@@ -38,7 +38,7 @@
                             <x-input-label for="identity_document" value="Upload KTP / ID Card" class="text-gray-700 font-semibold" />
                             <input id="identity_document" type="file" name="identity_document" required accept=".jpg,.jpeg,.png,.webp,.pdf"
                                 class="block mt-1 w-full text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-navylight file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors border border-gray-300 rounded-xl bg-white">
-                            <p class="mt-1 text-[11px] text-gray-500">Format JPG, PNG, WEBP, atau PDF. Maksimal 2MB.</p>
+                            <p class="mt-1 text-[11px] text-gray-500">Format JPG, PNG, WEBP, atau PDF. Maksimal 6MB.</p>
                             <x-input-error :messages="$errors->get('identity_document')" class="mt-2" />
                         </div>
 

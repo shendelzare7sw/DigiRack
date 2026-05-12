@@ -39,7 +39,7 @@ class SellerRegistrationController extends Controller
         $request->validate([
             'store_name' => 'required|string|max:255',
             'store_description' => 'nullable|string|max:1000',
-            'identity_document' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:2048',
+            'identity_document' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:6144',
         ]);
 
         // Generate unique slug
