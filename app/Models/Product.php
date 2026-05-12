@@ -105,4 +105,17 @@ class Product extends Model
     {
         return $this->stock > 0;
     }
+
+    public function isOwnedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        $storeUserId = $this->relationLoaded('store')
+            ? $this->store?->user_id
+            : Store::whereKey($this->store_id)->value('user_id');
+
+        return (int) $storeUserId === (int) $user->getKey();
+    }
 }

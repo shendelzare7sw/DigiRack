@@ -45,7 +45,15 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::with('store')->findOrFail($request->product_id);
+
+        if ($product->isOwnedBy($request->user())) {
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Produk milik toko sendiri tidak bisa dimasukkan ke keranjang.'], 403);
+            }
+
+            return back()->with('error', 'Produk milik toko sendiri tidak bisa dimasukkan ke keranjang.');
+        }
 
         // Cek stok
         if ($product->stock < $request->quantity) {
@@ -101,6 +109,16 @@ class CartController extends Controller
 
         $cartItem = Cart::where('user_id', Auth::id())->findOrFail($id);
         $product = $cartItem->product;
+
+        if ($product->isOwnedBy($request->user())) {
+            $cartItem->delete();
+
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Produk milik toko sendiri dihapus dari keranjang.'], 403);
+            }
+
+            return back()->with('error', 'Produk milik toko sendiri tidak bisa ada di keranjang.');
+        }
 
         if ($request->quantity > $product->stock) {
             if ($request->wantsJson()) {

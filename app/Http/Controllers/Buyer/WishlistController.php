@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,9 +34,29 @@ class WishlistController extends Controller
             'product_id' => 'required|exists:products,id',
         ]);
 
+        $product = Product::with('store')->findOrFail($request->product_id);
+
         $existing = Wishlist::where('user_id', Auth::id())
             ->where('product_id', $request->product_id)
             ->first();
+
+        if ($product->isOwnedBy($request->user())) {
+            if ($existing) {
+                $existing->delete();
+            }
+
+            $wishlistCount = Wishlist::where('user_id', Auth::id())->count();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'status' => 'blocked',
+                    'message' => 'Produk milik toko sendiri tidak bisa dimasukkan ke wishlist.',
+                    'wishlistCount' => $wishlistCount,
+                ], 403);
+            }
+
+            return back()->with('error', 'Produk milik toko sendiri tidak bisa dimasukkan ke wishlist.');
+        }
 
         if ($existing) {
             $existing->delete();

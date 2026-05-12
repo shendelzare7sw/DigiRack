@@ -30,7 +30,11 @@ class CheckoutController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = \App\Models\Product::findOrFail($request->product_id);
+        $product = \App\Models\Product::with('store')->findOrFail($request->product_id);
+
+        if ($product->isOwnedBy($request->user())) {
+            return back()->with('error', 'Produk milik toko sendiri tidak bisa dibeli atau di-checkout.');
+        }
         
         if ($product->price <= 0) {
             return back()->with('error', 'Produk ini tidak dapat dibeli karena harganya tidak valid (Mengandung unsur kerugian/Rp 0).');
@@ -73,6 +77,11 @@ class CheckoutController extends Controller
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('buyer.cart.index')->with('error', 'Item tidak ditemukan.');
+        }
+
+        if ($cartItems->contains(fn ($item) => $item->product->isOwnedBy($request->user()))) {
+            return redirect()->route('buyer.cart.index')
+                ->with('error', 'Keranjang berisi produk milik toko sendiri. Hapus produk tersebut sebelum checkout.');
         }
 
         // Get user saved addresses (with city_id for ongkir)
@@ -143,6 +152,11 @@ class CheckoutController extends Controller
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('buyer.cart.index')->with('error', 'Item keranjang tidak ditemukan.');
+        }
+
+        if ($cartItems->contains(fn ($item) => $item->product->isOwnedBy($request->user()))) {
+            return redirect()->route('buyer.cart.index')
+                ->with('error', 'Checkout ditolak karena ada produk milik toko sendiri di keranjang.');
         }
 
         // Group by Store

@@ -28,6 +28,7 @@
             quantity: 1,
             maxStock: {{ $product->stock }},
             isWishlisted: {{ $isWishlisted ? 'true' : 'false' }},
+            isOwnProduct: {{ $isOwnProduct ? 'true' : 'false' }},
             addingToCart: false,
             wishlistLoading: false,
 
@@ -59,6 +60,11 @@
             },
 
             async addToCart() {
+                if (this.isOwnProduct) {
+                    this.showToast('Produk milik toko sendiri tidak bisa dibeli.', 'error');
+                    return;
+                }
+
                 @guest
                     window.location.href = '{{ route('login') }}';
                     return;
@@ -92,6 +98,11 @@
             },
 
             async toggleWishlist() {
+                if (this.isOwnProduct) {
+                    this.showToast('Produk milik toko sendiri tidak bisa dimasukkan ke wishlist.', 'error');
+                    return;
+                }
+
                 @guest
                     window.location.href = '{{ route('login') }}';
                     return;
@@ -256,7 +267,32 @@
                 </div>
 
                 {{-- Quantity Selector & CTA --}}
-                @if($product->isInStock() && (!Auth::check() || Auth::user()->role !== 'admin'))
+                @if($isOwnProduct)
+                    <div class="bg-amber-50 rounded-2xl p-5 border border-amber-200">
+                        <div class="flex gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                <x-icon name="building-storefront" class="w-5 h-5" />
+                            </div>
+                            <div class="min-w-0">
+                                <p class="font-bold text-amber-900">Ini produk toko Anda</p>
+                                <p class="text-sm text-amber-800 mt-1">Produk sendiri tidak bisa dibeli, dimasukkan ke keranjang, atau ditambahkan ke wishlist.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                            <a href="{{ route('seller.products.edit', $product->id) }}"
+                                class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-bold text-white hover:bg-brand-navydark transition-colors">
+                                <x-icon name="pencil-square" class="w-4 h-4" />
+                                Kelola Produk
+                            </a>
+                            <a href="{{ route('seller.products.index') }}"
+                                class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border-2 border-brand-navy px-5 py-3 text-sm font-bold text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
+                                <x-icon name="squares-2x2" class="w-4 h-4" />
+                                Produk Saya
+                            </a>
+                        </div>
+                    </div>
+                @elseif($product->isInStock() && (!Auth::check() || Auth::user()->role !== 'admin'))
                     <div class="space-y-4">
                         {{-- Quantity --}}
                         <div class="flex items-center gap-4">

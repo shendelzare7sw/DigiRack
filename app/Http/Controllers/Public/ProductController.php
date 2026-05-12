@@ -147,7 +147,9 @@ class ProductController extends Controller
 
         // Wishlist check
         $isWishlisted = false;
+        $isOwnProduct = false;
         if (Auth::check()) {
+            $isOwnProduct = $product->isOwnedBy(Auth::user());
             $isWishlisted = Wishlist::where('user_id', Auth::id())
                 ->where('product_id', $product->id)
                 ->exists();
@@ -155,7 +157,7 @@ class ProductController extends Controller
 
         return view('products.show', compact(
             'product', 'ratingDist', 'specs',
-            'storeProductCount', 'relatedProducts', 'isWishlisted'
+            'storeProductCount', 'relatedProducts', 'isWishlisted', 'isOwnProduct'
         ));
     }
 }

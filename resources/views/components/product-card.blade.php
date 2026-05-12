@@ -1,9 +1,18 @@
 @props(['product', 'wishlisted' => false])
 
+@php
+    $isOwnProduct = auth()->check() && $product->isOwnedBy(auth()->user());
+@endphp
+
 <div class="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg hover:border-brand-navy/20 transition-all duration-300 relative flex flex-col">
 
     {{-- Wishlist Heart — Native Form, always works --}}
     @auth
+        @if($isOwnProduct)
+            <span class="absolute top-2.5 right-2.5 z-30 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700 border border-amber-200 shadow-sm">
+                Produk Saya
+            </span>
+        @else
         <form action="{{ route('buyer.wishlist.toggle') }}" method="POST" class="absolute top-2.5 right-2.5 z-30">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -14,6 +23,7 @@
                 </svg>
             </button>
         </form>
+        @endif
     @else
         <a href="{{ route('login') }}"
             class="absolute top-2.5 right-2.5 z-30 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md transition-all duration-200 hover:scale-110 active:scale-95 touch-manipulation border border-gray-100 text-gray-400">
@@ -85,7 +95,15 @@
         </div>
 
         {{-- Add to Cart Button — Native Form, separate from image, always works --}}
-        @if($product->isInStock() && (!Auth::check() || Auth::user()->role !== 'admin'))
+        @if($isOwnProduct)
+            <div class="mt-3 pt-2">
+                <a href="{{ route('seller.products.edit', $product->id) }}"
+                    class="w-full border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors active:scale-[0.97] touch-manipulation">
+                    <x-icon name="pencil-square" class="w-3.5 h-3.5" />
+                    Kelola Produk
+                </a>
+            </div>
+        @elseif($product->isInStock() && (!Auth::check() || Auth::user()->role !== 'admin'))
             <div class="mt-3 pt-2">
                 @auth
                     <form action="{{ route('buyer.cart.store') }}" method="POST">
