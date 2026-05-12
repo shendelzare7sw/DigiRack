@@ -1,30 +1,41 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
+    <div class="text-center mb-8">
+        <h1 class="font-display font-bold text-2xl text-brand-navy">Verifikasi Email Anda</h1>
+        <p class="text-sm text-gray-500 mt-1">Satu langkah lagi sebelum akun DigiRack aktif sepenuhnya.</p>
     </div>
 
-    @if (session('status') == 'verification-link-sent')
-        <div class="mb-4 font-medium text-sm text-green-600">
-            {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+    @if(session('success'))
+        <div class="mb-4 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+            {{ session('success') }}
         </div>
     @endif
 
-    <div class="mt-4 flex items-center justify-between">
+    <div class="mb-4 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
+        Kami sudah mengirim link verifikasi ke email Anda. Klik link tersebut untuk mengaktifkan fitur belanja dan buka toko.
+    </div>
+
+    @if (session('status') == 'verification-link-sent')
+        <div class="mb-4 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700">
+            Link verifikasi baru sudah dikirim ke email Anda.
+        </div>
+    @endif
+
+    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
 
             <div>
-                <x-primary-button>
-                    {{ __('Resend Verification Email') }}
-                </x-primary-button>
+                <button type="submit" class="w-full sm:w-auto inline-flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brand-navy hover:bg-brand-navy/90 transition-all">
+                    Kirim Ulang Email
+                </button>
             </div>
         </form>
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
 
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                {{ __('Log Out') }}
+            <button type="submit" class="w-full sm:w-auto text-sm font-semibold text-gray-500 hover:text-red-600 transition-colors">
+                Keluar
             </button>
         </form>
     </div>

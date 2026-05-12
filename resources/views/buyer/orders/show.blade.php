@@ -134,6 +134,14 @@
                                 <p>Token pembayaran tidak tersedia. Hubungi admin jika masalah berlanjut.</p>
                             </div>
                         @endif
+
+                        <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="mt-4 pt-4 border-t border-yellow-200" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Batalkan Pesanan', message: 'Pesanan belum dibayar dan akan langsung dibatalkan. Lanjutkan?', type: 'danger', confirmText: 'Ya, Batalkan' })">
+                            @csrf
+                            <textarea name="cancellation_reason" rows="2" maxlength="500" class="w-full border-yellow-200 focus:border-red-400 focus:ring-red-400 rounded-xl text-sm" placeholder="Alasan pembatalan (opsional)"></textarea>
+                            <button type="submit" class="mt-3 w-full bg-white border border-red-200 hover:border-red-400 text-red-600 font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                                <x-icon name="x-circle" class="w-5 h-5" /> Batalkan Pesanan
+                            </button>
+                        </form>
                     </div>
                 @elseif($order->status === 'shipped')
                     <div class="bg-brand-navylight/20 rounded-2xl shadow-sm border border-brand-navy/30 p-6 relative overflow-hidden">
@@ -160,7 +168,38 @@
                     <div class="bg-orange-50 rounded-2xl p-6 border border-orange-100 text-center">
                         <x-icon name="clock" class="w-10 h-10 text-brand-orange mx-auto mb-2" />
                         <h3 class="font-bold text-orange-900 mb-1">Sedang Diproses Penjual</h3>
-                        <p class="text-sm text-orange-700">Pembayaran berhasil! Penjual sedang menyiapkan pesanan Anda untuk dikirim.</p>
+                        <p class="text-sm text-orange-700 mb-4">Pembayaran berhasil! Penjual sedang menyiapkan pesanan Anda untuk dikirim.</p>
+                        <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="text-left" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Ajukan Pembatalan', message: 'Pesanan sudah diproses. Permintaan pembatalan akan dikirim ke penjual dan baru batal jika disetujui.', type: 'danger', confirmText: 'Kirim Permintaan' })">
+                            @csrf
+                            <textarea name="cancellation_reason" rows="3" maxlength="500" class="w-full border-orange-200 focus:border-red-400 focus:ring-red-400 rounded-xl text-sm" placeholder="Tulis alasan pembatalan agar penjual bisa mempertimbangkan."></textarea>
+                            <button type="submit" class="mt-3 w-full bg-white border border-red-200 hover:border-red-400 text-red-600 font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                                <x-icon name="x-circle" class="w-5 h-5" /> Minta Pembatalan
+                            </button>
+                        </form>
+                    </div>
+                @elseif($order->status === 'cancellation_requested')
+                    <div class="bg-orange-50 rounded-2xl p-6 border border-orange-100">
+                        <x-icon name="clock" class="w-10 h-10 text-brand-orange mx-auto mb-2" />
+                        <h3 class="font-bold text-orange-900 mb-1 text-center">Menunggu Persetujuan Penjual</h3>
+                        <p class="text-sm text-orange-700 text-center">Permintaan pembatalan sudah dikirim. Penjual akan menentukan apakah pesanan dibatalkan atau tetap dikirim.</p>
+                        @if($order->cancellation_reason)
+                            <div class="mt-4 bg-white border border-orange-100 rounded-xl p-3 text-sm">
+                                <p class="text-xs font-bold text-gray-500 mb-1">Alasan Anda</p>
+                                <p class="text-gray-700">{{ $order->cancellation_reason }}</p>
+                            </div>
+                        @endif
+                    </div>
+                @elseif($order->status === 'cancelled')
+                    <div class="bg-red-50 rounded-2xl p-6 border border-red-100">
+                        <x-icon name="x-circle" class="w-10 h-10 text-red-400 mx-auto mb-2" />
+                        <h3 class="font-bold text-red-900 mb-1 text-center">Pesanan Dibatalkan</h3>
+                        <p class="text-sm text-red-700 text-center">Pesanan ini sudah dibatalkan.</p>
+                        @if($order->cancellation_response)
+                            <div class="mt-4 bg-white border border-red-100 rounded-xl p-3 text-sm">
+                                <p class="text-xs font-bold text-gray-500 mb-1">Catatan</p>
+                                <p class="text-gray-700">{{ $order->cancellation_response }}</p>
+                            </div>
+                        @endif
                     </div>
                 @endif
             </div>

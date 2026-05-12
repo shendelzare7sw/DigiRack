@@ -117,6 +117,17 @@
                             <span class="text-xs font-semibold text-gray-700 text-center">Kelola Users</span>
                         </a>
 
+                        {{-- Tiket Pemulihan --}}
+                        <a href="{{ route('admin.recovery-tickets.index') }}" class="relative flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-red-300 hover:shadow-sm transition-all group">
+                            @if(($stats['pendingRecoveryTickets'] ?? 0) > 0)
+                                <span class="absolute right-2 top-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $stats['pendingRecoveryTickets'] }}</span>
+                            @endif
+                            <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <x-icon name="lifebuoy" class="w-6 h-6" />
+                            </div>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Tiket Pemulihan</span>
+                        </a>
+
                         {{-- Moderasi Produk --}}
                         <a href="{{ route('admin.products.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-teal-300 hover:shadow-sm transition-all group">
                             <div class="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">

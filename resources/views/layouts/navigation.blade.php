@@ -21,7 +21,7 @@
                 </a>
                 <span class="text-gray-300">|</span>
                 <a href="#" class="hover:text-brand-navy transition-colors">Tentang DigiRack</a>
-                <a href="{{ route('register') }}" class="hover:text-brand-navy transition-colors">Mulai Berjualan</a>
+                <a href="{{ Auth::check() ? (Auth::user()->store ? route('seller.dashboard') : route('seller.register.form')) : route('register') }}" class="hover:text-brand-navy transition-colors">Mulai Berjualan</a>
                 <a href="#" class="hover:text-brand-navy transition-colors">Mitra B2B</a>
             </div>
             <div class="flex gap-5">
@@ -72,6 +72,8 @@
                     @php
                         $unreadNotifs = Auth::user()->unreadNotifications->take(8);
                         $unreadCount = Auth::user()->unreadNotifications->count();
+                        $sellerEntryUrl = Auth::user()->store ? route('seller.dashboard') : route('seller.register.form');
+                        $sellerEntryLabel = Auth::user()->store ? 'Buka' : 'Daftar';
                     @endphp
                     <x-dropdown align="right" width="w-80 sm:w-96" contentClasses="py-0 overflow-hidden bg-white" class="mobile-dropdown-notif">
                         <x-slot name="trigger">
@@ -166,7 +168,7 @@
                                             <x-icon name="building-storefront" class="w-4 h-4 text-brand-navy" />
                                             <span class="text-xs font-bold text-gray-700">Toko Saya</span>
                                         </div>
-                                        <a href="{{ route('seller.dashboard') }}" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded shadow-sm hover:bg-blue-600 font-bold transition">Buka</a>
+                                        <a href="{{ $sellerEntryUrl }}" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded shadow-sm hover:bg-blue-600 font-bold transition">{{ $sellerEntryLabel }}</a>
                                     </div>
                                 @endif
                                 <x-dropdown-link :href="route('dashboard')">
@@ -265,7 +267,7 @@
                                 <x-icon name="building-storefront" class="w-5 h-5 text-brand-navy" />
                                 <span class="text-sm font-bold text-gray-700">Toko Saya</span>
                             </div>
-                            <a href="{{ route('seller.dashboard') }}" class="text-xs bg-brand-blue text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-600 font-bold transition">Buka Toko</a>
+                            <a href="{{ $sellerEntryUrl }}" class="text-xs bg-brand-blue text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-600 font-bold transition">{{ Auth::user()->store ? 'Buka Toko' : 'Daftar Toko' }}</a>
                         </div>
                         <x-responsive-nav-link :href="route('buyer.cart.index')">
                             Keranjang ({{ $cartCount ?? 0 }})

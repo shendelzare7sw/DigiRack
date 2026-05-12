@@ -4,6 +4,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         @php
             $store = Auth::user()->store;
+            $verificationStatus = $store->verification_status ?? ($store?->is_verified ? 'approved' : 'pending');
+            $isStoreApproved = $store && $verificationStatus === 'approved' && $store->is_verified;
         @endphp
 
         {{-- Welcome Header --}}
@@ -20,11 +22,16 @@
                     @endif
                 </p>
             </div>
-            @if($store)
+            @if($store && $isStoreApproved)
                 <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
                     <x-icon name="plus" class="w-4 h-4" />
                     Tambah Produk Baru
                 </a>
+            @elseif($store)
+                <span class="inline-flex items-center gap-2 bg-gray-200 text-gray-500 font-bold text-sm px-6 py-3 rounded-xl cursor-not-allowed self-start">
+                    <x-icon name="lock-closed" class="w-4 h-4" />
+                    Menunggu Verifikasi
+                </span>
             @endif
         </div>
 
@@ -36,12 +43,52 @@
                 </div>
                 <h2 class="font-display font-bold text-xl text-gray-700 mb-2">Belum Ada Toko</h2>
                 <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Buat toko Anda untuk mulai menjual produk infrastruktur IT di DigiRack.</p>
-                <span class="inline-flex items-center gap-2 bg-gray-200 text-gray-500 font-bold text-sm px-6 py-3 rounded-xl cursor-not-allowed">
+                <a href="{{ route('seller.register.form') }}" class="inline-flex items-center gap-2 bg-brand-navy hover:bg-brand-navydark text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors">
                     <x-icon name="plus" class="w-4 h-4" />
-                    Buat Toko (Segera Hadir)
-                </span>
+                    Buat Toko
+                </a>
             </div>
         @else
+            @if(!$isStoreApproved)
+                <div class="{{ $verificationStatus === 'rejected' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-orange-50 border-orange-200 text-orange-800' }} border rounded-2xl p-5 mb-8 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-start gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 {{ $verificationStatus === 'rejected' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600' }}">
+                            <x-icon :name="$verificationStatus === 'rejected' ? 'x-circle' : 'clock'" class="w-5 h-5" />
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="font-bold text-base">
+                                {{ $verificationStatus === 'rejected' ? 'Verifikasi Toko Ditolak' : 'Menunggu Verifikasi Admin' }}
+                            </h2>
+                            <p class="text-sm mt-1 leading-relaxed">
+                                @if($verificationStatus === 'rejected')
+                                    Pengajuan toko Anda belum dapat disetujui. Silakan cek catatan admin dan hubungi support untuk mengajukan perbaikan data.
+                                @else
+                                    Dokumen identitas toko Anda sedang ditinjau admin. Anda tetap bisa melihat dashboard seller, tetapi menu penjualan akan aktif setelah toko disetujui.
+                                @endif
+                            </p>
+                            <div class="mt-3 flex flex-col sm:flex-row gap-2 text-xs">
+                                <span class="inline-flex items-center gap-1.5 bg-white/70 px-3 py-1.5 rounded-lg border border-current/10">
+                                    <x-icon name="document-text" class="w-3.5 h-3.5" />
+                                    Dokumen: {{ $store->identity_document_path ? 'Sudah diunggah' : 'Belum tersedia' }}
+                                </span>
+                                @if($store->identity_submitted_at)
+                                    <span class="inline-flex items-center gap-1.5 bg-white/70 px-3 py-1.5 rounded-lg border border-current/10">
+                                        <x-icon name="calendar-days" class="w-3.5 h-3.5" />
+                                        Diajukan {{ $store->identity_submitted_at->diffForHumans() }}
+                                    </span>
+                                @endif
+                            </div>
+                            @if($store->verification_notes)
+                                <div class="mt-3 bg-white/80 border border-current/10 rounded-xl p-3 text-sm">
+                                    <p class="text-xs font-bold uppercase mb-1 opacity-70">Catatan Admin</p>
+                                    <p>{{ $store->verification_notes }}</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- Quick Stats --}}
             @php
                 $totalProducts = \App\Models\Product::where('store_id', $store->id)->count();
@@ -98,48 +145,34 @@
                             Menu Seller
                         </h2>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            <a href="{{ route('seller.products.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-navy/30 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-brand-navylight rounded-xl flex items-center justify-center text-brand-navy group-hover:bg-brand-navy group-hover:text-white transition-colors">
-                                    <x-icon name="cube" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Kelola Produk</span>
-                            </a>
-                            <a href="{{ route('seller.products.create') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-brand-blue/30 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue group-hover:bg-brand-blue group-hover:text-white transition-colors">
-                                    <x-icon name="plus-circle" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Tambah Produk</span>
-                            </a>
-                            <a href="{{ route('seller.orders.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-orange-300 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                                    <x-icon name="clipboard-document-list" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Pesanan Masuk</span>
-                            </a>
-                            <a href="{{ route('seller.wallet.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
-                                    <x-icon name="banknotes" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Saldo / Wallet</span>
-                            </a>
-                            <a href="{{ route('seller.store.show') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-purple-300 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                                    <x-icon name="building-storefront" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Profil Toko</span>
-                            </a>
-                            <a href="{{ route('profile.edit') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-                                    <x-icon name="user-circle" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Edit Profil</span>
-                            </a>
-                            <a href="{{ route('seller.couriers.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-teal-300 hover:shadow-sm transition-all group">
-                                <div class="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-500 group-hover:bg-teal-500 group-hover:text-white transition-colors">
-                                    <x-icon name="truck" class="w-6 h-6" />
-                                </div>
-                                <span class="text-xs font-semibold text-gray-700 text-center">Kelola Kurir</span>
-                            </a>
+                            @php
+                                $sellerMenus = [
+                                    ['label' => 'Kelola Produk', 'route' => route('seller.products.index'), 'icon' => 'cube', 'box' => 'bg-brand-navylight', 'text' => 'text-brand-navy', 'hover' => 'group-hover:bg-brand-navy group-hover:text-white'],
+                                    ['label' => 'Tambah Produk', 'route' => route('seller.products.create'), 'icon' => 'plus-circle', 'box' => 'bg-brand-bluelight', 'text' => 'text-brand-blue', 'hover' => 'group-hover:bg-brand-blue group-hover:text-white'],
+                                    ['label' => 'Pesanan Masuk', 'route' => route('seller.orders.index'), 'icon' => 'clipboard-document-list', 'box' => 'bg-orange-50', 'text' => 'text-orange-500', 'hover' => 'group-hover:bg-orange-500 group-hover:text-white'],
+                                    ['label' => 'Saldo / Wallet', 'route' => route('seller.wallet.index'), 'icon' => 'banknotes', 'box' => 'bg-green-50', 'text' => 'text-green-600', 'hover' => 'group-hover:bg-green-600 group-hover:text-white'],
+                                    ['label' => 'Profil Toko', 'route' => route('seller.store.show'), 'icon' => 'building-storefront', 'box' => 'bg-purple-50', 'text' => 'text-purple-500', 'hover' => 'group-hover:bg-purple-500 group-hover:text-white'],
+                                    ['label' => 'Edit Profil', 'route' => route('profile.edit'), 'icon' => 'user-circle', 'box' => 'bg-blue-50', 'text' => 'text-blue-500', 'hover' => 'group-hover:bg-blue-500 group-hover:text-white'],
+                                    ['label' => 'Kelola Kurir', 'route' => route('seller.couriers.index'), 'icon' => 'truck', 'box' => 'bg-teal-50', 'text' => 'text-teal-500', 'hover' => 'group-hover:bg-teal-500 group-hover:text-white'],
+                                ];
+                            @endphp
+                            @foreach($sellerMenus as $menu)
+                                @if($isStoreApproved)
+                                    <a href="{{ $menu['route'] }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:shadow-sm transition-all group">
+                                        <div class="w-12 h-12 {{ $menu['box'] }} rounded-xl flex items-center justify-center {{ $menu['text'] }} {{ $menu['hover'] }} transition-colors">
+                                            <x-icon :name="$menu['icon']" class="w-6 h-6" />
+                                        </div>
+                                        <span class="text-xs font-semibold text-gray-700 text-center">{{ $menu['label'] }}</span>
+                                    </a>
+                                @else
+                                    <div class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/70 opacity-70 cursor-not-allowed">
+                                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
+                                            <x-icon name="lock-closed" class="w-6 h-6" />
+                                        </div>
+                                        <span class="text-xs font-semibold text-gray-500 text-center">{{ $menu['label'] }}</span>
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -150,10 +183,20 @@
                         <div class="flex flex-col items-center text-center">
                             <img src="{{ $store->logo_url }}" alt="{{ $store->name }}" class="w-20 h-20 rounded-full border-4 border-brand-navylight mb-4 object-cover">
                             <h3 class="font-bold text-gray-900">{{ $store->name }}</h3>
-                            @if($store->is_verified)
+                            @if($isStoreApproved)
                                 <span class="mt-2 inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border border-green-200">
                                     <x-icon name="check-badge" class="w-3.5 h-3.5" />
                                     Toko Terverifikasi
+                                </span>
+                            @elseif($verificationStatus === 'rejected')
+                                <span class="mt-2 inline-flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-semibold px-3 py-1 rounded-full border border-red-200">
+                                    <x-icon name="x-circle" class="w-3.5 h-3.5" />
+                                    Verifikasi Ditolak
+                                </span>
+                            @else
+                                <span class="mt-2 inline-flex items-center gap-1.5 bg-orange-50 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full border border-orange-200">
+                                    <x-icon name="clock" class="w-3.5 h-3.5" />
+                                    Menunggu Verifikasi
                                 </span>
                             @endif
                         </div>

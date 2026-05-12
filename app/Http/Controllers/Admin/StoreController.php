@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Store;
 use App\Notifications\StoreStatusNotification;
+use Illuminate\Support\Facades\DB;
 
 class StoreController extends Controller
 {
@@ -15,9 +16,14 @@ class StoreController extends Controller
 
         if ($request->filled('status')) {
             if ($request->status === 'verified') {
-                $query->where('is_verified', true);
+                $query->where(function ($q) {
+                    $q->where('verification_status', 'approved')
+                        ->orWhere('is_verified', true);
+                });
             } elseif ($request->status === 'pending') {
-                $query->where('is_verified', false);
+                $query->where('verification_status', 'pending')->where('is_verified', false);
+            } elseif ($request->status === 'rejected') {
+                $query->where('verification_status', 'rejected');
             }
         }
 
@@ -30,7 +36,7 @@ class StoreController extends Controller
 
         $stores = $query->orderBy('created_at', 'desc')->paginate(15)->appends($request->query());
         
-        $pendingCount = Store::where('is_verified', false)->count();
+        $pendingCount = Store::where('verification_status', 'pending')->where('is_verified', false)->count();
 
         return view('admin.stores.index', compact('stores', 'pendingCount'));
     }
@@ -43,16 +49,34 @@ class StoreController extends Controller
 
     public function toggleVerification(Request $request, $id)
     {
-        $store = Store::findOrFail($id);
-        
-        $store->is_verified = !$store->is_verified;
-        
-        // As a business logic, verifying a store should also make sure it's active
-        if ($store->is_verified && !$store->is_active) {
-            $store->is_active = true;
-        }
+        $store = Store::with('user')->findOrFail($id);
 
-        $store->save();
+        DB::transaction(function () use ($store) {
+            $store->is_verified = !$store->is_verified;
+
+            if ($store->is_verified) {
+                $store->is_active = true;
+                $store->verification_status = 'approved';
+                $store->verification_notes = null;
+                $store->verified_at = now();
+
+                if ($store->user && $store->user->role !== 'admin') {
+                    $store->user->role = 'seller';
+                    $store->user->save();
+                }
+            } else {
+                $store->is_active = false;
+                $store->verification_status = 'pending';
+                $store->verified_at = null;
+
+                if ($store->user && $store->user->role !== 'admin') {
+                    $store->user->role = 'buyer';
+                    $store->user->save();
+                }
+            }
+
+            $store->save();
+        });
 
         // Notify seller
         try {
@@ -80,6 +104,44 @@ class StoreController extends Controller
 
         $status = $store->is_verified ? 'diverifikasi' : 'dicabut verifikasinya';
         return back()->with('success', "Toko {$store->name} berhasil {$status}.");
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'verification_notes' => 'required|string|max:1000',
+        ]);
+
+        $store = Store::with('user')->findOrFail($id);
+
+        DB::transaction(function () use ($store, $request) {
+            $store->is_verified = false;
+            $store->is_active = false;
+            $store->verification_status = 'rejected';
+            $store->verification_notes = $request->verification_notes;
+            $store->verified_at = null;
+            $store->save();
+
+            if ($store->user && $store->user->role !== 'admin') {
+                $store->user->role = 'buyer';
+                $store->user->save();
+            }
+        });
+
+        try {
+            $sellerUser = $store->user;
+            if ($sellerUser) {
+                $sellerUser->notify(new StoreStatusNotification(
+                    'store_rejected',
+                    'Pengajuan Toko Ditolak',
+                    'Pengajuan toko "' . $store->name . '" ditolak. Catatan admin: ' . $request->verification_notes,
+                    route('seller.dashboard'),
+                    '!'
+                ));
+            }
+        } catch (\Exception $e) {}
+
+        return back()->with('success', "Pengajuan toko {$store->name} berhasil ditolak.");
     }
 
     public function toggleActive(Request $request, $id)

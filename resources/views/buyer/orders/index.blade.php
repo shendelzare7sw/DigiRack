@@ -86,6 +86,14 @@
                                             </button>
                                         </form>
                                     @endif
+                                    @if(in_array($order->status, ['pending_payment', 'processing']))
+                                        <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: '{{ $order->status === 'pending_payment' ? 'Batalkan Pesanan' : 'Ajukan Pembatalan' }}', message: '{{ $order->status === 'pending_payment' ? 'Pesanan belum dibayar dan akan langsung dibatalkan.' : 'Pesanan sudah diproses. Permintaan pembatalan akan dikirim ke penjual untuk disetujui.' }}', type: 'danger', confirmText: '{{ $order->status === 'pending_payment' ? 'Ya, Batalkan' : 'Kirim Permintaan' }}' })">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center gap-1.5 bg-white border border-red-200 hover:border-red-400 hover:text-red-600 text-red-500 font-bold px-4 py-2 rounded-lg transition-all shadow-sm mr-2">
+                                                {{ $order->status === 'pending_payment' ? 'Batalkan' : 'Minta Batal' }}
+                                            </button>
+                                        </form>
+                                    @endif
                                     <a href="{{ route('buyer.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-600 font-bold px-4 py-2 rounded-lg transition-all shadow-sm">
                                         Detail
                                     </a>
@@ -122,6 +130,14 @@
                                         <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors">Diterima</button>
+                                        </form>
+                                    @endif
+                                    @if(in_array($order->status, ['pending_payment', 'processing']))
+                                        <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: '{{ $order->status === 'pending_payment' ? 'Batalkan Pesanan' : 'Ajukan Pembatalan' }}', message: '{{ $order->status === 'pending_payment' ? 'Pesanan belum dibayar dan akan langsung dibatalkan.' : 'Pesanan sudah diproses. Permintaan pembatalan akan dikirim ke penjual untuk disetujui.' }}', type: 'danger', confirmText: '{{ $order->status === 'pending_payment' ? 'Ya, Batalkan' : 'Kirim Permintaan' }}' })">
+                                            @csrf
+                                            <button type="submit" class="bg-white border border-red-200 hover:border-red-400 text-red-500 hover:text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg transition-all">
+                                                {{ $order->status === 'pending_payment' ? 'Batalkan' : 'Minta Batal' }}
+                                            </button>
                                         </form>
                                     @endif
                                     <a href="{{ route('buyer.orders.show', $order->id) }}" class="bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>

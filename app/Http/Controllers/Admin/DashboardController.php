@@ -9,6 +9,7 @@ use App\Models\Store;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Order;
+use App\Models\RecoveryTicket;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -26,7 +27,8 @@ class DashboardController extends Controller
             'activeProducts' => Product::where('status', 'active')->count(),
             'totalCategories' => Category::count(),
             'totalOrders' => Order::count(),
-            'totalRevenue' => Order::where('payment_status', 'paid')->sum('total_price')
+            'totalRevenue' => Order::where('payment_status', 'paid')->sum('total_price'),
+            'pendingRecoveryTickets' => RecoveryTicket::where('status', 'pending_admin')->count(),
         ];
 
         // 2. Revenue Time-Series (Last 30 Days GMV)

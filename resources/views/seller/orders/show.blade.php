@@ -120,6 +120,37 @@
                         </h3>
                         <p class="text-xs text-gray-600">Pesanan ini sedang menunggu pembayaran dari pembeli via Midtrans.</p>
                     </div>
+                @elseif($order->status === 'cancellation_requested')
+                    <div class="bg-orange-50 rounded-2xl shadow-sm border border-orange-200 p-5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+                        <h3 class="font-bold text-orange-900 mb-2 flex items-center gap-2 text-sm">
+                            <x-icon name="exclamation-circle" class="w-5 h-5 text-orange-500" />
+                            Permintaan Pembatalan
+                        </h3>
+                        <p class="text-xs text-orange-700 mb-4">Pembeli meminta pesanan ini dibatalkan. Anda dapat menyetujui pembatalan atau menolak dan melanjutkan proses pengiriman.</p>
+
+                        <div class="bg-white border border-orange-100 rounded-xl p-3 mb-4">
+                            <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">Alasan Pembeli</p>
+                            <p class="text-sm text-gray-800">{{ $order->cancellation_reason ?: 'Tidak ada alasan tambahan.' }}</p>
+                            @if($order->cancellation_requested_at)
+                                <p class="text-[10px] text-gray-400 mt-2">Diajukan {{ $order->cancellation_requested_at->diffForHumans() }}</p>
+                            @endif
+                        </div>
+
+                        <form action="{{ route('seller.orders.cancellation', $order->id) }}" method="POST" class="space-y-3" x-data>
+                            @csrf
+                            <input type="hidden" name="decision" x-ref="decision" value="">
+                            <textarea name="cancellation_response" rows="3" maxlength="500" class="w-full border-orange-200 focus:border-brand-orange focus:ring-brand-orange rounded-xl text-sm" placeholder="Catatan untuk pembeli (opsional)"></textarea>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <button type="button" @click="$refs.decision.value = 'reject'; $dispatch('open-confirm-modal', { form: $el.form, title: 'Tolak Pembatalan', message: 'Pesanan akan kembali ke status Diproses dan dapat Anda kirim. Lanjutkan?', type: 'info', confirmText: 'Tolak & Proses' })" class="w-full bg-brand-navy hover:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                                    <x-icon name="truck" class="w-5 h-5" /> Tolak & Proses
+                                </button>
+                                <button type="button" @click="$refs.decision.value = 'approve'; $dispatch('open-confirm-modal', { form: $el.form, title: 'Setujui Pembatalan', message: 'Pesanan akan dibatalkan. Jika stok sudah terpotong, stok produk akan dikembalikan. Lanjutkan?', type: 'danger', confirmText: 'Setujui Batal' })" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                                    <x-icon name="x-circle" class="w-5 h-5" /> Setujui Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 @elseif($order->status === 'processing')
                     <div class="bg-white rounded-2xl shadow-sm border border-brand-orange/30 p-5 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-orange"></div>
@@ -169,6 +200,12 @@
                         <x-icon name="x-circle" class="w-10 h-10 text-red-400 mx-auto mb-2" />
                         <h3 class="font-bold text-red-900 mb-1 text-sm">Pesanan Dibatalkan</h3>
                         <p class="text-xs text-red-700">Pesanan ini telah dibatalkan atau kadaluarsa.</p>
+                        @if($order->cancellation_response)
+                            <div class="mt-4 bg-white border border-red-100 rounded-xl p-3 text-left">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">Catatan Pembatalan</p>
+                                <p class="text-xs text-gray-700">{{ $order->cancellation_response }}</p>
+                            </div>
+                        @endif
                     </div>
                 @endif
             </div>

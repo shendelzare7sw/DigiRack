@@ -58,6 +58,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Selamat datang di DigiRack, ' . $user->name . '! Username Anda: ' . $user->username);
+        return redirect()->route('verification.notice')
+            ->with('success', 'Akun berhasil dibuat. Silakan verifikasi email Anda sebelum menggunakan fitur DigiRack.');
     }
 }

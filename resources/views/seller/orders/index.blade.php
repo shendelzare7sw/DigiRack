@@ -13,8 +13,10 @@
                     <option value="">Semua Status</option>
                     <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Menunggu Pembayaran</option>
                     <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Perlu Dikirim</option>
+                    <option value="cancellation_requested" {{ request('status') == 'cancellation_requested' ? 'selected' : '' }}>Permintaan Batal</option>
                     <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Sedang Dikirim</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                 </select>
             </form>
         </div>
@@ -60,7 +62,11 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    @if($order->status == 'processing')
+                                    @if($order->status == 'cancellation_requested')
+                                        <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+                                            <x-icon name="exclamation-circle" class="w-4 h-4" /> Review Batal
+                                        </a>
+                                    @elseif($order->status == 'processing')
                                         <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-brand-orange hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
                                             <x-icon name="truck" class="w-4 h-4" /> Proses Resi
                                         </a>
@@ -103,7 +109,11 @@
                                         <span class="text-[10px] text-gray-400 ml-2">{{ str_starts_with(strtolower($mc), 'toko_') ? 'Kurir Toko' : strtoupper($mc) }}</span>
                                     @endif
                                 </div>
-                                @if($order->status == 'processing')
+                                @if($order->status == 'cancellation_requested')
+                                    <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                        <x-icon name="exclamation-circle" class="w-3.5 h-3.5" /> Review
+                                    </a>
+                                @elseif($order->status == 'processing')
                                     <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
                                         <x-icon name="truck" class="w-3.5 h-3.5" /> Proses
                                     </a>

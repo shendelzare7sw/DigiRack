@@ -10,6 +10,7 @@ use App\Notifications\OrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -114,6 +115,78 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             \Log::error('Order confirm error: ' . $e->getMessage(), ['order_id' => $id]);
             return back()->with('error', 'Terjadi kesalahan saat menyelesaikan pesanan. Silakan coba lagi.');
+        }
+    }
+
+    public function cancel(Request $request, $id)
+    {
+        $request->validate([
+            'cancellation_reason' => 'nullable|string|max:500',
+        ]);
+
+        $order = Order::with(['store.user'])
+            ->where('buyer_id', Auth::id())
+            ->findOrFail($id);
+
+        if (in_array($order->status, ['shipped', 'completed', 'cancelled', 'cancellation_requested'], true)) {
+            return back()->with('error', 'Pesanan ini sudah tidak dapat diajukan untuk dibatalkan.');
+        }
+
+        $reason = $request->filled('cancellation_reason')
+            ? $request->cancellation_reason
+            : 'Pembeli mengajukan pembatalan dari halaman pesanan.';
+
+        try {
+            DB::beginTransaction();
+
+            if ($order->status === 'pending_payment') {
+                $order->update([
+                    'status' => 'cancelled',
+                    'cancellation_reason' => $reason,
+                    'cancellation_response' => 'Pesanan dibatalkan sebelum pembayaran dilakukan.',
+                    'cancellation_requested_at' => now(),
+                    'cancellation_resolved_at' => now(),
+                ]);
+
+                DB::commit();
+                return back()->with('success', 'Pesanan berhasil dibatalkan.');
+            }
+
+            if ($order->status !== 'processing') {
+                DB::rollBack();
+                return back()->with('error', 'Pesanan ini belum dapat diajukan untuk dibatalkan.');
+            }
+
+            $order->update([
+                'status' => 'cancellation_requested',
+                'cancellation_reason' => $reason,
+                'cancellation_response' => null,
+                'cancellation_requested_at' => now(),
+                'cancellation_resolved_at' => null,
+            ]);
+
+            DB::commit();
+
+            try {
+                $sellerUser = $order->store->user ?? null;
+                if ($sellerUser) {
+                    $sellerUser->notify(new OrderNotification(
+                        'order_cancellation_requested',
+                        'Permintaan Pembatalan Pesanan',
+                        'Pembeli meminta pembatalan pesanan ' . $order->invoice_number . '. Silakan tentukan apakah pesanan dibatalkan atau tetap diproses.',
+                        route('seller.orders.show', $order->id),
+                        '!'
+                    ));
+                }
+            } catch (\Exception $e) {
+                Log::warning('Order cancellation request notification failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+            }
+
+            return back()->with('success', 'Permintaan pembatalan dikirim ke penjual. Pesanan akan dibatalkan setelah disetujui penjual.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order cancellation request error: ' . $e->getMessage(), ['order_id' => $id]);
+            return back()->with('error', 'Terjadi kesalahan saat mengajukan pembatalan. Silakan coba lagi.');
         }
     }
 }

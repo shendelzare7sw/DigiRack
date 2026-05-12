@@ -19,11 +19,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
     Route::post('/users/{id}/toggle-active', [\App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('users.toggle');
 
+    // Recovery Tickets
+    Route::get('/recovery-tickets', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'index'])->name('recovery-tickets.index');
+    Route::post('/recovery-tickets/{ticket}/resend-reset', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'resendResetLink'])->name('recovery-tickets.resend-reset');
+    Route::post('/recovery-tickets/{ticket}/resolve', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'resolve'])->name('recovery-tickets.resolve');
+    Route::post('/recovery-tickets/{ticket}/expire', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'expire'])->name('recovery-tickets.expire');
+
     // Stores
     Route::get('/stores', [\App\Http\Controllers\Admin\StoreController::class, 'index'])->name('stores.index');
     Route::get('/stores/{id}', [\App\Http\Controllers\Admin\StoreController::class, 'show'])->name('stores.show');
     Route::post('/stores/{id}/toggle-active', [\App\Http\Controllers\Admin\StoreController::class, 'toggleActive'])->name('stores.toggle');
     Route::post('/stores/{id}/toggle-verify', [\App\Http\Controllers\Admin\StoreController::class, 'toggleVerification'])->name('stores.verify');
+    Route::post('/stores/{id}/reject', [\App\Http\Controllers\Admin\StoreController::class, 'reject'])->name('stores.reject');
 
     // Products (moderation)
     Route::get('/products', [\App\Http\Controllers\Admin\ProductModerationController::class, 'index'])->name('products.index');

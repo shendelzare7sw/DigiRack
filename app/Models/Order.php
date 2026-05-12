@@ -24,6 +24,10 @@ class Order extends Model
         'shipping_address',
         'applied_buyer_fees',
         'shipping_tracking_number',
+        'cancellation_reason',
+        'cancellation_response',
+        'cancellation_requested_at',
+        'cancellation_resolved_at',
         'notes',
     ];
 
@@ -34,6 +38,8 @@ class Order extends Model
             'shipping_cost' => 'integer',
             'shipping_address' => 'array',
             'applied_buyer_fees' => 'array',
+            'cancellation_requested_at' => 'datetime',
+            'cancellation_resolved_at' => 'datetime',
         ];
     }
 
@@ -68,6 +74,7 @@ class Order extends Model
         return match($this->status) {
             'pending_payment' => 'Menunggu Pembayaran',
             'processing' => 'Diproses',
+            'cancellation_requested' => 'Menunggu Persetujuan Batal',
             'shipped' => 'Dikirim',
             'completed' => 'Selesai',
             'cancelled' => 'Dibatalkan',
@@ -80,6 +87,7 @@ class Order extends Model
         return match($this->status) {
             'pending_payment' => 'yellow',
             'processing' => 'blue',
+            'cancellation_requested' => 'orange',
             'shipped' => 'indigo',
             'completed' => 'green',
             'cancelled' => 'red',

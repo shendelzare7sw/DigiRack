@@ -39,6 +39,7 @@ class SellerRegistrationController extends Controller
         $request->validate([
             'store_name' => 'required|string|max:255',
             'store_description' => 'nullable|string|max:1000',
+            'identity_document' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:2048',
         ]);
 
         // Generate unique slug
@@ -47,20 +48,24 @@ class SellerRegistrationController extends Controller
             $slug = Str::slug($request->store_name) . '-' . Str::random(5);
         }
 
-        // Create the store
+        $identityPath = $request->file('identity_document')->store('store-identities', 'public');
+
+        // Create the store as pending. Admin approval will activate seller access.
         Store::create([
             'user_id' => $user->id,
             'name' => $request->store_name,
             'slug' => $slug,
             'description' => $request->store_description ?? '',
-            'is_active' => true,
-            'is_verified' => false, // Needs admin verification
+            'identity_document_path' => $identityPath,
+            'identity_submitted_at' => now(),
+            'is_active' => false,
+            'is_verified' => false,
+            'verification_status' => 'pending',
+            'verification_notes' => null,
+            'verified_at' => null,
         ]);
 
-        // Upgrade user role to seller
-        $user->role = 'seller';
-        $user->save();
-
-        return redirect()->route('seller.dashboard')->with('success', 'Selamat! Toko "' . $request->store_name . '" berhasil didaftarkan. Menunggu verifikasi Admin untuk bisa mencairkan dana.');
+        return redirect()->route('seller.dashboard')
+            ->with('success', 'Toko "' . $request->store_name . '" berhasil diajukan. Anda bisa masuk dashboard seller, tetapi menu penjualan aktif setelah verifikasi admin.');
     }
 }

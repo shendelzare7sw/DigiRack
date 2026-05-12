@@ -36,6 +36,7 @@
                     <option value="">Semua Status</option>
                     <option value="verified" {{ request('status') == 'verified' ? 'selected' : '' }}>Terverifikasi Lolos</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu Validasi</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
                 </select>
                 
                 <button type="submit" class="bg-brand-navy hover:bg-brand-navydark text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm">Filter</button>
@@ -57,7 +58,10 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100 text-sm">
                             @foreach($stores as $store)
-                            <tr class="hover:bg-gray-50/50 transition-colors {{ !$store->is_verified ? 'bg-orange-50/30' : '' }}">
+                            @php
+                                $verificationStatus = $store->verification_status ?? ($store->is_verified ? 'approved' : 'pending');
+                            @endphp
+                            <tr class="hover:bg-gray-50/50 transition-colors {{ $verificationStatus === 'rejected' ? 'bg-red-50/30' : (!$store->is_verified ? 'bg-orange-50/30' : '') }}">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <img src="{{ $store->logo_url }}" class="w-10 h-10 rounded-full border border-gray-200 object-cover shrink-0">
@@ -80,12 +84,28 @@
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">
                                             <x-icon name="check-badge" class="w-3.5 h-3.5" /> Terverifikasi
                                         </span>
+                                    @elseif($verificationStatus === 'rejected')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                                            <x-icon name="x-circle" class="w-3.5 h-3.5" /> Ditolak
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200">
                                             <x-icon name="clock" class="w-3.5 h-3.5" /> Menunggu Validasi
                                         </span>
                                     @endif
                                     <div class="text-xs text-gray-400 mt-1">Sejak {{ $store->created_at->format('M Y') }}</div>
+                                    @if($store->identity_document_url)
+                                        <a href="{{ $store->identity_document_url }}" target="_blank" class="inline-flex items-center gap-1 mt-2 text-xs font-bold text-brand-blue hover:text-blue-700">
+                                            <x-icon name="document-text" class="w-3.5 h-3.5" /> Lihat ID
+                                        </a>
+                                    @else
+                                        <div class="text-[11px] text-red-400 mt-2">Dokumen ID belum ada</div>
+                                    @endif
+                                    @if($store->verification_notes)
+                                        <div class="text-[11px] text-gray-500 mt-1 max-w-[180px] truncate" title="{{ $store->verification_notes }}">
+                                            Catatan: {{ $store->verification_notes }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($store->bank_name)
@@ -110,6 +130,13 @@
                                             @csrf
                                             <button type="submit" class="px-3 py-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center gap-1">
                                                 <x-icon name="check" class="w-3.5 h-3.5" /> Loloskan
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.stores.reject', $store->id) }}" method="POST" class="flex items-center gap-1" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tolak Pengajuan', message: 'Tolak pengajuan toko ini? Catatan admin akan ditampilkan ke pemilik toko.', type: 'danger', confirmText: 'Ya, Tolak' })">
+                                            @csrf
+                                            <input type="text" name="verification_notes" required maxlength="1000" placeholder="Catatan" class="w-28 border-gray-300 focus:border-red-400 focus:ring-red-400 rounded-lg text-xs py-2">
+                                            <button type="submit" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center gap-1">
+                                                <x-icon name="x-mark" class="w-3.5 h-3.5" /> Tolak
                                             </button>
                                         </form>
                                     @endif

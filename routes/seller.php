@@ -11,17 +11,28 @@ use Illuminate\Support\Facades\Route;
 | middleware: auth, role:seller,admin
 */
 
-// Seller Registration (accessible by any authenticated user, including buyers)
-Route::middleware(['auth'])->prefix('seller')->name('seller.')->group(function () {
+// Seller Registration (accessible by verified authenticated users)
+Route::middleware(['auth', 'verified'])->prefix('seller')->name('seller.')->group(function () {
     Route::get('/register', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'showForm'])->name('register.form');
     Route::post('/register', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'register'])->name('register.store');
-});
-
-Route::middleware(['auth', 'role:seller,admin'])->prefix('seller')->name('seller.')->group(function () {
 
     Route::get('/dashboard', function () {
+        $user = auth()->user();
+
+        if ($user->role === 'admin') {
+            return view('seller.dashboard');
+        }
+
+        if (!$user->store) {
+            return redirect()->route('seller.register.form')
+                ->with('info', 'Untuk menjadi penjual, Anda perlu mendaftarkan toko terlebih dahulu.');
+        }
+
         return view('seller.dashboard');
     })->name('dashboard');
+});
+
+Route::middleware(['auth', 'verified', 'role:seller,admin', 'seller.approved'])->prefix('seller')->name('seller.')->group(function () {
 
     // Store Profile (Fase 6 & 9)
     Route::get('/store', [\App\Http\Controllers\Seller\StoreProfileController::class, 'show'])->name('store.show');
@@ -39,6 +50,7 @@ Route::middleware(['auth', 'role:seller,admin'])->prefix('seller')->name('seller
     Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::post('/orders/{id}/cancellation', [App\Http\Controllers\Seller\OrderController::class, 'resolveCancellation'])->name('orders.cancellation');
 
     // Reviews (Fase 6)
     // Route::get('/reviews', [App\Http\Controllers\Seller\ReviewController::class, 'index'])->name('reviews.index');
@@ -60,4 +72,3 @@ Route::middleware(['auth', 'role:seller,admin'])->prefix('seller')->name('seller
     // Route::get('/profile', [App\Http\Controllers\Seller\ProfileController::class, 'edit'])->name('profile.edit');
     // Route::post('/profile', [App\Http\Controllers\Seller\ProfileController::class, 'update'])->name('profile.update');
 });
-

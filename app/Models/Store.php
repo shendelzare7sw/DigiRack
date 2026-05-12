@@ -17,8 +17,13 @@ class Store extends Model
         'description',
         'logo',
         'banner',
+        'identity_document_path',
+        'identity_submitted_at',
         'is_active',
         'is_verified',
+        'verification_status',
+        'verification_notes',
+        'verified_at',
         'avg_rating',
         'total_sold',
         'bank_name',
@@ -32,6 +37,8 @@ class Store extends Model
             'is_active' => 'boolean',
             'is_verified' => 'boolean',
             'avg_rating' => 'decimal:1',
+            'identity_submitted_at' => 'datetime',
+            'verified_at' => 'datetime',
         ];
     }
 
@@ -60,5 +67,15 @@ class Store extends Model
     public function getBannerUrlAttribute(): ?string
     {
         return $this->banner ? asset('storage/' . $this->banner) : null;
+    }
+
+    public function getIdentityDocumentUrlAttribute(): ?string
+    {
+        return $this->identity_document_path ? asset('storage/' . $this->identity_document_path) : null;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->verification_status === 'approved' && $this->is_verified;
     }
 }

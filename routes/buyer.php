@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | middleware: auth, role:buyer,seller,admin
 */
 
-Route::middleware(['auth', 'role:buyer,seller,admin', \App\Http\Middleware\EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:buyer,seller,admin', \App\Http\Middleware\EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
 
     Route::get('/dashboard', function () {
         return view('buyer.dashboard');
@@ -32,6 +32,7 @@ Route::middleware(['auth', 'role:buyer,seller,admin', \App\Http\Middleware\Enfor
     Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/confirm', [App\Http\Controllers\Buyer\OrderController::class, 'confirm'])->name('orders.confirm');
+    Route::post('/orders/{id}/cancel', [App\Http\Controllers\Buyer\OrderController::class, 'cancel'])->name('orders.cancel');
 
     // Checkout (Fase 5B)
     Route::post('/checkout/init', [\App\Http\Controllers\Buyer\CheckoutController::class, 'init'])->name('checkout.init');
@@ -56,4 +57,3 @@ Route::middleware(['auth', 'role:buyer,seller,admin', \App\Http\Middleware\Enfor
     // Route::delete('/addresses/{id}', [App\Http\Controllers\Buyer\AddressController::class, 'destroy'])->name('addresses.destroy');
     // Route::post('/addresses/{id}/primary', [App\Http\Controllers\Buyer\AddressController::class, 'setPrimary'])->name('addresses.primary');
 });
-

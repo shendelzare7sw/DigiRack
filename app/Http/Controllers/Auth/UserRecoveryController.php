@@ -112,7 +112,7 @@ class UserRecoveryController extends Controller
                     'recovery_ticket',
                     '🎫 Tiket Pemulihan Akun Baru',
                     'User "' . $ticket->user->name . '" meminta reset password. Tiket #' . $ticket->id . ' menunggu verifikasi manual.',
-                    route('admin.dashboard'),
+                    route('admin.recovery-tickets.index'),
                     '🆘'
                 ));
             }
