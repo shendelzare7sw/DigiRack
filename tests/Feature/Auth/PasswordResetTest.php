@@ -47,6 +47,29 @@ class PasswordResetTest extends TestCase
         });
     }
 
+    public function test_reset_password_email_uses_configured_app_url(): void
+    {
+        Notification::fake();
+
+        config(['app.url' => 'https://digirack.sipaduhok.my.id']);
+
+        $user = User::factory()->create();
+
+        $this->post('/forgot-password', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, CustomResetPassword::class, function ($notification) use ($user) {
+            $mail = $notification->toMail($user);
+
+            $this->assertStringStartsWith(
+                'https://digirack.sipaduhok.my.id/reset-password/',
+                $mail->actionUrl
+            );
+            $this->assertStringContainsString('email='.urlencode($user->email), $mail->actionUrl);
+
+            return true;
+        });
+    }
+
     public function test_password_can_be_reset_with_valid_token(): void
     {
         Notification::fake();

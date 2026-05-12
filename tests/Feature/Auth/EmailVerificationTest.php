@@ -41,6 +41,38 @@ class EmailVerificationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
     }
 
+    public function test_email_can_be_verified_behind_https_proxy(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        Event::fake();
+        URL::forceRootUrl('https://digirack.sipaduhok.my.id');
+
+        try {
+            $verificationUrl = URL::temporarySignedRoute(
+                'verification.verify',
+                now()->addMinutes(60),
+                ['id' => $user->id, 'hash' => sha1($user->email)]
+            );
+
+            $response = $this
+                ->actingAs($user)
+                ->withServerVariables([
+                    'HTTP_HOST' => 'digirack.sipaduhok.my.id',
+                    'HTTP_X_FORWARDED_PROTO' => 'https',
+                    'HTTP_X_FORWARDED_HOST' => 'digirack.sipaduhok.my.id',
+                    'HTTP_X_FORWARDED_PORT' => '443',
+                ])
+                ->get($verificationUrl);
+        } finally {
+            URL::forceRootUrl(null);
+        }
+
+        Event::assertDispatched(Verified::class);
+        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+    }
+
     public function test_email_is_not_verified_with_invalid_hash(): void
     {
         $user = User::factory()->unverified()->create();
