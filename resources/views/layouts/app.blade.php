@@ -67,23 +67,23 @@
                         <ul class="space-y-4 text-[15px] text-gray-300">
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Tentang DigiRack</a>
+                                <a href="{{ route('pages.about') }}" class="hover:text-white transition-colors">Tentang DigiRack</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Official Store</a>
+                                <a href="{{ route('pages.download-app') }}" class="hover:text-white transition-colors">Download App</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Flash Sale</a>
+                                <a href="{{ route('pages.selling') }}" class="hover:text-white transition-colors">Mulai Berjualan</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Produk Enterprise</a>
+                                <a href="{{ route('pages.b2b') }}" class="hover:text-white transition-colors">Mitra B2B</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Berita Terkini</a>
+                                <a href="{{ route('pages.promos') }}" class="hover:text-white transition-colors">Promo Spesial</a>
                             </li>
                         </ul>
                     </div>
@@ -94,23 +94,23 @@
                         <ul class="space-y-4 text-[15px] text-gray-300">
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Bantuan Pembeli</a>
+                                <a href="{{ route('pages.help') }}" class="hover:text-white transition-colors">Pusat Bantuan</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Pusat Edukasi Seller</a>
+                                <a href="{{ route('user.recovery.form') }}" class="hover:text-white transition-colors">Pemulihan Akun</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Pengiriman & Logistik</a>
+                                <a href="{{ route('products.index') }}" class="hover:text-white transition-colors">Belanja Produk</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Garansi Produk</a>
+                                <a href="{{ route('pages.selling') }}" class="hover:text-white transition-colors">Panduan Seller</a>
                             </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="#" class="hover:text-white transition-colors">Hubungi Kami</a>
+                                <a href="{{ auth()->check() ? route('profile.edit') : route('login') }}" class="hover:text-white transition-colors">Profil Saya</a>
                             </li>
                         </ul>
                     </div>
@@ -176,9 +176,9 @@
                 <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[14px] text-gray-400 gap-4 mt-8 pb-4">
                     <p>&copy; {{ date('Y') }} PT DigiRack Infrastruktur Digital. All rights reserved.</p>
                     <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mt-4 md:mt-0">
-                        <a href="#" class="hover:text-white transition-colors">Kebijakan Privasi</a>
-                        <a href="#" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
-                        <a href="#" class="hover:text-white transition-colors">Sitemap</a>
+                        <a href="{{ route('pages.about') }}" class="hover:text-white transition-colors">Kebijakan Privasi</a>
+                        <a href="{{ route('pages.help') }}" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
+                        <a href="{{ route('pages.help') }}" class="hover:text-white transition-colors">Sitemap</a>
                     </div>
                 </div>
             </div>

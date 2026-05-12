@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Public\ProductController;
+use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+Route::get('/download-app', [PageController::class, 'downloadApp'])->name('pages.download-app');
+Route::get('/tentang-digirack', [PageController::class, 'about'])->name('pages.about');
+Route::get('/mulai-berjualan', [PageController::class, 'selling'])->name('pages.selling');
+Route::get('/mitra-b2b', [PageController::class, 'b2b'])->name('pages.b2b');
+Route::get('/promo-spesial', [PageController::class, 'promos'])->name('pages.promos');
+Route::get('/pusat-bantuan', [PageController::class, 'help'])->name('pages.help');
 
 // Public API for locations & Webhooks
 Route::get('/api/locations/provinces', [\App\Http\Controllers\Public\LocationController::class, 'getProvinces']);
@@ -69,4 +77,3 @@ require __DIR__.'/auth.php';
 require __DIR__.'/buyer.php';
 require __DIR__.'/seller.php';
 require __DIR__.'/admin.php';
-

@@ -16,19 +16,19 @@
     <div class="bg-gray-100 border-b border-gray-200 hidden md:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-9 text-xs text-gray-500 font-medium">
             <div class="flex gap-5">
-                <a href="#" class="hover:text-brand-navy flex items-center gap-1.5 transition-colors">
+                <a href="{{ route('pages.download-app') }}" class="hover:text-brand-navy flex items-center gap-1.5 transition-colors">
                     <x-icon name="device-phone-mobile" class="w-4 h-4" /> Download App DigiRack
                 </a>
                 <span class="text-gray-300">|</span>
-                <a href="#" class="hover:text-brand-navy transition-colors">Tentang DigiRack</a>
-                <a href="{{ Auth::check() ? (Auth::user()->store ? route('seller.dashboard') : route('seller.register.form')) : route('register') }}" class="hover:text-brand-navy transition-colors">Mulai Berjualan</a>
-                <a href="#" class="hover:text-brand-navy transition-colors">Mitra B2B</a>
+                <a href="{{ route('pages.about') }}" class="hover:text-brand-navy transition-colors">Tentang DigiRack</a>
+                <a href="{{ route('pages.selling') }}" class="hover:text-brand-navy transition-colors">Mulai Berjualan</a>
+                <a href="{{ route('pages.b2b') }}" class="hover:text-brand-navy transition-colors">Mitra B2B</a>
             </div>
             <div class="flex gap-5">
-                <a href="#" class="hover:text-brand-navy transition-colors flex items-center gap-1">
+                <a href="{{ route('pages.promos') }}" class="hover:text-brand-navy transition-colors flex items-center gap-1">
                     Promo Spesial
                 </a>
-                <a href="#" class="hover:text-brand-navy transition-colors flex items-center gap-1">
+                <a href="{{ route('pages.help') }}" class="hover:text-brand-navy transition-colors flex items-center gap-1">
                     <x-icon name="question-mark-circle" class="w-4 h-4" /> Pusat Bantuan
                 </a>
             </div>
@@ -284,6 +284,30 @@
                     </x-responsive-nav-link>
                 </div>
 
+                <div class="mt-4 mx-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Info DigiRack</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
+                        <a href="{{ route('pages.download-app') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Download App
+                        </a>
+                        <a href="{{ route('pages.about') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Tentang
+                        </a>
+                        <a href="{{ route('pages.selling') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Mulai Berjualan
+                        </a>
+                        <a href="{{ route('pages.b2b') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Mitra B2B
+                        </a>
+                        <a href="{{ route('pages.promos') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Promo
+                        </a>
+                        <a href="{{ route('pages.help') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Bantuan
+                        </a>
+                    </div>
+                </div>
+
                 <div class="mt-4 border-t border-gray-100 pt-2 px-2 pb-3">
                     <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })">
                         @csrf
@@ -302,6 +326,30 @@
                 <a href="{{ route('register') }}" class="block w-full text-center bg-brand-blue text-white font-bold text-base px-4 py-3 rounded-xl shadow-sm transition-colors hover:bg-blue-600">
                     Daftar Akun Baru
                 </a>
+
+                <div class="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Info DigiRack</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
+                        <a href="{{ route('pages.download-app') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Download App
+                        </a>
+                        <a href="{{ route('pages.about') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Tentang
+                        </a>
+                        <a href="{{ route('pages.selling') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Mulai Berjualan
+                        </a>
+                        <a href="{{ route('pages.b2b') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Mitra B2B
+                        </a>
+                        <a href="{{ route('pages.promos') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Promo
+                        </a>
+                        <a href="{{ route('pages.help') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
+                            Bantuan
+                        </a>
+                    </div>
+                </div>
             </div>
         @endauth
     </div>
