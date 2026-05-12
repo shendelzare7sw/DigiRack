@@ -72,8 +72,14 @@
                     @php
                         $unreadNotifs = Auth::user()->unreadNotifications->take(8);
                         $unreadCount = Auth::user()->unreadNotifications->count();
-                        $sellerEntryUrl = Auth::user()->store ? route('seller.dashboard') : route('seller.register.form');
-                        $sellerEntryLabel = Auth::user()->store ? 'Buka' : 'Daftar';
+                        $activeRole = Auth::user()->isAdmin() ? 'admin' : session('active_role', Auth::user()->role);
+                        $roleLabel = match($activeRole) {
+                            'seller' => 'Mode Seller',
+                            'admin' => 'Admin',
+                            default => 'Mode Pembeli',
+                        };
+                        $sellerEntryUrl = Auth::user()->store ? route('switch.role', 'seller') : route('seller.register.form');
+                        $sellerEntryLabel = Auth::user()->store ? 'Seller' : 'Daftar';
                     @endphp
                     <x-dropdown align="right" width="w-80 sm:w-96" contentClasses="py-0 overflow-hidden bg-white" class="mobile-dropdown-notif">
                         <x-slot name="trigger">
@@ -151,7 +157,7 @@
                                     <img src="{{ Auth::user()->avatar_url }}" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-200 group-hover:border-brand-navy transition-colors">
                                     <div class="text-left hidden lg:block">
                                         <div class="text-sm font-semibold text-gray-800 leading-none group-hover:text-brand-navy transition-colors">{{ Str::limit(Auth::user()->name, 15) }}</div>
-                                        <div class="text-[11px] font-medium text-gray-500 mt-1 uppercase tracking-wider">{{ Auth::user()->role }}</div>
+                                        <div class="text-[11px] font-medium text-gray-500 mt-1 uppercase tracking-wider">{{ $roleLabel }}</div>
                                     </div>
                                     <x-icon name="chevron-down" class="w-4 h-4 text-gray-400 hidden lg:block" />
                                 </button>
@@ -169,6 +175,19 @@
                                             <span class="text-xs font-bold text-gray-700">Toko Saya</span>
                                         </div>
                                         <a href="{{ $sellerEntryUrl }}" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded shadow-sm hover:bg-blue-600 font-bold transition">{{ $sellerEntryLabel }}</a>
+                                    </div>
+                                @endif
+                                @if(!Auth::user()->isAdmin() && Auth::user()->store)
+                                    <div class="px-3 py-3 border-b border-gray-100">
+                                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Mode akun aktif</p>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
+                                                Pembeli
+                                            </a>
+                                            <a href="{{ route('switch.role', 'seller') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'seller' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
+                                                Seller
+                                            </a>
+                                        </div>
                                     </div>
                                 @endif
                                 <x-dropdown-link :href="route('dashboard')">
@@ -256,9 +275,24 @@
                     <img src="{{ Auth::user()->avatar_url }}" alt="Avatar" class="w-10 h-10 rounded-full">
                     <div>
                         <div class="font-semibold text-base text-gray-800">{{ Auth::user()->name }}</div>
-                        <div class="font-medium text-xs text-brand-blue uppercase">{{ Auth::user()->role }}</div>
+                        <div class="font-medium text-xs text-brand-blue uppercase">{{ $roleLabel }}</div>
                     </div>
                 </div>
+                @if(!Auth::user()->isAdmin() && Auth::user()->store)
+                    <div class="px-4 mb-3">
+                        <div class="rounded-xl border border-gray-100 bg-gray-50 p-2">
+                            <p class="px-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Mode akun aktif</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200' }}">
+                                    Pembeli
+                                </a>
+                                <a href="{{ route('switch.role', 'seller') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'seller' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200' }}">
+                                    Seller
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 
                 <div class="space-y-1 px-2">
                     @if(!Auth::user()->isAdmin())

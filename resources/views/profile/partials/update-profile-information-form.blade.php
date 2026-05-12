@@ -65,17 +65,11 @@
                     id="email"
                     name="email"
                     type="email"
-                    class="block w-full {{ $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && $user->hasVerifiedEmail() ? 'border-green-300 bg-green-50/70 text-green-950 focus:border-green-500 focus:ring-green-500 pr-11' : '' }}"
+                    class="block w-full {{ $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && $user->hasVerifiedEmail() ? 'border-green-300 bg-green-50/70 text-green-950 focus:border-green-500 focus:ring-green-500' : '' }}"
                     :value="old('email', $user->email)"
                     required
                     autocomplete="username"
                 />
-
-                @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && $user->hasVerifiedEmail())
-                    <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-green-600">
-                        <x-icon name="check-circle" class="w-5 h-5" />
-                    </div>
-                @endif
             </div>
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 

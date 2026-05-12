@@ -37,7 +37,7 @@ class RoleSwitchController extends Controller
 
         // Redirect based on role
         if ($role === 'seller') {
-            return redirect()->route('seller.dashboard');
+            return redirect()->route('seller.dashboard')->with('success', 'Beralih ke mode Seller.');
         } elseif ($role === 'admin') {
             return redirect()->route('admin.dashboard');
         } else {
