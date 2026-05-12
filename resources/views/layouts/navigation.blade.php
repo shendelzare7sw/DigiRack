@@ -74,9 +74,9 @@
                         $unreadCount = Auth::user()->unreadNotifications->count();
                         $activeRole = Auth::user()->isAdmin() ? 'admin' : session('active_role', Auth::user()->role);
                         $roleLabel = match($activeRole) {
-                            'seller' => 'Mode Seller',
+                            'seller' => 'Seller',
                             'admin' => 'Admin',
-                            default => 'Mode Pembeli',
+                            default => 'Buyer',
                         };
                         $sellerEntryUrl = Auth::user()->store ? route('switch.role', 'seller') : route('seller.register.form');
                         $sellerEntryLabel = Auth::user()->store ? 'Seller' : 'Daftar';
@@ -179,7 +179,7 @@
                                 @endif
                                 @if(!Auth::user()->isAdmin() && Auth::user()->store)
                                     <div class="px-3 py-3 border-b border-gray-100">
-                                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Mode akun aktif</p>
+                                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Akun aktif</p>
                                         <div class="grid grid-cols-2 gap-2">
                                             <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
                                                 Pembeli
@@ -281,7 +281,7 @@
                 @if(!Auth::user()->isAdmin() && Auth::user()->store)
                     <div class="px-4 mb-3">
                         <div class="rounded-xl border border-gray-100 bg-gray-50 p-2">
-                            <p class="px-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Mode akun aktif</p>
+                            <p class="px-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Akun aktif</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200' }}">
                                     Pembeli

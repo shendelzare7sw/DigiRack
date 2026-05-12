@@ -29,8 +29,8 @@
                 <div class="p-5 sm:p-6 bg-white shadow-sm border border-gray-100 rounded-2xl">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-gray-900">Mode Akun</h2>
-                            <p class="mt-1 text-sm text-gray-500">Gunakan mode pembeli untuk belanja, dan mode seller untuk mengelola toko.</p>
+                            <h2 class="text-lg font-semibold text-gray-900">Akun Aktif</h2>
+                            <p class="mt-1 text-sm text-gray-500">Gunakan Buyer untuk belanja, dan Seller untuk mengelola toko.</p>
                         </div>
                         <div class="grid grid-cols-2 gap-2 sm:w-64">
                             <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-xl px-4 py-2.5 text-sm font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
