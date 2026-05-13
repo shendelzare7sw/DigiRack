@@ -281,8 +281,9 @@
                     </div>
                     <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })" class="shrink-0">
                         @csrf
-                        <button type="submit" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-colors" aria-label="Keluar" title="Keluar">
+                        <button type="submit" class="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 hover:border-red-200 hover:bg-red-100 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-colors" aria-label="Keluar" title="Keluar">
                             <x-icon name="arrow-right-on-rectangle-outline" class="w-5 h-5" />
+                            <span>Keluar</span>
                         </button>
                     </form>
                 </div>
