@@ -271,12 +271,20 @@
         @auth
             <!-- Authenticated Mobile Menu -->
             <div class="pt-4 pb-1">
-                <div class="px-4 flex items-center gap-3 mb-4">
-                    <img src="{{ Auth::user()->avatar_url }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                    <div>
-                        <div class="font-semibold text-base text-gray-800">{{ Auth::user()->name }}</div>
-                        <div class="font-medium text-xs text-brand-blue uppercase">{{ $roleLabel }}</div>
+                <div class="px-4 flex items-center justify-between gap-3 mb-4">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <img src="{{ Auth::user()->avatar_url }}" alt="Avatar" class="w-10 h-10 rounded-full shrink-0">
+                        <div class="min-w-0">
+                            <div class="truncate font-semibold text-base text-gray-800">{{ Auth::user()->name }}</div>
+                            <div class="font-medium text-xs text-brand-blue uppercase">{{ $roleLabel }}</div>
+                        </div>
                     </div>
+                    <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })" class="shrink-0">
+                        @csrf
+                        <button type="submit" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500/30 transition-colors" aria-label="Keluar" title="Keluar">
+                            <x-icon name="arrow-right-on-rectangle-outline" class="w-5 h-5" />
+                        </button>
+                    </form>
                 </div>
                 @if(!Auth::user()->isAdmin() && Auth::user()->store)
                     <div class="px-4 mb-3">
@@ -340,15 +348,6 @@
                             Bantuan
                         </a>
                     </div>
-                </div>
-
-                <div class="mt-4 border-t border-gray-100 pt-2 px-2 pb-3">
-                    <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })">
-                        @csrf
-                        <button type="submit" class="block w-full text-left w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 hover:border-red-600 focus:outline-none transition duration-150 ease-in-out">
-                            Keluar
-                        </button>
-                    </form>
                 </div>
             </div>
         @else
