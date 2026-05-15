@@ -1,11 +1,17 @@
 <x-app-layout>
     <x-slot name="title">{{ $store->name }} - DigiRack</x-slot>
 
+    @php
+        $previousUrl = url()->previous();
+        $currentUrl = url()->current();
+        $backUrl = $previousUrl && $previousUrl !== $currentUrl ? $previousUrl : route('products.index');
+    @endphp
+
     {{-- Store Header / Banner --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div class="relative rounded-2xl overflow-hidden bg-gray-100 h-48 sm:h-64 md:h-80 shadow-inner">
             {{-- Back Button (floating over banner) --}}
-            <a href="javascript:history.back()" class="absolute top-4 left-4 z-10 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 hover:bg-white text-gray-700 hover:text-brand-navy transition-all shadow-lg" title="Kembali">
+            <a href="{{ $backUrl }}" data-store-back-button class="absolute top-4 left-4 z-30 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm border border-white/40 hover:bg-white text-gray-700 hover:text-brand-navy transition-all shadow-lg pointer-events-auto touch-manipulation" title="Kembali" aria-label="Kembali">
                 <x-icon name="arrow-left" class="w-5 h-5" />
             </a>
             @if($store->banner)
@@ -104,4 +110,40 @@
             </div>
         @endif
     </section>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var backButton = document.querySelector('[data-store-back-button]');
+                if (!backButton) return;
+
+                var fallbackUrl = backButton.getAttribute('href');
+                var navigated = false;
+
+                function goBack(event) {
+                    if (event) event.preventDefault();
+                    if (navigated) return;
+                    navigated = true;
+
+                    var hasSameOriginReferrer = document.referrer && (function() {
+                        try {
+                            return new URL(document.referrer).origin === window.location.origin;
+                        } catch (error) {
+                            return false;
+                        }
+                    })();
+
+                    if (window.history.length > 1 && hasSameOriginReferrer) {
+                        window.history.back();
+                        return;
+                    }
+
+                    window.location.assign(fallbackUrl);
+                }
+
+                backButton.addEventListener('click', goBack);
+                backButton.addEventListener('touchend', goBack, { passive: false });
+            });
+        </script>
+    @endpush
 </x-app-layout>
