@@ -215,7 +215,7 @@
                             <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" class="mt-4" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
                                 @csrf
                                 <textarea name="delivery_confirmation_note" rows="3" maxlength="500" class="w-full border-blue-200 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm" placeholder="Catatan opsional: diterima oleh siapa, bukti dari tracking, atau konfirmasi kurir..."></textarea>
-                                <button type="submit" class="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                                <button type="submit" class="mt-3 w-full bg-brand-navy hover:bg-brand-navydark focus:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all shadow-lg shadow-brand-navy/20 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
                                     <x-icon name="check-circle" class="w-5 h-5" /> Tandai Paket Sudah Sampai
                                 </button>
                             </form>
