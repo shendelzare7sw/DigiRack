@@ -190,8 +190,11 @@
                         $autoCompleteAt = $order->delivered_at && $autoCompleteHours > 0
                             ? $order->delivered_at->copy()->addHours($autoCompleteHours)
                             : null;
+                        $deliveryProofPaths = collect($order->delivery_proof_paths ?: ($order->delivery_proof_path ? [$order->delivery_proof_path] : []))
+                            ->filter()
+                            ->values();
                     @endphp
-                    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100">
+                    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100" x-data="{ proofOpen: false, proofSrc: '', proofAlt: '' }">
                         <x-icon :name="$order->delivered_at ? 'check-circle' : 'truck'" class="w-10 h-10 text-blue-400 mx-auto mb-2" />
                         <h3 class="font-bold text-blue-900 mb-1 text-sm text-center">
                             {{ $order->delivered_at ? 'Paket Tercatat Sampai' : 'Pesanan Dalam Perjalanan' }}
@@ -210,22 +213,38 @@
                                 @if($order->delivery_confirmation_note)
                                     <p class="mt-2 text-gray-600">{{ $order->delivery_confirmation_note }}</p>
                                 @endif
-                                @if($order->delivery_proof_path)
-                                    <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block mt-3 overflow-hidden rounded-xl border border-blue-100 bg-white">
-                                        <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti paket sampai untuk {{ $order->invoice_number }}" class="w-full max-h-56 object-cover">
-                                    </a>
+                                @if($deliveryProofPaths->isNotEmpty())
+                                    <div class="mt-3">
+                                        <p class="text-[10px] font-bold text-blue-900 uppercase tracking-wide mb-2">Bukti foto sampai</p>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            @foreach($deliveryProofPaths as $proofPath)
+                                                @php $proofUrl = asset('storage/' . $proofPath); @endphp
+                                                <button type="button" @click="proofSrc = '{{ $proofUrl }}'; proofAlt = 'Bukti paket sampai {{ $loop->iteration }}'; proofOpen = true" class="group aspect-square overflow-hidden rounded-xl border border-blue-100 bg-white focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
+                                                    <img src="{{ $proofUrl }}" alt="Bukti paket sampai {{ $loop->iteration }} untuk {{ $order->invoice_number }}" class="w-full h-full object-cover transition-transform group-hover:scale-105">
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 @endif
                             </div>
                         @else
-                            <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" enctype="multipart/form-data" class="mt-4" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima dan bukti foto sudah benar. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
+                            <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" enctype="multipart/form-data" class="mt-4" x-data="{ previews: [], tooMany: false, updatePreviews(event) { this.previews.forEach((preview) => URL.revokeObjectURL(preview.url)); const files = Array.from(event.target.files || []); this.tooMany = files.length > 6; this.previews = files.map((file) => ({ name: file.name, url: URL.createObjectURL(file) })); } }" @submit.prevent="if (tooMany) return; $dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima dan bukti foto sudah benar. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
                                 @csrf
                                 <textarea name="delivery_confirmation_note" rows="3" maxlength="500" class="w-full border-blue-200 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm" placeholder="Catatan opsional: diterima oleh siapa, bukti dari tracking, atau konfirmasi kurir..."></textarea>
                                 <div class="mt-3 text-left">
-                                    <label for="delivery_proof" class="block text-xs font-bold text-blue-900 mb-1">Foto bukti sampai <span class="text-red-500">*</span></label>
-                                    <input id="delivery_proof" name="delivery_proof" type="file" accept="image/jpeg,image/png,image/webp" required class="block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-sm file:font-bold file:text-brand-navy hover:file:bg-blue-50">
-                                    <p class="text-[11px] text-blue-700 mt-1">Format JPG, PNG, atau WebP. Maksimal 8 MB.</p>
+                                    <label for="delivery_proofs" class="block text-xs font-bold text-blue-900 mb-1">Foto bukti sampai <span class="text-red-500">*</span></label>
+                                    <input id="delivery_proofs" name="delivery_proofs[]" type="file" accept="image/jpeg,image/png,image/webp" multiple required @change="updatePreviews($event)" class="block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-sm file:font-bold file:text-brand-navy hover:file:bg-blue-50">
+                                    <p class="text-[11px] text-blue-700 mt-1">Bisa pilih beberapa foto. Maksimal 6 foto, masing-masing 8 MB. Format JPG, PNG, atau WebP.</p>
+                                    <p x-cloak x-show="tooMany" class="text-[11px] text-red-600 font-semibold mt-1">Maksimal 6 foto. Kurangi pilihan sebelum mengirim.</p>
+                                    <div x-cloak x-show="previews.length" class="grid grid-cols-3 gap-2 mt-3">
+                                        <template x-for="preview in previews" :key="preview.url">
+                                            <button type="button" @click="proofSrc = preview.url; proofAlt = preview.name; proofOpen = true" class="group aspect-square overflow-hidden rounded-xl border border-blue-100 bg-white focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
+                                                <img :src="preview.url" :alt="preview.name" class="w-full h-full object-cover transition-transform group-hover:scale-105">
+                                            </button>
+                                        </template>
+                                    </div>
                                 </div>
-                                <button type="submit" class="mt-3 w-full bg-brand-navy hover:bg-brand-navydark focus:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all shadow-lg shadow-brand-navy/20 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
+                                <button type="submit" :disabled="tooMany" :class="tooMany ? 'opacity-60 cursor-not-allowed' : ''" class="mt-3 w-full bg-brand-navy hover:bg-brand-navydark focus:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all shadow-lg shadow-brand-navy/20 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
                                     <x-icon name="check-circle" class="w-5 h-5" /> Tandai Paket Sudah Sampai
                                 </button>
                             </form>
@@ -233,6 +252,12 @@
                                 Untuk TIKI/POS/JNE dan kurir reguler, cek tracking manual lalu tandai saat status kurir sudah delivered.
                             </p>
                         @endif
+                        <div x-cloak x-show="proofOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6" @click.self="proofOpen = false" @keydown.escape.window="proofOpen = false">
+                            <button type="button" @click="proofOpen = false" class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white focus:outline-none focus:ring-2 focus:ring-white" aria-label="Tutup preview">
+                                <x-icon name="x-mark-outline" class="w-5 h-5" />
+                            </button>
+                            <img :src="proofSrc" :alt="proofAlt" class="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl">
+                        </div>
                     </div>
                 @elseif($order->status === 'completed')
                     <div class="bg-green-50 rounded-2xl p-5 border border-green-100 text-center">

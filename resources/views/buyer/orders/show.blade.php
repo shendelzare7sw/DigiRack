@@ -157,8 +157,11 @@
                         $autoCompleteAt = $order->delivered_at && $autoCompleteHours > 0
                             ? $order->delivered_at->copy()->addHours($autoCompleteHours)
                             : null;
+                        $deliveryProofPaths = collect($order->delivery_proof_paths ?: ($order->delivery_proof_path ? [$order->delivery_proof_path] : []))
+                            ->filter()
+                            ->values();
                     @endphp
-                    <div class="bg-brand-navylight/20 rounded-2xl shadow-sm border border-brand-navy/30 p-6 relative overflow-hidden">
+                    <div class="bg-brand-navylight/20 rounded-2xl shadow-sm border border-brand-navy/30 p-6 relative overflow-hidden" x-data="{ proofOpen: false, proofSrc: '', proofAlt: '' }">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-navy"></div>
                         <h3 class="font-bold text-brand-navy mb-2 flex items-center gap-2">
                             <x-icon :name="$order->delivered_at ? 'gift' : 'truck'" class="w-5 h-5" />
@@ -178,10 +181,18 @@
                                 Auto-selesai belum berjalan sampai pengiriman tercatat sampai di alamat.
                             </p>
                         @endif
-                        @if($order->delivered_at && $order->delivery_proof_path)
-                            <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block mb-4 overflow-hidden rounded-xl border border-brand-navy/10 bg-white">
-                                <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti paket sampai untuk {{ $order->invoice_number }}" class="w-full max-h-60 object-cover">
-                            </a>
+                        @if($order->delivered_at && $deliveryProofPaths->isNotEmpty())
+                            <div class="mb-4 rounded-xl border border-brand-navy/10 bg-white/80 p-3">
+                                <p class="text-[11px] font-bold text-brand-navy mb-2">Bukti foto paket sampai</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    @foreach($deliveryProofPaths as $proofPath)
+                                        @php $proofUrl = asset('storage/' . $proofPath); @endphp
+                                        <button type="button" @click="proofSrc = '{{ $proofUrl }}'; proofAlt = 'Bukti paket sampai {{ $loop->iteration }}'; proofOpen = true" class="group aspect-square overflow-hidden rounded-xl border border-brand-navy/10 bg-white focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
+                                            <img src="{{ $proofUrl }}" alt="Bukti paket sampai {{ $loop->iteration }} untuk {{ $order->invoice_number }}" class="w-full h-full object-cover transition-transform group-hover:scale-105">
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endif
                         @if($order->delivered_at && $order->delivery_confirmation_note)
                             <p class="text-xs text-gray-600 bg-white/70 border border-brand-navy/10 rounded-xl px-3 py-2 mb-4">
@@ -195,6 +206,12 @@
                                 <x-icon name="check-circle" class="w-5 h-5" /> Pesanan Diterima & Selesai
                             </button>
                         </form>
+                        <div x-cloak x-show="proofOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6" @click.self="proofOpen = false" @keydown.escape.window="proofOpen = false">
+                            <button type="button" @click="proofOpen = false" class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg hover:bg-white focus:outline-none focus:ring-2 focus:ring-white" aria-label="Tutup preview">
+                                <x-icon name="x-mark-outline" class="w-5 h-5" />
+                            </button>
+                            <img :src="proofSrc" :alt="proofAlt" class="max-h-[85vh] max-w-[92vw] rounded-xl object-contain shadow-2xl">
+                        </div>
                     </div>
                 @elseif($order->status === 'completed')
                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 text-center">

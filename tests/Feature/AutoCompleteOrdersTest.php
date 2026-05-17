@@ -74,7 +74,10 @@ class AutoCompleteOrdersTest extends TestCase
 
         $response = $this->actingAs($seller)->post(route('seller.orders.delivered', $order->id), [
             'delivery_confirmation_note' => 'Diterima oleh Ani.',
-            'delivery_proof' => UploadedFile::fake()->image('proof.jpg')->size(1024),
+            'delivery_proofs' => [
+                UploadedFile::fake()->image('proof-a.jpg')->size(1024),
+                UploadedFile::fake()->image('proof-b.png')->size(1024),
+            ],
         ]);
 
         $response->assertSessionHas('success');
@@ -84,7 +87,11 @@ class AutoCompleteOrdersTest extends TestCase
         $this->assertNotNull($order->delivered_at);
         $this->assertSame('Diterima oleh Ani.', $order->delivery_confirmation_note);
         $this->assertNotNull($order->delivery_proof_path);
-        Storage::disk('public')->assertExists($order->delivery_proof_path);
+        $this->assertCount(2, $order->delivery_proof_paths);
+        $this->assertSame($order->delivery_proof_paths[0], $order->delivery_proof_path);
+        foreach ($order->delivery_proof_paths as $proofPath) {
+            Storage::disk('public')->assertExists($proofPath);
+        }
     }
 
     private function createShippedOrder($shippedAt = null, $deliveredAt = null): Order

@@ -155,7 +155,8 @@ class OrderController extends Controller
 
         $request->validate([
             'delivery_confirmation_note' => 'nullable|string|max:500',
-            'delivery_proof' => 'required|image|mimes:jpg,jpeg,png,webp|max:8192',
+            'delivery_proofs' => 'required|array|min:1|max:6',
+            'delivery_proofs.*' => 'image|mimes:jpg,jpeg,png,webp|max:8192',
         ]);
 
         if ($order->status !== 'shipped') {
@@ -170,7 +171,13 @@ class OrderController extends Controller
         $order->delivery_confirmation_note = $request->filled('delivery_confirmation_note')
             ? $request->delivery_confirmation_note
             : 'Seller menandai paket sudah sampai berdasarkan konfirmasi pengiriman.';
-        $order->delivery_proof_path = $request->file('delivery_proof')->store('delivery-proofs', 'public');
+        $proofPaths = collect($request->file('delivery_proofs', []))
+            ->map(fn ($file) => $file->store('delivery-proofs', 'public'))
+            ->values()
+            ->all();
+
+        $order->delivery_proof_paths = $proofPaths;
+        $order->delivery_proof_path = $proofPaths[0] ?? null;
         $order->save();
 
         try {

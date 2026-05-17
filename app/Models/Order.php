@@ -28,6 +28,7 @@ class Order extends Model
         'delivered_at',
         'delivery_confirmation_note',
         'delivery_proof_path',
+        'delivery_proof_paths',
         'cancellation_reason',
         'cancellation_response',
         'cancellation_requested_at',
@@ -44,6 +45,7 @@ class Order extends Model
             'applied_buyer_fees' => 'array',
             'shipped_at' => 'datetime',
             'delivered_at' => 'datetime',
+            'delivery_proof_paths' => 'array',
             'cancellation_requested_at' => 'datetime',
             'cancellation_resolved_at' => 'datetime',
         ];
