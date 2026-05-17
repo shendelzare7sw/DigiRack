@@ -27,6 +27,7 @@ class Order extends Model
         'shipped_at',
         'delivered_at',
         'delivery_confirmation_note',
+        'delivery_proof_path',
         'cancellation_reason',
         'cancellation_response',
         'cancellation_requested_at',

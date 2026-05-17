@@ -10,8 +10,10 @@ use App\Models\Store;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AutoCompleteOrdersTest extends TestCase
@@ -62,6 +64,29 @@ class AutoCompleteOrdersTest extends TestCase
         $this->assertNull(Wallet::where('store_id', $order->store_id)->first());
     }
 
+    public function test_seller_must_upload_delivery_proof_when_marking_order_delivered(): void
+    {
+        Notification::fake();
+        Storage::fake('public');
+
+        $order = $this->createShippedOrder(deliveredAt: null);
+        $seller = $order->store->user;
+
+        $response = $this->actingAs($seller)->post(route('seller.orders.delivered', $order->id), [
+            'delivery_confirmation_note' => 'Diterima oleh Ani.',
+            'delivery_proof' => UploadedFile::fake()->image('proof.jpg')->size(1024),
+        ]);
+
+        $response->assertSessionHas('success');
+
+        $order->refresh();
+
+        $this->assertNotNull($order->delivered_at);
+        $this->assertSame('Diterima oleh Ani.', $order->delivery_confirmation_note);
+        $this->assertNotNull($order->delivery_proof_path);
+        Storage::disk('public')->assertExists($order->delivery_proof_path);
+    }
+
     private function createShippedOrder($shippedAt = null, $deliveredAt = null): Order
     {
         $buyer = User::factory()->create(['role' => 'buyer']);
@@ -73,6 +98,7 @@ class AutoCompleteOrdersTest extends TestCase
             'slug' => 'auto-complete-store-' . uniqid(),
             'is_active' => true,
             'is_verified' => true,
+            'verification_status' => 'approved',
         ]);
 
         $category = Category::create([

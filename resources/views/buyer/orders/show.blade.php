@@ -178,6 +178,16 @@
                                 Auto-selesai belum berjalan sampai pengiriman tercatat sampai di alamat.
                             </p>
                         @endif
+                        @if($order->delivered_at && $order->delivery_proof_path)
+                            <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block mb-4 overflow-hidden rounded-xl border border-brand-navy/10 bg-white">
+                                <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti paket sampai untuk {{ $order->invoice_number }}" class="w-full max-h-60 object-cover">
+                            </a>
+                        @endif
+                        @if($order->delivered_at && $order->delivery_confirmation_note)
+                            <p class="text-xs text-gray-600 bg-white/70 border border-brand-navy/10 rounded-xl px-3 py-2 mb-4">
+                                {{ $order->delivery_confirmation_note }}
+                            </p>
+                        @endif
                         
                         <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Apakah Anda yakin barang pesanan sudah diterima dengan baik dan sesuai? Dana akan diteruskan ke penjual dan pesanan difinalisasi.', type: 'info', confirmText: 'Ya, Selesai' })">
                             @csrf

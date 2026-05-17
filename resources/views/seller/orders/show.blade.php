@@ -210,11 +210,21 @@
                                 @if($order->delivery_confirmation_note)
                                     <p class="mt-2 text-gray-600">{{ $order->delivery_confirmation_note }}</p>
                                 @endif
+                                @if($order->delivery_proof_path)
+                                    <a href="{{ asset('storage/' . $order->delivery_proof_path) }}" target="_blank" class="block mt-3 overflow-hidden rounded-xl border border-blue-100 bg-white">
+                                        <img src="{{ asset('storage/' . $order->delivery_proof_path) }}" alt="Bukti paket sampai untuk {{ $order->invoice_number }}" class="w-full max-h-56 object-cover">
+                                    </a>
+                                @endif
                             </div>
                         @else
-                            <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" class="mt-4" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
+                            <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" enctype="multipart/form-data" class="mt-4" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima dan bukti foto sudah benar. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
                                 @csrf
                                 <textarea name="delivery_confirmation_note" rows="3" maxlength="500" class="w-full border-blue-200 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm" placeholder="Catatan opsional: diterima oleh siapa, bukti dari tracking, atau konfirmasi kurir..."></textarea>
+                                <div class="mt-3 text-left">
+                                    <label for="delivery_proof" class="block text-xs font-bold text-blue-900 mb-1">Foto bukti sampai <span class="text-red-500">*</span></label>
+                                    <input id="delivery_proof" name="delivery_proof" type="file" accept="image/jpeg,image/png,image/webp" required class="block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-sm file:font-bold file:text-brand-navy hover:file:bg-blue-50">
+                                    <p class="text-[11px] text-blue-700 mt-1">Format JPG, PNG, atau WebP. Maksimal 8 MB.</p>
+                                </div>
                                 <button type="submit" class="mt-3 w-full bg-brand-navy hover:bg-brand-navydark focus:bg-brand-navydark text-white font-bold py-3 text-sm rounded-xl transition-all shadow-lg shadow-brand-navy/20 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
                                     <x-icon name="check-circle" class="w-5 h-5" /> Tandai Paket Sudah Sampai
                                 </button>
