@@ -154,19 +154,28 @@
                 @elseif($order->status === 'shipped')
                     @php
                         $autoCompleteHours = (int) \App\Models\SystemSetting::val('auto_complete_hours', 24);
-                        $autoCompleteAt = $order->shipped_at && $autoCompleteHours > 0
-                            ? $order->shipped_at->copy()->addHours($autoCompleteHours)
+                        $autoCompleteAt = $order->delivered_at && $autoCompleteHours > 0
+                            ? $order->delivered_at->copy()->addHours($autoCompleteHours)
                             : null;
                     @endphp
                     <div class="bg-brand-navylight/20 rounded-2xl shadow-sm border border-brand-navy/30 p-6 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1 h-full bg-brand-navy"></div>
                         <h3 class="font-bold text-brand-navy mb-2 flex items-center gap-2">
-                            <x-icon name="gift" class="w-5 h-5" /> Pesanan Tiba?
+                            <x-icon :name="$order->delivered_at ? 'gift' : 'truck'" class="w-5 h-5" />
+                            {{ $order->delivered_at ? 'Paket Tercatat Sampai' : 'Pesanan Dalam Pengiriman' }}
                         </h3>
-                        <p class="text-sm text-gray-600 mb-4">Pastikan paket sudah Anda terima dalam kondisi baik. Dana akan dicairkan ke penjual setelah konfirmasi.</p>
+                        <p class="text-sm text-gray-600 mb-4">
+                            {{ $order->delivered_at
+                                ? 'Pastikan paket sudah Anda terima dalam kondisi baik. Dana akan dicairkan ke penjual setelah konfirmasi.'
+                                : 'Paket sedang dikirim. Jika barang sudah Anda terima lebih dulu, Anda tetap bisa mengonfirmasi pesanan.' }}
+                        </p>
                         @if($autoCompleteAt)
                             <p class="text-xs text-brand-navy bg-white/70 border border-brand-navy/10 rounded-xl px-3 py-2 mb-4">
                                 Jika tidak dikonfirmasi, pesanan otomatis selesai pada {{ $autoCompleteAt->translatedFormat('d M Y, H:i') }}.
+                            </p>
+                        @else
+                            <p class="text-xs text-gray-600 bg-white/70 border border-brand-navy/10 rounded-xl px-3 py-2 mb-4">
+                                Auto-selesai belum berjalan sampai pengiriman tercatat sampai di alamat.
                             </p>
                         @endif
                         

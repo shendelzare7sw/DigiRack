@@ -18,11 +18,11 @@ class AutoCompleteOrdersTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_shipped_order_is_auto_completed_after_configured_hours(): void
+    public function test_delivered_order_is_auto_completed_after_configured_hours(): void
     {
         Notification::fake();
 
-        $order = $this->createShippedOrder(now()->subHours(25));
+        $order = $this->createShippedOrder(deliveredAt: now()->subHours(25));
 
         Artisan::call('orders:auto-complete');
 
@@ -34,11 +34,11 @@ class AutoCompleteOrdersTest extends TestCase
         $this->assertSame(315000, (int) $wallet->balance);
     }
 
-    public function test_recent_shipped_order_is_not_auto_completed_yet(): void
+    public function test_recent_delivered_order_is_not_auto_completed_yet(): void
     {
         Notification::fake();
 
-        $order = $this->createShippedOrder(now()->subHours(23));
+        $order = $this->createShippedOrder(deliveredAt: now()->subHours(23));
 
         Artisan::call('orders:auto-complete');
 
@@ -48,7 +48,21 @@ class AutoCompleteOrdersTest extends TestCase
         $this->assertNull(Wallet::where('store_id', $order->store_id)->first());
     }
 
-    private function createShippedOrder($shippedAt): Order
+    public function test_old_shipped_order_without_delivery_confirmation_is_not_auto_completed(): void
+    {
+        Notification::fake();
+
+        $order = $this->createShippedOrder(shippedAt: now()->subDays(3), deliveredAt: null);
+
+        Artisan::call('orders:auto-complete');
+
+        $order->refresh();
+
+        $this->assertSame('shipped', $order->status);
+        $this->assertNull(Wallet::where('store_id', $order->store_id)->first());
+    }
+
+    private function createShippedOrder($shippedAt = null, $deliveredAt = null): Order
     {
         $buyer = User::factory()->create(['role' => 'buyer']);
         $seller = User::factory()->create(['role' => 'seller']);
@@ -88,7 +102,9 @@ class AutoCompleteOrdersTest extends TestCase
             'payment_status' => 'paid',
             'payment_reference' => 'PAY-' . date('Ymd') . '-' . strtoupper(uniqid()),
             'shipping_tracking_number' => 'KURIR-TOKO',
-            'shipped_at' => $shippedAt,
+            'shipped_at' => $shippedAt ?? now()->subDays(2),
+            'delivered_at' => $deliveredAt,
+            'delivery_confirmation_note' => $deliveredAt ? 'Paket diterima oleh penerima.' : null,
             'shipping_address' => [
                 'name' => 'Buyer',
                 'phone' => '081234567890',

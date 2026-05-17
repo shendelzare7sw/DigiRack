@@ -187,17 +187,40 @@
                 @elseif($order->status === 'shipped')
                     @php
                         $autoCompleteHours = (int) \App\Models\SystemSetting::val('auto_complete_hours', 24);
-                        $autoCompleteAt = $order->shipped_at && $autoCompleteHours > 0
-                            ? $order->shipped_at->copy()->addHours($autoCompleteHours)
+                        $autoCompleteAt = $order->delivered_at && $autoCompleteHours > 0
+                            ? $order->delivered_at->copy()->addHours($autoCompleteHours)
                             : null;
                     @endphp
-                    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 text-center">
-                        <x-icon name="truck" class="w-10 h-10 text-blue-400 mx-auto mb-2" />
-                        <h3 class="font-bold text-blue-900 mb-1 text-sm">Pesanan Dalam Perjalanan</h3>
-                        <p class="text-xs text-blue-700">Menunggu pembeli konfirmasi penerimaan barang. Saldo akan cair setelah dikonfirmasi.</p>
-                        @if($autoCompleteAt)
-                            <p class="text-[11px] text-blue-800 bg-white/70 border border-blue-100 rounded-xl px-3 py-2 mt-3">
-                                Auto-selesai jika belum dikonfirmasi sampai {{ $autoCompleteAt->translatedFormat('d M Y, H:i') }}.
+                    <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100">
+                        <x-icon :name="$order->delivered_at ? 'check-circle' : 'truck'" class="w-10 h-10 text-blue-400 mx-auto mb-2" />
+                        <h3 class="font-bold text-blue-900 mb-1 text-sm text-center">
+                            {{ $order->delivered_at ? 'Paket Tercatat Sampai' : 'Pesanan Dalam Perjalanan' }}
+                        </h3>
+                        <p class="text-xs text-blue-700 text-center">
+                            {{ $order->delivered_at
+                                ? 'Menunggu pembeli konfirmasi penerimaan barang. Saldo akan cair setelah dikonfirmasi atau saat batas auto-selesai tercapai.'
+                                : 'Auto-selesai belum berjalan. Tandai paket sudah sampai hanya jika kurir toko/kurir reguler sudah mengonfirmasi sampai di alamat.' }}
+                        </p>
+                        @if($order->delivered_at)
+                            <div class="text-[11px] text-blue-800 bg-white/70 border border-blue-100 rounded-xl px-3 py-2 mt-3">
+                                <p>Paket sampai: {{ $order->delivered_at->translatedFormat('d M Y, H:i') }}</p>
+                                @if($autoCompleteAt)
+                                    <p class="mt-1">Auto-selesai jika belum dikonfirmasi sampai {{ $autoCompleteAt->translatedFormat('d M Y, H:i') }}.</p>
+                                @endif
+                                @if($order->delivery_confirmation_note)
+                                    <p class="mt-2 text-gray-600">{{ $order->delivery_confirmation_note }}</p>
+                                @endif
+                            </div>
+                        @else
+                            <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" class="mt-4" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
+                                @csrf
+                                <textarea name="delivery_confirmation_note" rows="3" maxlength="500" class="w-full border-blue-200 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm" placeholder="Catatan opsional: diterima oleh siapa, bukti dari tracking, atau konfirmasi kurir..."></textarea>
+                                <button type="submit" class="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                                    <x-icon name="check-circle" class="w-5 h-5" /> Tandai Paket Sudah Sampai
+                                </button>
+                            </form>
+                            <p class="text-[11px] text-blue-700 mt-3 text-center">
+                                Untuk TIKI/POS/JNE dan kurir reguler, cek tracking manual lalu tandai saat status kurir sudah delivered.
                             </p>
                         @endif
                     </div>

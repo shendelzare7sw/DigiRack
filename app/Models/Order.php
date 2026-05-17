@@ -25,6 +25,8 @@ class Order extends Model
         'applied_buyer_fees',
         'shipping_tracking_number',
         'shipped_at',
+        'delivered_at',
+        'delivery_confirmation_note',
         'cancellation_reason',
         'cancellation_response',
         'cancellation_requested_at',
@@ -40,6 +42,7 @@ class Order extends Model
             'shipping_address' => 'array',
             'applied_buyer_fees' => 'array',
             'shipped_at' => 'datetime',
+            'delivered_at' => 'datetime',
             'cancellation_requested_at' => 'datetime',
             'cancellation_resolved_at' => 'datetime',
         ];

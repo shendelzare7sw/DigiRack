@@ -55,6 +55,7 @@ Route::middleware(['auth', 'verified', 'role:seller,admin', 'seller.approved'])-
     Route::get('/orders/report', [App\Http\Controllers\Seller\OrderController::class, 'report'])->name('orders.report');
     Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::post('/orders/{id}/delivered', [App\Http\Controllers\Seller\OrderController::class, 'markDelivered'])->name('orders.delivered');
     Route::post('/orders/{id}/cancellation', [App\Http\Controllers\Seller\OrderController::class, 'resolveCancellation'])->name('orders.cancellation');
 
     // Reviews (Fase 6)

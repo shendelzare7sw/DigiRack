@@ -138,7 +138,7 @@
                                 <input type="number" name="auto_complete_hours" value="{{ $settings['auto_complete_hours'] ?? '24' }}" min="0" max="168"
                                     class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:border-brand-navy focus:ring-brand-navy/20"
                                     placeholder="24">
-                                <p class="text-[10px] text-gray-400 mt-1">Pesanan berstatus <strong>Dikirim</strong> akan otomatis selesai dan dana dicairkan ke seller jika buyer tidak mengkonfirmasi dalam waktu ini. Set <strong>0</strong> untuk menonaktifkan fitur ini.</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Hitungan dimulai setelah seller menandai paket <strong>sudah sampai di alamat</strong>. Jika buyer tidak mengkonfirmasi dalam waktu ini, pesanan otomatis selesai dan dana dicairkan ke seller. Set <strong>0</strong> untuk menonaktifkan fitur ini.</p>
                             </div>
 
                             <div class="pt-4 border-t border-gray-100 flex justify-end">

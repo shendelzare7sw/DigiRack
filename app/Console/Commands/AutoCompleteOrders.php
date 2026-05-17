@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 class AutoCompleteOrders extends Command
 {
     protected $signature = 'orders:auto-complete';
-    protected $description = 'Otomatis menyelesaikan pesanan shipped yang melewati batas waktu konfirmasi buyer';
+    protected $description = 'Otomatis menyelesaikan pesanan delivered yang melewati batas waktu konfirmasi buyer';
 
     public function handle(): int
     {
@@ -27,18 +27,11 @@ class AutoCompleteOrders extends Command
 
         $cutoff = now()->subHours($hours);
 
-        // Cari pesanan shipped yang sudah melewati batas waktu sejak benar-benar dikirim.
-        // Fallback updated_at menjaga pesanan lama sebelum kolom shipped_at ada.
+        // Auto-complete baru dimulai setelah paket tercatat sampai ke alamat,
+        // bukan sejak paket dikirim. Ini aman untuk kurir toko dan reguler.
         $orders = Order::where('status', 'shipped')
-            ->where(function ($query) use ($cutoff) {
-                $query->where(function ($q) use ($cutoff) {
-                    $q->whereNotNull('shipped_at')
-                        ->where('shipped_at', '<=', $cutoff);
-                })->orWhere(function ($q) use ($cutoff) {
-                    $q->whereNull('shipped_at')
-                        ->where('updated_at', '<=', $cutoff);
-                });
-            })
+            ->whereNotNull('delivered_at')
+            ->where('delivered_at', '<=', $cutoff)
             ->get();
 
         if ($orders->isEmpty()) {

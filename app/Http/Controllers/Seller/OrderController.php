@@ -146,6 +146,54 @@ class OrderController extends Controller
         return back()->with('success', 'Status pesanan berhasil diperbarui menjadi ' . $order->status_label);
     }
 
+    public function markDelivered(Request $request, $id)
+    {
+        $store = $this->getStore();
+        $order = Order::with('buyer')
+            ->where('store_id', $store->id)
+            ->findOrFail($id);
+
+        $request->validate([
+            'delivery_confirmation_note' => 'nullable|string|max:500',
+        ]);
+
+        if ($order->status !== 'shipped') {
+            return back()->with('error', 'Hanya pesanan yang sedang dikirim yang bisa ditandai sampai.');
+        }
+
+        if ($order->delivered_at) {
+            return back()->with('success', 'Paket sudah tercatat sampai sebelumnya.');
+        }
+
+        $order->delivered_at = now();
+        $order->delivery_confirmation_note = $request->filled('delivery_confirmation_note')
+            ? $request->delivery_confirmation_note
+            : 'Seller menandai paket sudah sampai berdasarkan konfirmasi pengiriman.';
+        $order->save();
+
+        try {
+            $buyer = $order->buyer ?? null;
+            if ($buyer) {
+                $hours = (int) \App\Models\SystemSetting::val('auto_complete_hours', 24);
+                $deadline = $hours > 0
+                    ? ' Jika tidak dikonfirmasi dalam ' . $hours . ' jam, pesanan akan otomatis selesai.'
+                    : '';
+
+                $buyer->notify(new OrderNotification(
+                    'order_delivered',
+                    'Paket Tercatat Sampai',
+                    'Pesanan ' . $order->invoice_number . ' tercatat sudah sampai di alamat tujuan.' . $deadline,
+                    route('buyer.orders.show', $order->id),
+                    'check'
+                ));
+            }
+        } catch (\Exception $e) {
+            Log::warning('Order delivered notification failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+        }
+
+        return back()->with('success', 'Paket ditandai sudah sampai. Timer auto-selesai pembeli dimulai sekarang.');
+    }
+
     public function resolveCancellation(Request $request, $id)
     {
         $store = $this->getStore();
