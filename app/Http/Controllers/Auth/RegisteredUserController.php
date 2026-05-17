@@ -21,6 +21,7 @@ class RegisteredUserController extends Controller
     private const SESSION_KEY = 'registration_otp';
     private const EXPIRES_MINUTES = 10;
     private const MAX_ATTEMPTS = 5;
+    private const MAX_RESENDS = 3;
     private const RESEND_COOLDOWN_SECONDS = 60;
 
     /**
@@ -63,6 +64,7 @@ class RegisteredUserController extends Controller
             'expires_at' => now()->addMinutes(self::EXPIRES_MINUTES)->timestamp,
             'sent_at' => now()->timestamp,
             'attempts' => 0,
+            'resends' => 0,
         ]);
 
         $this->sendOtp($request->email, $request->name, $code);
@@ -155,6 +157,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+        $request->session()->regenerate();
 
         return redirect()->route('dashboard')
             ->with('success', 'Email terverifikasi & akun berhasil dibuat. Selamat datang di ' . config('app.name', 'DigiRack') . '!');
@@ -172,6 +175,18 @@ class RegisteredUserController extends Controller
                 ->with('error', 'Sesi pendaftaran tidak ditemukan. Silakan daftar ulang.');
         }
 
+        if (now()->timestamp > $pending['expires_at']) {
+            $request->session()->forget(self::SESSION_KEY);
+            return redirect()->route('register')
+                ->with('error', 'Kode OTP sudah kedaluwarsa. Silakan daftar ulang.');
+        }
+
+        if (($pending['resends'] ?? 0) >= self::MAX_RESENDS) {
+            $request->session()->forget(self::SESSION_KEY);
+            return redirect()->route('register')
+                ->with('error', 'Batas kirim ulang kode OTP tercapai. Silakan daftar ulang.');
+        }
+
         $elapsed = now()->timestamp - $pending['sent_at'];
         if ($elapsed < self::RESEND_COOLDOWN_SECONDS) {
             return back()->with('error', 'Tunggu ' . (self::RESEND_COOLDOWN_SECONDS - $elapsed) . ' detik sebelum meminta kode baru.');
@@ -182,6 +197,7 @@ class RegisteredUserController extends Controller
         $pending['expires_at'] = now()->addMinutes(self::EXPIRES_MINUTES)->timestamp;
         $pending['sent_at'] = now()->timestamp;
         $pending['attempts'] = 0;
+        $pending['resends'] = ($pending['resends'] ?? 0) + 1;
         $request->session()->put(self::SESSION_KEY, $pending);
 
         $this->sendOtp($pending['email'], $pending['name'], $code);

@@ -15,12 +15,14 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:3,1');
 
     Route::get('register/otp', [RegisteredUserController::class, 'showOtp'])
         ->name('register.otp.notice');
 
     Route::post('register/otp', [RegisteredUserController::class, 'verifyOtp'])
+        ->middleware('throttle:10,1')
         ->name('register.otp.verify');
 
     Route::post('register/otp/resend', [RegisteredUserController::class, 'resendOtp'])
