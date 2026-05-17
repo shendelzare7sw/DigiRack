@@ -116,6 +116,7 @@ class OrderController extends Controller
                 return back()->with('error', 'Nomor resi pengiriman wajib diisi saat mengubah status menjadi Dikirim.');
             }
             $order->shipping_tracking_number = $request->shipping_tracking_number;
+            $order->shipped_at = $order->shipped_at ?? now();
         }
 
         if ($request->status == 'cancelled') {

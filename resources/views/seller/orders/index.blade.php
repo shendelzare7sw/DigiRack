@@ -79,12 +79,12 @@
                                             <x-icon name="exclamation-circle" class="w-4 h-4" /> Review Batal
                                         </a>
                                     @elseif($order->status == 'processing')
-                                        <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-brand-orange hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+                                        <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">
                                             <x-icon name="truck" class="w-4 h-4" /> Proses Resi
                                         </a>
                                     @else
                                         <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-600 font-bold px-4 py-2 rounded-lg transition-all shadow-sm">
-                                            <x-icon name="eye" class="w-4 h-4" /> Detail
+                                            <x-icon name="eye-outline" class="w-4 h-4" /> Detail
                                         </a>
                                     @endif
                                 </td>
@@ -97,7 +97,12 @@
                 {{-- Mobile cards --}}
                 <div class="md:hidden divide-y divide-gray-100">
                     @foreach($orders as $order)
-                        <div class="p-4">
+                        <div class="p-4 cursor-pointer transition-colors active:bg-gray-50 focus:outline-none focus:bg-gray-50"
+                            role="link"
+                            tabindex="0"
+                            aria-label="Lihat detail pesanan {{ $order->invoice_number }}"
+                            onclick="window.location.href='{{ route('seller.orders.show', $order->id) }}'"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ route('seller.orders.show', $order->id) }}'; }">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs text-gray-400 font-mono break-all truncate max-w-[55%]">{{ $order->invoice_number }}</span>
                                 <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
@@ -113,24 +118,24 @@
                                 <span>&bull;</span>
                                 {{ $order->created_at->translatedFormat('d M Y') }}
                             </div>
-                            <div class="flex items-center justify-between mt-3">
-                                <div>
-                                    <span class="font-bold text-brand-blue">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                            <div class="flex items-center justify-between gap-3 mt-3">
+                                <div class="min-w-0">
+                                    <span class="block font-bold text-brand-blue truncate">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                     @if($order->shipping_address['courier'] ?? false)
                                         @php $mc = $order->shipping_address['courier']; @endphp
-                                        <span class="text-[10px] text-gray-400 ml-2">{{ str_starts_with(strtolower($mc), 'toko_') ? 'Kurir Toko' : strtoupper($mc) }}</span>
+                                        <span class="text-[10px] text-gray-400">{{ str_starts_with(strtolower($mc), 'toko_') ? 'Kurir Toko' : strtoupper($mc) }}</span>
                                     @endif
                                 </div>
                                 @if($order->status == 'cancellation_requested')
-                                    <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                    <a href="{{ route('seller.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
                                         <x-icon name="exclamation-circle" class="w-3.5 h-3.5" /> Review
                                     </a>
                                 @elseif($order->status == 'processing')
-                                    <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-brand-orange hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                    <a href="{{ route('seller.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
                                         <x-icon name="truck" class="w-3.5 h-3.5" /> Proses
                                     </a>
                                 @else
-                                    <a href="{{ route('seller.orders.show', $order->id) }}" class="bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
+                                    <a href="{{ route('seller.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
                                 @endif
                             </div>
                         </div>

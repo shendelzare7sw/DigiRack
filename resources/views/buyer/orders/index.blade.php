@@ -79,7 +79,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right text-sm">
                                     @if($order->status == 'shipped')
-                                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" class="inline">
+                                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Pastikan barang sudah Anda terima dalam kondisi baik. Setelah dikonfirmasi, dana akan langsung dicairkan ke penjual dan pesanan difinalisasi.', type: 'info', confirmText: 'Ya, Barang Diterima' })">
                                             @csrf
                                             <button type="submit" class="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg transition-colors mr-2 shadow-sm">
                                                 Diterima
@@ -135,7 +135,7 @@
                                 <span class="font-bold text-brand-blue text-base min-w-0 truncate">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                 <div class="flex items-center gap-1.5 shrink-0">
                                     @if($order->status == 'shipped')
-                                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" class="inline" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()">
+                                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" class="inline" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Pastikan barang sudah Anda terima dalam kondisi baik. Setelah dikonfirmasi, dana akan langsung dicairkan ke penjual dan pesanan difinalisasi.', type: 'info', confirmText: 'Ya, Barang Diterima' })">
                                             @csrf
                                             <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg transition-colors">Diterima</button>
                                         </form>

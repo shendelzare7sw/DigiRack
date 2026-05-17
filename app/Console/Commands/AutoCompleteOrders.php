@@ -27,9 +27,18 @@ class AutoCompleteOrders extends Command
 
         $cutoff = now()->subHours($hours);
 
-        // Cari pesanan shipped yang sudah melewati batas waktu
+        // Cari pesanan shipped yang sudah melewati batas waktu sejak benar-benar dikirim.
+        // Fallback updated_at menjaga pesanan lama sebelum kolom shipped_at ada.
         $orders = Order::where('status', 'shipped')
-            ->where('updated_at', '<=', $cutoff)
+            ->where(function ($query) use ($cutoff) {
+                $query->where(function ($q) use ($cutoff) {
+                    $q->whereNotNull('shipped_at')
+                        ->where('shipped_at', '<=', $cutoff);
+                })->orWhere(function ($q) use ($cutoff) {
+                    $q->whereNull('shipped_at')
+                        ->where('updated_at', '<=', $cutoff);
+                });
+            })
             ->get();
 
         if ($orders->isEmpty()) {
@@ -44,8 +53,15 @@ class AutoCompleteOrders extends Command
             try {
                 DB::beginTransaction();
 
-                $order->status = 'completed';
-                $order->save();
+                $order = Order::with(['items.product', 'store.user', 'buyer'])
+                    ->whereKey($order->id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$order || $order->status !== 'shipped') {
+                    DB::rollBack();
+                    continue;
+                }
 
                 // Hitung dana ke seller (sama seperti logic di OrderController@confirm)
                 $productSubtotal = $order->total_price - $order->shipping_cost;
@@ -57,7 +73,6 @@ class AutoCompleteOrders extends Command
                 }
 
                 // Potongan platform per-item
-                $order->load('items');
                 $totalQty = $order->items->sum('quantity');
                 $feePerItem = SystemSetting::val('platform_fee_per_item', 0);
                 $totalPlatformFee = $totalQty * $feePerItem;
@@ -92,6 +107,9 @@ class AutoCompleteOrders extends Command
                         'description' => $desc,
                     ]);
                 }
+
+                $order->status = 'completed';
+                $order->save();
 
                 DB::commit();
 

@@ -142,7 +142,7 @@
                                         <div class="flex items-center justify-center gap-1">
                                             <a href="{{ route('products.show', $product->slug) }}" target="_blank"
                                                 class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
-                                                <x-icon name="eye" class="w-4 h-4" />
+                                                <x-icon name="eye-outline" class="w-4 h-4" />
                                             </a>
                                             <a href="{{ route('seller.products.edit', $product->id) }}"
                                                 class="p-2 text-gray-400 hover:text-brand-navy hover:bg-brand-navylight rounded-lg transition-colors" title="Edit">
@@ -166,12 +166,17 @@
                 {{-- Mobile Cards (hidden on desktop) --}}
                 <div class="md:hidden divide-y divide-gray-100">
                     @foreach($products as $product)
-                        <div class="p-4">
+                        <div class="p-4 cursor-pointer transition-colors active:bg-gray-50 focus:outline-none focus:bg-gray-50"
+                            role="link"
+                            tabindex="0"
+                            aria-label="Edit produk {{ $product->name }}"
+                            onclick="window.location.href='{{ route('seller.products.edit', $product->id) }}'"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ route('seller.products.edit', $product->id) }}'; }">
                             <div class="flex items-start gap-3 mb-3">
                                 <img src="{{ $product->primary_image_url }}" alt="{{ $product->name }}"
                                     class="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0">
                                 <div class="flex-1 min-w-0">
-                                    <a href="{{ route('products.show', $product->slug) }}" target="_blank" class="font-bold text-sm text-gray-900 hover:text-brand-navy line-clamp-2">{{ $product->name }}</a>
+                                    <p class="font-bold text-sm text-gray-900 line-clamp-2">{{ $product->name }}</p>
                                     <p class="text-xs text-gray-400 mt-0.5">{{ $product->category->name ?? '-' }}</p>
                                     <p class="text-sm font-bold text-brand-blue mt-1">{{ $product->formatted_price }}</p>
                                 </div>
@@ -191,13 +196,13 @@
                                     <span>Terjual: <strong class="text-gray-900">{{ $product->sold_count }}</strong></span>
                                 </div>
                                 <div class="flex items-center gap-1">
-                                    <a href="{{ route('products.show', $product->slug) }}" target="_blank" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors" title="Lihat">
-                                        <x-icon name="eye" class="w-4 h-4" />
+                                    <a href="{{ route('products.show', $product->slug) }}" target="_blank" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors" title="Lihat" aria-label="Lihat produk">
+                                        <x-icon name="eye-outline" class="w-4 h-4" />
                                     </a>
-                                    <a href="{{ route('seller.products.edit', $product->id) }}" class="p-2 bg-brand-navylight text-brand-navy rounded-lg hover:bg-brand-navy hover:text-white transition-colors" title="Edit">
+                                    <a href="{{ route('seller.products.edit', $product->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="p-2 bg-brand-navylight text-brand-navy rounded-lg hover:bg-brand-navy hover:text-white transition-colors" title="Edit" aria-label="Edit produk">
                                         <x-icon name="pencil-square" class="w-4 h-4" />
                                     </a>
-                                    <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
+                                    <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors" title="Hapus">
                                             <x-icon name="trash" class="w-4 h-4" />

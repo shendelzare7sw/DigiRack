@@ -24,6 +24,7 @@ class Order extends Model
         'shipping_address',
         'applied_buyer_fees',
         'shipping_tracking_number',
+        'shipped_at',
         'cancellation_reason',
         'cancellation_response',
         'cancellation_requested_at',
@@ -38,6 +39,7 @@ class Order extends Model
             'shipping_cost' => 'integer',
             'shipping_address' => 'array',
             'applied_buyer_fees' => 'array',
+            'shipped_at' => 'datetime',
             'cancellation_requested_at' => 'datetime',
             'cancellation_resolved_at' => 'datetime',
         ];

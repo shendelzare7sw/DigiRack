@@ -51,7 +51,7 @@
 
                         @if($documentUrl)
                             <a href="{{ $documentUrl }}" target="_blank" class="inline-flex items-center gap-2 rounded-xl bg-brand-navy px-4 py-2 text-sm font-bold text-white hover:bg-brand-navydark transition-colors">
-                                <x-icon name="eye" class="w-4 h-4" />
+                                <x-icon name="eye-outline" class="w-4 h-4" />
                                 Buka File
                             </a>
                         @endif

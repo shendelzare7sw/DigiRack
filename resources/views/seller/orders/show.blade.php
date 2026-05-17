@@ -185,10 +185,21 @@
                         @endif
                     </div>
                 @elseif($order->status === 'shipped')
+                    @php
+                        $autoCompleteHours = (int) \App\Models\SystemSetting::val('auto_complete_hours', 24);
+                        $autoCompleteAt = $order->shipped_at && $autoCompleteHours > 0
+                            ? $order->shipped_at->copy()->addHours($autoCompleteHours)
+                            : null;
+                    @endphp
                     <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 text-center">
                         <x-icon name="truck" class="w-10 h-10 text-blue-400 mx-auto mb-2" />
                         <h3 class="font-bold text-blue-900 mb-1 text-sm">Pesanan Dalam Perjalanan</h3>
-                        <p class="text-xs text-blue-700">Menunggu pembeli konfirmasi penerimaan barang. Saldo akan otomatis cair setelah dikonfirmasi.</p>
+                        <p class="text-xs text-blue-700">Menunggu pembeli konfirmasi penerimaan barang. Saldo akan cair setelah dikonfirmasi.</p>
+                        @if($autoCompleteAt)
+                            <p class="text-[11px] text-blue-800 bg-white/70 border border-blue-100 rounded-xl px-3 py-2 mt-3">
+                                Auto-selesai jika belum dikonfirmasi sampai {{ $autoCompleteAt->translatedFormat('d M Y, H:i') }}.
+                            </p>
+                        @endif
                     </div>
                 @elseif($order->status === 'completed')
                     <div class="bg-green-50 rounded-2xl p-5 border border-green-100 text-center">
