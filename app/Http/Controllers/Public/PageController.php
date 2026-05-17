@@ -137,4 +137,145 @@ class PageController extends Controller
             ],
         ]);
     }
+
+    public function privacy()
+    {
+        return view('public.pages.legal', [
+            'title' => 'Kebijakan Privasi',
+            'eyebrow' => 'Privasi',
+            'heading' => 'Cara DigiRack mengelola dan melindungi data pengguna.',
+            'description' => 'Kebijakan ini menjelaskan data yang dikumpulkan, alasan pemrosesan, penggunaan data, dan pilihan pengguna saat memakai DigiRack.',
+            'updatedAt' => '17 Mei 2026',
+            'sections' => [
+                [
+                    'title' => 'Data yang kami kumpulkan',
+                    'items' => [
+                        'Data akun seperti nama, email, nomor telepon, password terenkripsi, dan status verifikasi.',
+                        'Data alamat pengiriman, kontak penerima, dan catatan pesanan yang diberikan saat checkout.',
+                        'Data toko seller seperti profil toko, dokumen identitas untuk verifikasi, kurir, rekening, produk, stok, dan riwayat transaksi.',
+                        'Data pembayaran seperti metode pembayaran, payment reference, status transaksi, dan informasi callback dari Midtrans. DigiRack tidak menyimpan detail kartu pembayaran.',
+                        'Data teknis seperti aktivitas login, notifikasi, session, dan log aplikasi yang dibutuhkan untuk keamanan dan pemecahan masalah.',
+                    ],
+                ],
+                [
+                    'title' => 'Penggunaan data',
+                    'items' => [
+                        'Membuat dan mengamankan akun pengguna, termasuk OTP pendaftaran dan verifikasi email.',
+                        'Memproses checkout, pembayaran, invoice, pengiriman, pembatalan, konfirmasi penerimaan barang, wallet seller, dan payout.',
+                        'Memverifikasi seller dan menjaga kualitas toko serta produk yang tampil di marketplace.',
+                        'Mengirim notifikasi penting terkait akun, pesanan, pembayaran, pengiriman, pemulihan akun, dan aktivitas toko.',
+                        'Meningkatkan keamanan, mencegah penyalahgunaan, dan memastikan operasional platform berjalan stabil.',
+                    ],
+                ],
+                [
+                    'title' => 'Berbagi data dengan pihak terkait',
+                    'items' => [
+                        'Data transaksi pembayaran diproses melalui Midtrans sesuai kebutuhan pembayaran dan callback status transaksi.',
+                        'Data pengiriman dapat terlihat oleh seller dan buyer yang terlibat dalam pesanan terkait.',
+                        'Data dapat dibagikan kepada penyedia layanan teknis, email, hosting, atau pihak yang membantu operasional platform dengan batas kebutuhan layanan.',
+                        'DigiRack dapat membuka data jika diwajibkan oleh hukum, permintaan otoritas yang sah, atau untuk melindungi hak dan keamanan platform.',
+                    ],
+                ],
+                [
+                    'title' => 'Hak pengguna dan keamanan',
+                    'items' => [
+                        'Pengguna dapat memperbarui profil, alamat, dan informasi akun melalui menu yang tersedia.',
+                        'Permintaan pemulihan akun dapat diajukan melalui halaman pemulihan akun jika akses email atau password bermasalah.',
+                        'DigiRack menerapkan pembatasan akses berbasis role dan menyimpan file upload di storage aplikasi.',
+                        'Gunakan password yang kuat, jaga akses email, dan segera hubungi pengelola jika ada aktivitas mencurigakan.',
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function terms()
+    {
+        return view('public.pages.legal', [
+            'title' => 'Syarat & Ketentuan',
+            'eyebrow' => 'Ketentuan Layanan',
+            'heading' => 'Aturan penggunaan DigiRack untuk buyer, seller, dan admin platform.',
+            'description' => 'Dengan menggunakan DigiRack, pengguna dianggap memahami dan menyetujui aturan transaksi, pengiriman, pembayaran, serta pengelolaan akun di platform.',
+            'updatedAt' => '17 Mei 2026',
+            'sections' => [
+                [
+                    'title' => 'Akun dan akses',
+                    'items' => [
+                        'Pengguna wajib memberikan data yang benar saat registrasi dan menjaga kerahasiaan akses akun.',
+                        'Registrasi membutuhkan verifikasi OTP email sebelum akun aktif sepenuhnya.',
+                        'Seller wajib melengkapi data toko dan dokumen identitas, lalu menunggu persetujuan admin sebelum berjualan.',
+                        'DigiRack dapat membatasi, menonaktifkan, atau meninjau akun jika ditemukan penyalahgunaan, data tidak valid, atau pelanggaran aturan.',
+                    ],
+                ],
+                [
+                    'title' => 'Produk dan toko',
+                    'items' => [
+                        'Seller bertanggung jawab atas akurasi nama produk, foto, harga, stok, spesifikasi, kondisi barang, dan kelayakan produk.',
+                        'Produk harus relevan dengan kategori infrastruktur IT, jaringan, server, perangkat enterprise, atau kategori lain yang tersedia di DigiRack.',
+                        'Admin dapat menonaktifkan produk atau toko yang melanggar aturan, menyesatkan, ilegal, atau berisiko merugikan pengguna.',
+                        'Seller tidak diperbolehkan membeli produk milik toko sendiri melalui akun yang sama.',
+                    ],
+                ],
+                [
+                    'title' => 'Pembayaran dan pesanan',
+                    'items' => [
+                        'Pembayaran diproses melalui Midtrans atau metode yang disediakan platform.',
+                        'Status pembayaran mengikuti hasil sinkronisasi sistem dan callback pembayaran yang valid.',
+                        'Pesanan yang sudah dibayar akan masuk ke proses seller, kecuali ada pembatalan sesuai alur yang tersedia.',
+                        'Invoice dibuat otomatis berdasarkan data pesanan dan dapat digunakan sebagai dokumen transaksi di platform.',
+                    ],
+                ],
+                [
+                    'title' => 'Pengiriman, penerimaan, dan pencairan dana',
+                    'items' => [
+                        'Seller wajib mengirim barang sesuai pesanan dan mengisi resi untuk kurir reguler jika tersedia.',
+                        'Untuk kurir toko, seller tetap bertanggung jawab memastikan barang sampai ke alamat buyer.',
+                        'Seller wajib mengunggah bukti foto ketika menandai paket sudah sampai di alamat.',
+                        'Buyer harus memeriksa barang sebelum menekan konfirmasi diterima karena konfirmasi akan memfinalisasi pesanan dan mencairkan dana ke seller.',
+                        'Jika buyer tidak melakukan konfirmasi setelah paket tercatat sampai melewati durasi auto-complete yang ditentukan admin, sistem dapat menyelesaikan pesanan otomatis.',
+                    ],
+                ],
+                [
+                    'title' => 'Pembatalan dan sengketa',
+                    'items' => [
+                        'Buyer dapat membatalkan pesanan sebelum pembayaran atau mengajukan pembatalan saat pesanan sudah diproses.',
+                        'Pembatalan setelah pembayaran dapat memerlukan persetujuan seller sesuai status pesanan.',
+                        'Jika ada kendala barang, pembayaran, atau pengiriman, pengguna dianjurkan menyimpan bukti transaksi dan menghubungi pengelola platform.',
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function sitemap()
+    {
+        return view('public.pages.sitemap', [
+            'groups' => [
+                'DigiRack' => [
+                    ['label' => 'Beranda', 'url' => route('home')],
+                    ['label' => 'Tentang DigiRack', 'url' => route('pages.about')],
+                    ['label' => 'Download App', 'url' => route('pages.download-app')],
+                    ['label' => 'Pusat Bantuan', 'url' => route('pages.help')],
+                ],
+                'Belanja' => [
+                    ['label' => 'Katalog Produk', 'url' => route('products.index')],
+                    ['label' => 'Promo Spesial', 'url' => route('pages.promos')],
+                    ['label' => 'Dashboard Buyer', 'url' => auth()->check() ? route('buyer.dashboard') : route('login')],
+                    ['label' => 'Riwayat Pesanan', 'url' => auth()->check() ? route('buyer.orders.index') : route('login')],
+                ],
+                'Seller' => [
+                    ['label' => 'Mulai Berjualan', 'url' => route('pages.selling')],
+                    ['label' => 'Mitra B2B', 'url' => route('pages.b2b')],
+                    ['label' => 'Dashboard Seller', 'url' => auth()->check() ? route('seller.dashboard') : route('login')],
+                ],
+                'Akun dan Legal' => [
+                    ['label' => 'Login', 'url' => route('login')],
+                    ['label' => 'Registrasi', 'url' => route('register')],
+                    ['label' => 'Pemulihan Akun', 'url' => route('user.recovery.form')],
+                    ['label' => 'Kebijakan Privasi', 'url' => route('pages.privacy')],
+                    ['label' => 'Syarat & Ketentuan', 'url' => route('pages.terms')],
+                ],
+            ],
+        ]);
+    }
 }

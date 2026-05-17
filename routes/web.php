@@ -21,6 +21,9 @@ Route::get('/mulai-berjualan', [PageController::class, 'selling'])->name('pages.
 Route::get('/mitra-b2b', [PageController::class, 'b2b'])->name('pages.b2b');
 Route::get('/promo-spesial', [PageController::class, 'promos'])->name('pages.promos');
 Route::get('/pusat-bantuan', [PageController::class, 'help'])->name('pages.help');
+Route::get('/kebijakan-privasi', [PageController::class, 'privacy'])->name('pages.privacy');
+Route::get('/syarat-dan-ketentuan', [PageController::class, 'terms'])->name('pages.terms');
+Route::get('/sitemap', [PageController::class, 'sitemap'])->name('pages.sitemap');
 
 // Public API for locations & Webhooks
 Route::get('/api/locations/provinces', [\App\Http\Controllers\Public\LocationController::class, 'getProvinces']);

@@ -179,9 +179,9 @@
                 <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[14px] text-gray-400 gap-4 mt-8 pb-4">
                     <p>&copy; {{ date('Y') }} PT Infrakarsa Sinergi Digital. All rights reserved.</p>
                     <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mt-4 md:mt-0">
-                        <a href="{{ route('pages.about') }}" class="hover:text-white transition-colors">Kebijakan Privasi</a>
-                        <a href="{{ route('pages.help') }}" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
-                        <a href="{{ route('pages.help') }}" class="hover:text-white transition-colors">Sitemap</a>
+                        <a href="{{ route('pages.privacy') }}" class="hover:text-white transition-colors">Kebijakan Privasi</a>
+                        <a href="{{ route('pages.terms') }}" class="hover:text-white transition-colors">Syarat & Ketentuan</a>
+                        <a href="{{ route('pages.sitemap') }}" class="hover:text-white transition-colors">Sitemap</a>
                     </div>
                 </div>
                 <div class="border-t border-white/10 pt-3 text-center text-[11px] text-gray-500">
