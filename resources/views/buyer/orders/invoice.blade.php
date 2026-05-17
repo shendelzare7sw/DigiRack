@@ -19,6 +19,7 @@
     title="Invoice {{ $order->invoice_number }}"
     subtitle="{{ $order->created_at->translatedFormat('d F Y, H:i') }} WIB"
     doc-label="INVOICE"
+    :watermark="true"
     :back-url="route('buyer.orders.show', $order->id)">
 
     {{-- Meta + status --}}

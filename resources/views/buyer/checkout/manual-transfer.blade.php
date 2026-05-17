@@ -52,7 +52,7 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-600">Atas Nama</span>
-                        <span class="font-bold text-gray-900">PT DigiRack Indonesia</span>
+                        <span class="font-bold text-gray-900">PT Infrakarsa Sinergi Digital</span>
                     </div>
                 </div>
                 <p class="text-[10px] text-blue-600 mt-3">* Transfer sesuai nominal tagihan agar verifikasi lebih cepat.</p>

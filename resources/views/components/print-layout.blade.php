@@ -3,6 +3,7 @@
     'subtitle' => null,
     'docLabel' => 'DOKUMEN',
     'backUrl' => null,
+    'watermark' => false,
 ])
 
 <!DOCTYPE html>
@@ -20,28 +21,28 @@
         :root { --brand-navy: #14213d; --brand-blue: #2563eb; --brand-orange: #f97316; }
         html, body { background:#f3f4f6; font-family:'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif; }
 
-        /* Full-page diagonal watermark — also rendered when printing */
+        /* Full-page diagonal watermark — also rendered when printing.
+           A square larger than the viewport diagonal is rotated and clipped,
+           so the repeating text covers every corner (no empty right/bottom). */
         .dr-watermark {
             position: fixed; inset: 0; z-index: 0; overflow: hidden;
             pointer-events: none; user-select: none;
+        }
+        .dr-watermark__text {
+            position: absolute; top: 50%; left: 50%;
+            width: 240vmax; height: 240vmax;
+            transform: translate(-50%, -50%) rotate(-30deg);
             display: flex; align-items: center; justify-content: center;
+            text-align: center; word-break: break-word;
+            font-family: 'Sora', sans-serif; font-weight: 800;
+            font-size: 2.6vmax; line-height: 3.2; letter-spacing: .42em;
+            text-transform: uppercase; color: #14213d; opacity: .05;
         }
         .dr-watermark__logo {
             position: absolute; top: 50%; left: 50%;
-            width: min(60vw, 460px); height: auto;
+            width: min(55vw, 420px); height: auto;
             transform: translate(-50%, -50%) rotate(-30deg);
             opacity: .06;
-        }
-        .dr-watermark__grid {
-            position: absolute; inset: -25%;
-            transform: rotate(-30deg);
-            display: flex; flex-direction: column; gap: 18px;
-        }
-        .dr-watermark__row {
-            white-space: nowrap;
-            font-family: 'Sora', sans-serif; font-weight: 800;
-            font-size: 34px; letter-spacing: 8px;
-            color: #14213d; opacity: .045;
         }
         .dr-sheet { position: relative; z-index: 1; }
 
@@ -49,7 +50,7 @@
             html, body { background:#fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
             .dr-watermark__logo { opacity: .07; }
-            .dr-watermark__row { opacity: .05; }
+            .dr-watermark__text { opacity: .055; }
             .dr-sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: 100% !important; }
             .print-page { padding: 0 !important; }
             @page { margin: 12mm; }
@@ -59,14 +60,12 @@
 </head>
 <body class="text-gray-900 antialiased">
 
-    <div class="dr-watermark" aria-hidden="true">
-        <div class="dr-watermark__grid">
-            @for ($i = 0; $i < 14; $i++)
-                <div class="dr-watermark__row">DIGIRACK&nbsp;&nbsp;DIGIRACK&nbsp;&nbsp;DIGIRACK&nbsp;&nbsp;DIGIRACK&nbsp;&nbsp;DIGIRACK&nbsp;&nbsp;DIGIRACK</div>
-            @endfor
+    @if($watermark)
+        <div class="dr-watermark" aria-hidden="true">
+            <div class="dr-watermark__text">{!! str_repeat('DigiRack&nbsp; ', 700) !!}</div>
+            <img class="dr-watermark__logo" src="{{ asset('images/logo-digirack.png') }}" alt="">
         </div>
-        <img class="dr-watermark__logo" src="{{ asset('images/logo-digirack.png') }}" alt="">
-    </div>
+    @endif
 
     {{-- Toolbar (hidden on print) --}}
     <div class="no-print sticky top-0 z-20 bg-brand-navy text-white">
@@ -86,12 +85,9 @@
 
             {{-- Document header --}}
             <div class="px-5 sm:px-8 py-5 sm:py-7 border-b border-gray-100 flex items-start justify-between gap-4">
-                <div class="flex items-center gap-3 min-w-0">
-                    <img src="{{ asset('images/logo-digirack.png') }}" alt="DigiRack" class="h-9 sm:h-11 w-auto shrink-0">
-                    <div class="min-w-0">
-                        <p class="font-display font-extrabold text-base sm:text-lg text-brand-navy leading-tight">DigiRack</p>
-                        <p class="text-[10px] sm:text-xs text-gray-500 leading-tight">PT DigiRack Infrastruktur Digital</p>
-                    </div>
+                <div class="flex flex-col items-start gap-1.5 min-w-0">
+                    <img src="{{ asset('images/logo-digirack.png') }}" alt="DigiRack" class="h-9 sm:h-11 w-auto">
+                    <p class="text-[10px] sm:text-xs text-gray-500 leading-tight">PT Infrakarsa Sinergi Digital</p>
                 </div>
                 <div class="text-right shrink-0">
                     <p class="font-display font-extrabold text-sm sm:text-xl text-brand-navy tracking-wider">{{ $docLabel }}</p>
