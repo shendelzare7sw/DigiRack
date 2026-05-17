@@ -27,9 +27,9 @@
             <p class="text-gray-500 text-sm mb-6">Satu langkah lagi. Silakan selesaikan pembayaran Anda via Midtrans.</p>
             
             <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 mb-8 text-left inline-block w-full max-w-sm mx-auto">
-                <div class="flex justify-between items-center mb-3 text-sm">
-                    <span class="text-gray-500">No. Invoice</span>
-                    <span class="font-bold text-gray-900">{{ $order->invoice_number }}</span>
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 text-sm gap-0.5">
+                    <span class="text-gray-500 shrink-0">No. Invoice</span>
+                    <span class="font-bold text-gray-900 break-all sm:text-right">{{ $order->invoice_number }}</span>
                 </div>
                 <div class="flex justify-between items-center mb-3 text-sm">
                     <span class="text-gray-500">Status</span>
