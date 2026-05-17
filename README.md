@@ -1,66 +1,225 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DigiRack
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+DigiRack adalah marketplace untuk produk infrastruktur IT, jaringan, server, dan perangkat enterprise. Aplikasi ini dibangun dengan Laravel 11, Blade, Tailwind CSS, Alpine.js, Vite, dan integrasi Midtrans untuk pembayaran.
 
-## About Laravel
+Project ini mendukung alur buyer, seller, dan admin dalam satu aplikasi: katalog produk, toko seller, checkout, pembayaran, pengiriman, bukti paket sampai, auto-complete order, wallet seller, payout, serta pengaturan operasional platform.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Marketplace produk IT: katalog, detail produk, galeri gambar, kategori, banner, flash sale, wishlist, dan cart.
+- Role buyer, seller, dan admin dengan dashboard masing-masing.
+- Registrasi akun dengan OTP email 6 digit, masa berlaku, batas percobaan, dan resend cooldown.
+- Seller onboarding dengan data toko, dokumen identitas, approval admin, dan storefront publik.
+- CRUD produk seller, laporan produk, dan proteksi agar seller tidak membeli produk sendiri.
+- Checkout buyer dengan Midtrans Snap, status sinkron dari callback dan dari halaman order.
+- Riwayat order buyer dan seller, invoice cetak/unduh, pembatalan order, dan notifikasi.
+- Pengiriman fleksibel tanpa API tracking: kurir toko, ekspedisi reguler, input resi manual, dan bukti foto paket sampai.
+- Upload multiple foto bukti paket sampai, preview sebelum upload, thumbnail di buyer/seller, dan preview besar saat diklik.
+- Auto-complete order setelah paket tercatat sampai dan buyer tidak konfirmasi dalam durasi yang ditentukan admin.
+- Wallet seller, perhitungan dana bersih, fee platform per item, dan request payout.
+- Admin panel untuk user, toko, produk, order, kategori, banner, flash sale, payout, recovery ticket, transaction fee, dan system settings.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack
 
-## Learning Laravel
+- PHP 8.2+
+- Laravel 11
+- Laravel Breeze
+- MySQL/MariaDB atau SQLite untuk lokal
+- Tailwind CSS 3
+- Alpine.js
+- Vite 5
+- Midtrans PHP SDK
+- PHPUnit
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Kebutuhan
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP 8.2 atau lebih baru
+- Composer
+- Node.js dan npm
+- Database MySQL/MariaDB untuk production
+- Mail transport aktif untuk OTP email
+- Web server yang mengarah ke folder `public`
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Setup Lokal
 
-## Laravel Sponsors
+```bash
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Atur database di `.env`. Untuk Laragon/MySQL biasanya:
 
-### Premium Partners
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=digirack
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Jalankan migrasi dan seeder:
 
-## Contributing
+```bash
+php artisan migrate --seed
+php artisan storage:link
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Jalankan aplikasi:
 
-## Code of Conduct
+```bash
+php artisan serve
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Untuk build asset production:
 
-## Security Vulnerabilities
+```bash
+npm run build
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Environment Penting
 
-## License
+Contoh variabel yang biasanya perlu diatur:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```env
+APP_NAME=DigiRack
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+APP_TIMEZONE=Asia/Jakarta
+
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=no-reply@domain.test
+MAIL_FROM_NAME="Helpdesk DigiRack"
+
+MIDTRANS_SERVER_KEY=
+MIDTRANS_CLIENT_KEY=
+MIDTRANS_MERCHANT_ID=
+MIDTRANS_IRIS_API_KEY=
+MIDTRANS_IS_PRODUCTION=false
+```
+
+Catatan: konfigurasi Midtrans juga bisa dikelola dari menu admin `Settings`, sehingga nilai database dapat menggantikan fallback dari `.env`.
+
+## Alur Pembayaran Midtrans
+
+1. Buyer checkout dan memilih pembayaran Midtrans.
+2. Sistem membuat payment reference dan payment token.
+3. Buyer membayar lewat Snap.
+4. Status order diperbarui melalui callback `/api/midtrans/callback`.
+5. Halaman `buyer/orders` dan detail order juga melakukan sinkronisasi status berdasarkan payment reference.
+6. Jika pembayaran sukses, order masuk ke status diproses dan seller dapat mengirim paket.
+
+Pastikan URL callback Midtrans mengarah ke:
+
+```text
+https://domain-anda.com/api/midtrans/callback
+```
+
+## Alur Pengiriman dan Dana Seller
+
+1. Seller menandai order sudah dikirim.
+2. Untuk kurir reguler, seller mengisi nomor resi manual.
+3. Untuk kurir toko, sistem memakai penanda internal `KURIR-TOKO`.
+4. Saat paket sudah benar-benar sampai di alamat, seller wajib upload foto bukti sampai.
+5. Buyer melihat bukti foto di detail order dan dapat konfirmasi pesanan diterima.
+6. Dana dicairkan ke wallet seller setelah buyer konfirmasi atau setelah auto-complete melewati batas waktu.
+
+Auto-complete dihitung sejak `delivered_at`, yaitu saat paket tercatat sampai, bukan sejak `shipped_at`.
+
+## Cron Production
+
+Command auto-complete:
+
+```bash
+php artisan orders:auto-complete
+```
+
+Cron yang disarankan:
+
+```cron
+* * * * * cd /www/wwwroot/digirack && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Jika scheduler belum memanggil command ini di environment tertentu, jalankan langsung tiap beberapa menit:
+
+```cron
+*/5 * * * * cd /www/wwwroot/digirack && php artisan orders:auto-complete >> /dev/null 2>&1
+```
+
+Durasi auto-complete dapat diatur admin melalui `auto_complete_hours` di menu Settings. Nilai `0` menonaktifkan auto-complete.
+
+## Deploy Production
+
+Setelah pull perubahan terbaru:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm install
+npm run build
+php artisan migrate --force
+php artisan storage:link
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Jika build gagal karena permission pada `public/build`, perbaiki ownership folder yang perlu ditulis oleh user web server:
+
+```bash
+sudo chown -R www:www public/build storage bootstrap/cache
+sudo -u www npm run build
+```
+
+Sesuaikan user `www:www` dengan user web server production Anda.
+
+## Testing
+
+Jalankan semua test:
+
+```bash
+php artisan test
+```
+
+Test penting yang sudah mencakup flow kritis:
+
+- OTP registration
+- Midtrans payment status sync
+- Buyer/seller role switching
+- Proteksi pembelian produk sendiri
+- Product gallery
+- Auto-complete order
+- Bukti foto pengiriman multiple image
+
+## Struktur Folder Penting
+
+- `app/Http/Controllers/Buyer` - alur buyer, cart, checkout, order.
+- `app/Http/Controllers/Seller` - toko, produk, order, kurir, wallet seller.
+- `app/Http/Controllers/Admin` - panel admin dan pengaturan platform.
+- `app/Services/MidtransService.php` - integrasi status pembayaran Midtrans.
+- `app/Console/Commands/AutoCompleteOrders.php` - command auto-complete order.
+- `resources/views` - Blade UI untuk public, buyer, seller, admin, auth, dan layout.
+- `routes/buyer.php`, `routes/seller.php`, `routes/admin.php` - routing per role.
+- `database/migrations` - skema database.
+- `database/seeders` - data awal kategori, lokasi, user, toko, produk, banner, flash sale, review.
+
+## Catatan Keamanan
+
+- Jangan commit `.env`, key Midtrans, credential SMTP, atau credential database.
+- Gunakan mode Sandbox Midtrans saat testing, lalu ubah ke Production hanya setelah callback dan payment flow terverifikasi.
+- Pastikan `APP_DEBUG=false` di production.
+- Pastikan folder `storage` dan `bootstrap/cache` writable oleh web server.
+- Gunakan HTTPS di production, terutama untuk callback Midtrans, login, OTP, dan upload bukti pengiriman.
+
+## Developer Credit
+
+Developed by: Tabah Ujianto & Yayan Wahyudi
