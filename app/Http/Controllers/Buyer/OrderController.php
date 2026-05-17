@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Notifications\OrderNotification;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,8 +15,21 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request, MidtransService $midtrans)
     {
+        // Buyer just returned from Midtrans — the webhook may be delayed or
+        // blocked, so actively confirm the payment before rendering the list.
+        if ($request->has('payment')) {
+            Order::where('buyer_id', Auth::id())
+                ->where('payment_status', 'unpaid')
+                ->whereNotNull('payment_reference')
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->pluck('payment_reference')
+                ->unique()
+                ->each(fn ($ref) => $midtrans->syncByReference($ref));
+        }
+
         $orders = Order::with('items.product.store')
             ->where('buyer_id', Auth::id())
             ->orderBy('created_at', 'desc')
@@ -24,9 +38,18 @@ class OrderController extends Controller
         return view('buyer.orders.index', compact('orders'));
     }
 
-    public function show($id)
+    public function show($id, MidtransService $midtrans)
     {
         $order = Order::with(['items.product.store', 'store'])->where('buyer_id', Auth::id())->findOrFail($id);
+
+        // Fallback for a delayed/undelivered Midtrans webhook: confirm payment
+        // status server-to-server when the buyer opens an unpaid order.
+        if ($order->payment_status === 'unpaid' && $order->payment_reference) {
+            if ($midtrans->syncByReference($order->payment_reference)) {
+                $order->refresh();
+            }
+        }
+
         return view('buyer.orders.show', compact('order'));
     }
 
