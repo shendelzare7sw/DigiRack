@@ -16,6 +16,9 @@ Route::middleware(['auth', 'verified'])->prefix('seller')->name('seller.')->grou
     Route::get('/register', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'showForm'])->name('register.form');
     Route::post('/register', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'register'])->name('register.store');
 
+    Route::get('/identity', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'showIdentityForm'])->name('identity.form');
+    Route::post('/identity', [\App\Http\Controllers\Seller\SellerRegistrationController::class, 'submitIdentity'])->name('identity.submit');
+
     Route::get('/dashboard', function () {
         $user = auth()->user();
 
@@ -65,6 +68,7 @@ Route::middleware(['auth', 'verified', 'role:seller,admin', 'seller.approved'])-
     // Store Couriers (Fase 8)
     Route::get('/couriers', [\App\Http\Controllers\Seller\CourierController::class, 'index'])->name('couriers.index');
     Route::post('/couriers', [\App\Http\Controllers\Seller\CourierController::class, 'store'])->name('couriers.store');
+    Route::post('/couriers/expeditions', [\App\Http\Controllers\Seller\CourierController::class, 'updateExpeditions'])->name('couriers.expeditions');
     Route::post('/couriers/{id}/toggle', [\App\Http\Controllers\Seller\CourierController::class, 'toggleActive'])->name('couriers.toggle');
     Route::delete('/couriers/{id}', [\App\Http\Controllers\Seller\CourierController::class, 'destroy'])->name('couriers.destroy');
 

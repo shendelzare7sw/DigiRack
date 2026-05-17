@@ -12,10 +12,15 @@
         @endif
 
         {{-- Header --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div>
-                <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Kelola Produk</h1>
-                <p class="text-sm text-gray-500 mt-1">{{ $stats['total'] }} produk • {{ $stats['active'] }} aktif • {{ $stats['lowStock'] }} stok menipis</p>
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+            <div class="flex items-start gap-3">
+                <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                    <x-icon name="arrow-left" class="w-4 h-4" />
+                </a>
+                <div>
+                    <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Kelola Produk</h1>
+                    <p class="text-sm text-gray-500 mt-1">{{ $stats['total'] }} produk • {{ $stats['active'] }} aktif • {{ $stats['lowStock'] }} stok menipis</p>
+                </div>
             </div>
             <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
                 <x-icon name="plus" class="w-4 h-4" />

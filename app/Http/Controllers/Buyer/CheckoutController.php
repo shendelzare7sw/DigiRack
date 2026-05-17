@@ -106,7 +106,8 @@ class CheckoutController extends Controller
                     'items' => [],
                     'totalWeight' => 0,
                     'subtotal' => 0,
-                    'custom_couriers' => $customCouriers
+                    'custom_couriers' => $customCouriers,
+                    'active_expeditions' => $item->product->store->activeExpeditions(),
                 ];
             }
             $storesData[$storeId]['items'][] = $item;
@@ -196,17 +197,29 @@ class CheckoutController extends Controller
 
             $index = 1;
             foreach ($storesData as $storeId => $data) {
-                $courierCode = $request->couriers[$storeId] ?? 'jne';
+                $courierCode = $request->couriers[$storeId] ?? '';
                 $shippingCost = 0;
+
+                if ($courierCode === '') {
+                    throw new \Exception('Metode pengiriman untuk toko ' . $data['store']->name . ' belum dipilih.');
+                }
 
                 if (str_starts_with($courierCode, 'toko_')) {
                     $courierId = explode('_', $courierCode)[1];
-                    $storeCourier = \App\Models\StoreCourier::find($courierId);
-                    if ($storeCourier) {
-                        $shippingCost = (int) $storeCourier->price;
-                        $courierCode = 'toko_' . $storeCourier->name;
+                    $storeCourier = \App\Models\StoreCourier::where('id', $courierId)
+                        ->where('store_id', $storeId)
+                        ->where('is_active', true)
+                        ->first();
+                    if (! $storeCourier) {
+                        throw new \Exception('Kurir yang dipilih untuk toko ' . $data['store']->name . ' tidak tersedia.');
                     }
+                    $shippingCost = (int) $storeCourier->price;
+                    $courierCode = 'toko_' . $storeCourier->name;
                 } else {
+                    if (! in_array($courierCode, $data['store']->enabled_expeditions ?? [], true)
+                        || ! array_key_exists($courierCode, \App\Models\Store::EXPEDITIONS)) {
+                        throw new \Exception('Ekspedisi yang dipilih tidak diaktifkan oleh toko ' . $data['store']->name . '.');
+                    }
                     $originCityId = $data['store']->city_id ?? 153;
                     $destCityId = $address->city_id ?? 153;
                     $ongkirResponse = $rajaOngkir->getCost($originCityId, $destCityId, $data['totalWeight'], $courierCode);

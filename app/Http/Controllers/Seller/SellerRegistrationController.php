@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Notifications\StoreStatusNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SellerRegistrationController extends Controller
@@ -87,5 +88,80 @@ class SellerRegistrationController extends Controller
 
         return redirect()->route('seller.dashboard')
             ->with('success', 'Toko "' . $request->store_name . '" berhasil diajukan. Anda bisa masuk dashboard seller, tetapi menu penjualan aktif setelah verifikasi admin.');
+    }
+
+    /**
+     * Show identity document upload form for an existing store that has no
+     * (or rejected) document yet — e.g. stores created before identity was required.
+     */
+    public function showIdentityForm()
+    {
+        $user = Auth::user();
+        $store = $user->store;
+
+        if (! $store) {
+            return redirect()->route('seller.register.form')
+                ->with('info', 'Daftarkan toko Anda terlebih dahulu.');
+        }
+
+        if ($store->isApproved()) {
+            return redirect()->route('seller.dashboard')
+                ->with('info', 'Toko Anda sudah terverifikasi.');
+        }
+
+        return view('seller.identity', compact('store'));
+    }
+
+    /**
+     * Store/replace the identity document for an existing store and
+     * push it back into the admin verification queue.
+     */
+    public function submitIdentity(Request $request)
+    {
+        $user = Auth::user();
+        $store = $user->store;
+
+        if (! $store) {
+            return redirect()->route('seller.register.form')
+                ->with('info', 'Daftarkan toko Anda terlebih dahulu.');
+        }
+
+        if ($store->isApproved()) {
+            return redirect()->route('seller.dashboard')
+                ->with('info', 'Toko Anda sudah terverifikasi.');
+        }
+
+        $request->validate([
+            'identity_document' => 'required|file|mimes:jpg,jpeg,png,webp,pdf|max:6144',
+        ]);
+
+        if ($store->identity_document_path && Storage::disk('public')->exists($store->identity_document_path)) {
+            Storage::disk('public')->delete($store->identity_document_path);
+        }
+
+        $identityPath = $request->file('identity_document')->store('store-identities', 'public');
+
+        $store->update([
+            'identity_document_path' => $identityPath,
+            'identity_submitted_at' => now(),
+            'is_verified' => false,
+            'is_active' => false,
+            'verification_status' => 'pending',
+            'verification_notes' => null,
+            'verified_at' => null,
+        ]);
+
+        User::where('role', 'admin')->get()->each(function (User $admin) use ($store, $user) {
+            $admin->notify(new StoreStatusNotification(
+                'store_identity_submitted',
+                'Dokumen identitas toko diperbarui',
+                'Toko "' . $store->name . '" mengirim dokumen identitas dari ' . $user->name . '. Silakan tinjau untuk verifikasi.',
+                route('admin.stores.show', $store->id),
+                'ID'
+            ));
+        });
+
+        return redirect()->route('seller.dashboard')
+            ->with('success', 'Dokumen identitas berhasil dikirim. Toko Anda kembali masuk antrean verifikasi admin.');
     }
 }

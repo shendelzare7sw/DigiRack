@@ -124,43 +124,59 @@
                     </div>
                     
                     {{-- Pilihan Kurir Per Toko --}}
+                    @php
+                        $hasInternal = isset($data['custom_couriers']) && $data['custom_couriers']->count() > 0;
+                        $hasExpeditions = !empty($data['active_expeditions']);
+                    @endphp
                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p class="text-sm font-semibold text-gray-700 mb-3 block">Metode Pengiriman</p>
-                        
-                        <div x-show="!selectedAddress?.city_id" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                            Pilih alamat dengan data kota valid terlebih dahulu untuk menghitung ongkir.
-                        </div>
 
-                        <div x-show="selectedAddress?.city_id" class="space-y-3">
-                            <select name="couriers[{{ $storeId }}]" x-model="selectedCouriers[{{ $storeId }}]" @change="calculateShipping({{ $storeId }})" required
-                                class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
-                                <option value="">Pilih Kurir</option>
-                                @if(isset($data['custom_couriers']) && $data['custom_couriers']->count() > 0)
-                                    <optgroup label="Kurir Internal Toko">
-                                        @foreach($data['custom_couriers'] as $customC)
-                                            <option value="toko_{{ $customC->id }}">{{ $customC->name }} - Rp {{ number_format($customC->price, 0, ',', '.') }}{{ $customC->estimation ? ' ('.$customC->estimation.')' : '' }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                @endif
-                                <optgroup label="Ekspedisi Reguler">
-                                    <option value="jne">JNE</option>
-                                    <option value="pos">POS Indonesia</option>
-                                    <option value="tiki">TIKI</option>
-                                </optgroup>
-                            </select>
-
-                            <div x-show="isCalculating[{{ $storeId }}]" class="text-xs text-gray-500 flex items-center gap-2">
-                                <svg class="animate-spin h-3 w-3 text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                Menghitung tarif...
+                        @if(!$hasInternal && !$hasExpeditions)
+                            <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 flex items-start gap-2">
+                                <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
+                                <div>
+                                    <span class="font-bold">Tidak ada pengiriman yang tersedia.</span>
+                                    Toko ini belum mengaktifkan kurir apa pun, sehingga produknya belum dapat di-checkout. Silakan hapus produk toko ini dari pilihan atau hubungi penjual.
+                                </div>
                             </div>
-                            
-                            <div x-show="ongkirError[{{ $storeId }}]" x-text="ongkirError[{{ $storeId }}]" class="text-xs text-red-500 font-medium"></div>
-
-                            <div x-show="shippingCosts[{{ $storeId }}] > 0" class="flex justify-between items-center text-sm">
-                                <span class="text-gray-600">Biaya Kirim (<span x-text="stores.find(s => s.id == {{ $storeId }}).weight"></span>g)</span>
-                                <span class="font-bold text-gray-900" x-text="'Rp ' + formatRupiah(shippingCosts[{{ $storeId }}])"></span>
+                        @else
+                            <div x-show="!selectedAddress?.city_id" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                Pilih alamat dengan data kota valid terlebih dahulu untuk menghitung ongkir.
                             </div>
-                        </div>
+
+                            <div x-show="selectedAddress?.city_id" class="space-y-3">
+                                <select name="couriers[{{ $storeId }}]" x-model="selectedCouriers[{{ $storeId }}]" @change="calculateShipping({{ $storeId }})" required
+                                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
+                                    <option value="">Pilih Kurir</option>
+                                    @if($hasInternal)
+                                        <optgroup label="Kurir Internal / Instan">
+                                            @foreach($data['custom_couriers'] as $customC)
+                                                <option value="toko_{{ $customC->id }}">{{ $customC->name }} - Rp {{ number_format($customC->price, 0, ',', '.') }}{{ $customC->estimation ? ' ('.$customC->estimation.')' : '' }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endif
+                                    @if($hasExpeditions)
+                                        <optgroup label="Ekspedisi Reguler">
+                                            @foreach($data['active_expeditions'] as $expCode => $expLabel)
+                                                <option value="{{ $expCode }}">{{ $expLabel }}</option>
+                                            @endforeach
+                                        </optgroup>
+                                    @endif
+                                </select>
+
+                                <div x-show="isCalculating[{{ $storeId }}]" class="text-xs text-gray-500 flex items-center gap-2">
+                                    <svg class="animate-spin h-3 w-3 text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Menghitung tarif...
+                                </div>
+
+                                <div x-show="ongkirError[{{ $storeId }}]" x-text="ongkirError[{{ $storeId }}]" class="text-xs text-red-500 font-medium"></div>
+
+                                <div x-show="shippingCosts[{{ $storeId }}] > 0" class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-600">Biaya Kirim (<span x-text="stores.find(s => s.id == {{ $storeId }}).weight"></span>g)</span>
+                                    <span class="font-bold text-gray-900" x-text="'Rp ' + formatRupiah(shippingCosts[{{ $storeId }}])"></span>
+                                </div>
+                            </div>
+                        @endif
 
                     </div>
                 </div>

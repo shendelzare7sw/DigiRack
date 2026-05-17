@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Models\Store;
 use App\Models\StoreCourier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,23 @@ class CourierController extends Controller
     {
         $store = Auth::user()->store;
         $couriers = StoreCourier::where('store_id', $store->id)->orderBy('created_at', 'desc')->get();
-        return view('seller.couriers.index', compact('couriers'));
+        $expeditions = Store::EXPEDITIONS;
+        $enabledExpeditions = $store->enabled_expeditions ?? [];
+        return view('seller.couriers.index', compact('couriers', 'expeditions', 'enabledExpeditions'));
+    }
+
+    public function updateExpeditions(Request $request)
+    {
+        $request->validate([
+            'expeditions' => 'nullable|array',
+            'expeditions.*' => 'string|in:' . implode(',', array_keys(Store::EXPEDITIONS)),
+        ]);
+
+        $store = Auth::user()->store;
+        $store->enabled_expeditions = array_values($request->input('expeditions', []));
+        $store->save();
+
+        return back()->with('success', 'Pengaturan ekspedisi reguler berhasil disimpan.');
     }
 
     public function store(Request $request)

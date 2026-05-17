@@ -84,6 +84,22 @@
                                     <p>{{ $store->verification_notes }}</p>
                                 </div>
                             @endif
+
+                            @if(!$store->identity_document_path || $verificationStatus === 'rejected')
+                                <div class="mt-4">
+                                    <a href="{{ route('seller.identity.form') }}" class="inline-flex items-center gap-2 bg-brand-navy hover:bg-brand-navydark text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm transition-colors">
+                                        <x-icon name="identification" class="w-4 h-4" />
+                                        {{ $store->identity_document_path ? 'Kirim Ulang Dokumen Identitas' : 'Upload Dokumen Identitas (KTP)' }}
+                                    </a>
+                                    <p class="text-xs mt-2 opacity-70">
+                                        @if(!$store->identity_document_path)
+                                            Toko ini belum melampirkan KTP / ID Card. Unggah dokumen agar admin bisa melanjutkan verifikasi.
+                                        @else
+                                            Perbaiki dokumen sesuai catatan admin, lalu kirim ulang untuk ditinjau.
+                                        @endif
+                                    </p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -9,12 +9,23 @@ class Store extends Model
 {
     use HasFactory;
 
+    /**
+     * Regular expeditions whose cost is calculated automatically (RajaOngkir).
+     * Keyed by the code used in checkout / OngkirController.
+     */
+    public const EXPEDITIONS = [
+        'jne' => 'JNE',
+        'pos' => 'POS Indonesia',
+        'tiki' => 'TIKI',
+    ];
+
     protected $fillable = [
         'user_id',
         'city_id',
         'name',
         'slug',
         'description',
+        'enabled_expeditions',
         'logo',
         'banner',
         'identity_document_path',
@@ -39,7 +50,39 @@ class Store extends Model
             'avg_rating' => 'decimal:1',
             'identity_submitted_at' => 'datetime',
             'verified_at' => 'datetime',
+            'enabled_expeditions' => 'array',
         ];
+    }
+
+    public function storeCouriers()
+    {
+        return $this->hasMany(StoreCourier::class);
+    }
+
+    /**
+     * Regular expeditions the seller has switched on for this store,
+     * as [code => label]. Empty until the seller configures couriers.
+     */
+    public function activeExpeditions(): array
+    {
+        $enabled = $this->enabled_expeditions ?? [];
+
+        return collect(self::EXPEDITIONS)
+            ->only($enabled)
+            ->all();
+    }
+
+    /**
+     * True when the store has at least one shipping option for buyers:
+     * an active internal/instant courier OR an enabled regular expedition.
+     */
+    public function hasShippingOptions(): bool
+    {
+        if (! empty($this->activeExpeditions())) {
+            return true;
+        }
+
+        return $this->storeCouriers()->where('is_active', true)->exists();
     }
 
     public function user()
