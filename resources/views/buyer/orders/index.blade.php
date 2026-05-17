@@ -126,27 +126,31 @@
                                 <span>&bull;</span>
                                 {{ $order->created_at->translatedFormat('d M Y') }}
                             </div>
-                            <div class="flex items-center justify-between mt-3">
-                                <span class="font-bold text-brand-blue">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
-                                <div class="flex items-center gap-2">
+                            <div class="flex items-center justify-between gap-3 mt-3">
+                                <span class="font-bold text-brand-blue text-base min-w-0 truncate">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                                <div class="flex items-center gap-1.5 shrink-0">
                                     @if($order->status == 'shipped')
                                         <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" class="inline">
                                             @csrf
-                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors">Diterima</button>
+                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold text-xs px-2.5 py-1.5 rounded-lg transition-colors">Diterima</button>
                                         </form>
                                     @endif
                                     @if(in_array($order->status, ['pending_payment', 'processing']))
                                         <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="inline" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: '{{ $order->status === 'pending_payment' ? 'Batalkan Pesanan' : 'Ajukan Pembatalan' }}', message: '{{ $order->status === 'pending_payment' ? 'Pesanan belum dibayar dan akan langsung dibatalkan.' : 'Pesanan sudah diproses. Permintaan pembatalan akan dikirim ke penjual untuk disetujui.' }}', type: 'danger', confirmText: '{{ $order->status === 'pending_payment' ? 'Ya, Batalkan' : 'Kirim Permintaan' }}' })">
                                             @csrf
-                                            <button type="submit" class="bg-white border border-red-200 hover:border-red-400 text-red-500 hover:text-red-600 font-bold text-xs px-3 py-1.5 rounded-lg transition-all">
+                                            <button type="submit" class="bg-white border border-red-200 hover:border-red-400 text-red-500 hover:text-red-600 font-bold text-xs px-2.5 py-1.5 rounded-lg transition-all">
                                                 {{ $order->status === 'pending_payment' ? 'Batalkan' : 'Minta Batal' }}
                                             </button>
                                         </form>
                                     @endif
-                                    <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank" class="inline-flex items-center gap-1 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all" title="Invoice">
-                                        <x-icon name="document-text" class="w-3.5 h-3.5" /> Invoice
+                                    <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank" class="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy rounded-lg transition-all" title="Unduh / Cetak Invoice" aria-label="Unduh / Cetak Invoice">
+                                        <x-icon name="document-text" class="w-4 h-4" />
+                                        <span class="sr-only">Unduh / Cetak Invoice</span>
                                     </a>
-                                    <a href="{{ route('buyer.orders.show', $order->id) }}" class="bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
+                                    <a href="{{ route('buyer.orders.show', $order->id) }}" class="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy rounded-lg transition-all" title="Lihat Detail Pesanan" aria-label="Lihat Detail Pesanan">
+                                        <x-icon name="eye-outline" class="w-4 h-4" />
+                                        <span class="sr-only">Lihat Detail Pesanan</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
