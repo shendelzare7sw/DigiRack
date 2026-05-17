@@ -94,6 +94,9 @@
                                             </button>
                                         </form>
                                     @endif
+                                    <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-600 font-bold px-4 py-2 rounded-lg transition-all shadow-sm mr-2" title="Lihat / Cetak Invoice">
+                                        <x-icon name="document-text" class="w-4 h-4" /> Invoice
+                                    </a>
                                     <a href="{{ route('buyer.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-600 font-bold px-4 py-2 rounded-lg transition-all shadow-sm">
                                         Detail
                                     </a>
@@ -140,6 +143,9 @@
                                             </button>
                                         </form>
                                     @endif
+                                    <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank" class="inline-flex items-center gap-1 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all" title="Invoice">
+                                        <x-icon name="document-text" class="w-3.5 h-3.5" /> Invoice
+                                    </a>
                                     <a href="{{ route('buyer.orders.show', $order->id) }}" class="bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
                                 </div>
                             </div>

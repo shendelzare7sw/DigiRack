@@ -57,4 +57,43 @@ class OrderController extends Controller
 
         return view('admin.orders.show', compact('order'));
     }
+
+    public function report(Request $request)
+    {
+        $query = Order::with(['buyer', 'store', 'items']);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('payment')) {
+            $query->where('payment_status', $request->payment);
+        }
+        if ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->from);
+        }
+        if ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->to);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('buyer', fn ($sub) => $sub->where('name', 'like', "%{$search}%"))
+                  ->orWhereHas('store', fn ($sub) => $sub->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        $orders = $query->latest()->get();
+
+        $summary = [
+            'count' => $orders->count(),
+            'gross' => $orders->sum('total_price'),
+            'paidGross' => $orders->whereIn('status', ['processing', 'shipped', 'completed'])->sum('total_price'),
+            'completed' => $orders->where('status', 'completed')->count(),
+            'inProgress' => $orders->whereIn('status', ['processing', 'shipped'])->count(),
+            'cancelled' => $orders->whereIn('status', ['cancelled', 'cancellation_requested'])->count(),
+        ];
+
+        return view('admin.orders.report', compact('orders', 'summary'));
+    }
 }

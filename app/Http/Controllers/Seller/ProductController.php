@@ -58,6 +58,44 @@ class ProductController extends Controller
     }
 
     /**
+     * Laporan stok & produk (printable)
+     */
+    public function report(Request $request)
+    {
+        $store = Auth::user()->store;
+        if (!$store) {
+            return redirect()->route('seller.dashboard')
+                ->with('error', 'Anda belum memiliki toko.');
+        }
+
+        $query = Product::with(['category'])->where('store_id', $store->id);
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $products = $query->orderBy('name')->get();
+
+        $stats = [
+            'total' => $products->count(),
+            'active' => $products->where('status', 'active')->count(),
+            'inactive' => $products->where('status', '!=', 'active')->count(),
+            'lowStock' => $products->where('stock', '>', 0)->where('stock', '<=', 5)->count(),
+            'outOfStock' => $products->where('stock', 0)->count(),
+            'stockValue' => $products->sum(fn ($p) => $p->price * $p->stock),
+            'totalSold' => $products->sum('sold_count'),
+        ];
+
+        return view('seller.products.report', compact('products', 'store', 'stats'));
+    }
+
+    /**
      * Form tambah produk
      */
     public function create()

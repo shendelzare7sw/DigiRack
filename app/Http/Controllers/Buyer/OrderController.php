@@ -53,6 +53,19 @@ class OrderController extends Controller
         return view('buyer.orders.show', compact('order'));
     }
 
+    public function invoice($id)
+    {
+        $order = Order::with(['items.product', 'store', 'buyer'])
+            ->where('buyer_id', Auth::id())
+            ->findOrFail($id);
+
+        $itemsSubtotal = $order->items->sum(fn ($item) => $item->price_snapshot * $item->quantity);
+        $buyerFees = collect($order->applied_buyer_fees ?? []);
+        $grandTotal = $order->total_price + $buyerFees->sum('amount');
+
+        return view('buyer.orders.invoice', compact('order', 'itemsSubtotal', 'buyerFees', 'grandTotal'));
+    }
+
     public function confirm(Request $request, $id)
     {
         $order = Order::where('buyer_id', Auth::id())->findOrFail($id);

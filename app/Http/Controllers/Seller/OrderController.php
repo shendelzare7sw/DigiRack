@@ -46,6 +46,39 @@ class OrderController extends Controller
         return view('seller.orders.show', compact('order', 'store'));
     }
 
+    public function report(Request $request)
+    {
+        $store = $this->getStore();
+        if (!$store) {
+            return redirect()->route('dashboard')->with('error', 'Anda harus membuka toko terlebih dahulu.');
+        }
+
+        $query = Order::with(['buyer', 'items'])->where('store_id', $store->id);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('from')) {
+            $query->whereDate('created_at', '>=', $request->from);
+        }
+        if ($request->filled('to')) {
+            $query->whereDate('created_at', '<=', $request->to);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->get();
+
+        $summary = [
+            'count' => $orders->count(),
+            'gross' => $orders->sum('total_price'),
+            'paidGross' => $orders->whereIn('status', ['processing', 'shipped', 'completed'])->sum('total_price'),
+            'completed' => $orders->where('status', 'completed')->count(),
+            'inProgress' => $orders->whereIn('status', ['processing', 'shipped'])->count(),
+            'cancelled' => $orders->whereIn('status', ['cancelled', 'cancellation_requested'])->count(),
+        ];
+
+        return view('seller.orders.report', compact('orders', 'store', 'summary'));
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $store = $this->getStore();

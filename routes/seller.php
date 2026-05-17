@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified', 'role:seller,admin', 'seller.approved'])-
 
     // Products (CRUD)
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/report', [ProductController::class, 'report'])->name('products.report');
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products/create', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'verified', 'role:seller,admin', 'seller.approved'])-
 
     // Orders (Fase 6 & 7)
     Route::get('/orders', [App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/report', [App\Http\Controllers\Seller\OrderController::class, 'report'])->name('orders.report');
     Route::get('/orders/{id}', [App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/status', [App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.status');
     Route::post('/orders/{id}/cancellation', [App\Http\Controllers\Seller\OrderController::class, 'resolveCancellation'])->name('orders.cancellation');

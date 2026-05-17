@@ -2,23 +2,35 @@
     <x-slot name="title">Kelola Pesanan Penjualan</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-2xl font-bold font-display text-gray-900">Daftar Transaksi</h1>
-                <p class="text-gray-500 text-sm mt-1">Pantau, proses, dan kirimkan pesanan pelanggan Anda.</p>
+        <div class="flex flex-col gap-4 mb-6">
+            <div class="flex items-start gap-3">
+                <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                    <x-icon name="arrow-left" class="w-4 h-4" />
+                </a>
+                <div>
+                    <h1 class="text-2xl font-bold font-display text-gray-900">Daftar Transaksi</h1>
+                    <p class="text-gray-500 text-sm mt-1">Pantau, proses, dan kirimkan pesanan pelanggan Anda.</p>
+                </div>
             </div>
-            
-            <form action="{{ route('seller.orders.index') }}" method="GET" class="flex items-center gap-2">
-                <select name="status" onchange="this.form.submit()" class="border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
-                    <option value="">Semua Status</option>
-                    <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Menunggu Pembayaran</option>
-                    <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Perlu Dikirim</option>
-                    <option value="cancellation_requested" {{ request('status') == 'cancellation_requested' ? 'selected' : '' }}>Permintaan Batal</option>
-                    <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Sedang Dikirim</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
-                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                </select>
-            </form>
+
+            <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <form action="{{ route('seller.orders.index') }}" method="GET" class="flex-1">
+                    <select name="status" onchange="this.form.submit()" class="w-full sm:w-auto border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
+                        <option value="">Semua Status</option>
+                        <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Menunggu Pembayaran</option>
+                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Perlu Dikirim</option>
+                        <option value="cancellation_requested" {{ request('status') == 'cancellation_requested' ? 'selected' : '' }}>Permintaan Batal</option>
+                        <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Sedang Dikirim</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
+                    </select>
+                </form>
+                <a href="{{ route('seller.orders.report', request()->only(['status'])) }}" target="_blank"
+                   class="inline-flex items-center justify-center gap-2 bg-brand-navy hover:bg-brand-navydark text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm transition-colors shrink-0">
+                    <x-icon name="document-chart-bar" class="w-4 h-4" />
+                    Cetak Laporan
+                </a>
+            </div>
         </div>
 
         <div class="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">

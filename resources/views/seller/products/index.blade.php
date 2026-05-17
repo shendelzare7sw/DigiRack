@@ -22,10 +22,17 @@
                     <p class="text-sm text-gray-500 mt-1">{{ $stats['total'] }} produk • {{ $stats['active'] }} aktif • {{ $stats['lowStock'] }} stok menipis</p>
                 </div>
             </div>
-            <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors self-start">
-                <x-icon name="plus" class="w-4 h-4" />
-                Tambah Produk
-            </a>
+            <div class="flex flex-col sm:flex-row gap-2 self-stretch sm:self-start">
+                <a href="{{ route('seller.products.report', request()->only(['search','status','category'])) }}" target="_blank"
+                   class="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-700 font-bold text-sm px-5 py-3 rounded-xl shadow-sm transition-all">
+                    <x-icon name="document-chart-bar" class="w-4 h-4" />
+                    Cetak Laporan
+                </a>
+                <a href="{{ route('seller.products.create') }}" class="inline-flex items-center justify-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors">
+                    <x-icon name="plus" class="w-4 h-4" />
+                    Tambah Produk
+                </a>
+            </div>
         </div>
 
         {{-- Filters --}}

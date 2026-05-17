@@ -107,6 +107,13 @@
                     </div>
                 </div>
 
+                {{-- Invoice --}}
+                <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank"
+                   class="flex items-center justify-center gap-2 w-full bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-700 font-bold text-sm py-3 rounded-2xl transition-all shadow-sm">
+                    <x-icon name="document-text" class="w-5 h-5" />
+                    Unduh / Cetak Invoice
+                </a>
+
                 {{-- Action Card --}}
                 @if($order->status === 'pending_payment')
                     @php

@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified', 'role:buyer,seller,admin', \App\Http\Midd
     // Orders (Fase 5B)
     Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{id}/invoice', [App\Http\Controllers\Buyer\OrderController::class, 'invoice'])->name('orders.invoice');
     Route::post('/orders/{id}/confirm', [App\Http\Controllers\Buyer\OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('/orders/{id}/cancel', [App\Http\Controllers\Buyer\OrderController::class, 'cancel'])->name('orders.cancel');
 
