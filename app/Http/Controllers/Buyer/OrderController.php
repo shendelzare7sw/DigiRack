@@ -17,18 +17,17 @@ class OrderController extends Controller
 {
     public function index(Request $request, MidtransService $midtrans)
     {
-        // Buyer just returned from Midtrans — the webhook may be delayed or
-        // blocked, so actively confirm the payment before rendering the list.
-        if ($request->has('payment')) {
-            Order::where('buyer_id', Auth::id())
-                ->where('payment_status', 'unpaid')
-                ->whereNotNull('payment_reference')
-                ->orderByDesc('created_at')
-                ->limit(5)
-                ->pluck('payment_reference')
-                ->unique()
-                ->each(fn ($ref) => $midtrans->syncByReference($ref));
-        }
+        // Webhook can be delayed or blocked. Keep the buyer's recent unpaid
+        // orders fresh by confirming status server-to-server before rendering.
+        Order::where('buyer_id', Auth::id())
+            ->where('status', 'pending_payment')
+            ->where('payment_status', 'unpaid')
+            ->whereNotNull('payment_reference')
+            ->orderByDesc('created_at')
+            ->limit($request->has('payment') ? 5 : 3)
+            ->pluck('payment_reference')
+            ->unique()
+            ->each(fn ($ref) => $midtrans->syncByReference($ref));
 
         $orders = Order::with('items.product.store')
             ->where('buyer_id', Auth::id())

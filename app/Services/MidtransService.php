@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\SystemSetting;
 use App\Notifications\OrderNotification;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Transaction;
@@ -41,11 +42,9 @@ class MidtransService
             return false;
         }
 
-        try {
-            $status = Transaction::status($paymentReference);
-        } catch (\Throwable $e) {
-            // 404 = transaction not yet created at Midtrans, or unreachable.
-            Log::info('Midtrans status check skipped: ' . $e->getMessage(), ['ref' => $paymentReference]);
+        $status = $this->getTransactionStatus($paymentReference);
+
+        if (!$status) {
             return false;
         }
 
@@ -77,43 +76,110 @@ class MidtransService
      */
     public function applyTransactionStatus(Order $order, string $transactionStatus, ?string $fraudStatus): bool
     {
-        if ($transactionStatus === 'capture') {
-            if ($fraudStatus === 'challenge') {
-                $order->payment_status = 'pending';
-            } elseif ($fraudStatus === 'accept') {
-                $order->payment_status = 'paid';
+        $paidOrder = null;
+
+        $changed = DB::transaction(function () use ($order, $transactionStatus, $fraudStatus, &$paidOrder): bool {
+            $lockedOrder = Order::with('items.product', 'store.user', 'buyer')
+                ->whereKey($order->getKey())
+                ->lockForUpdate()
+                ->first();
+
+            if (!$lockedOrder) {
+                return false;
             }
-        } elseif ($transactionStatus === 'settlement') {
-            $order->payment_status = 'paid';
-        } elseif (in_array($transactionStatus, ['cancel', 'deny', 'expire'], true)) {
-            $order->payment_status = 'failed';
-            $order->status = 'cancelled';
-        } elseif ($transactionStatus === 'pending') {
-            $order->payment_status = 'pending';
-        }
 
-        $becamePaid = $order->isDirty('payment_status') && $order->payment_status === 'paid';
+            $wasPaid = $lockedOrder->payment_status === 'paid';
 
-        if ($becamePaid) {
-            $order->status = 'processing';
+            $this->mapTransactionStatus($lockedOrder, $transactionStatus, $fraudStatus);
 
-            foreach ($order->items as $item) {
-                if ($item->product) {
-                    $item->product->decrement('stock', $item->quantity);
-                    $item->product->increment('sold_count', $item->quantity);
+            $becamePaid = !$wasPaid && $lockedOrder->payment_status === 'paid';
+
+            if ($becamePaid) {
+                $lockedOrder->status = 'processing';
+
+                foreach ($lockedOrder->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                        $item->product->increment('sold_count', $item->quantity);
+                    }
                 }
             }
 
-            $this->notifyPaid($order);
+            if (!$lockedOrder->isDirty()) {
+                return false;
+            }
+
+            $lockedOrder->save();
+
+            if ($becamePaid) {
+                $paidOrder = $lockedOrder;
+            }
+
+            return true;
+        });
+
+        if ($paidOrder) {
+            $this->notifyPaid($paidOrder);
         }
 
-        if (!$order->isDirty()) {
-            return false;
+        return $changed;
+    }
+
+    private function getTransactionStatus(string $paymentReference): ?object
+    {
+        try {
+            return Transaction::status($paymentReference);
+        } catch (\Throwable $e) {
+            $firstError = $e->getMessage();
         }
 
-        $order->save();
+        if (!str_contains($paymentReference, '/')) {
+            Log::info('Midtrans status check skipped: ' . $firstError, ['ref' => $paymentReference]);
+            return null;
+        }
 
-        return true;
+        try {
+            return Transaction::status(rawurlencode($paymentReference));
+        } catch (\Throwable $e) {
+            // 404 = transaction not yet created at Midtrans, or unreachable.
+            Log::info('Midtrans status check skipped: ' . $e->getMessage(), [
+                'ref' => $paymentReference,
+                'first_error' => $firstError,
+            ]);
+
+            return null;
+        }
+    }
+
+    private function mapTransactionStatus(Order $order, string $transactionStatus, ?string $fraudStatus): void
+    {
+        if ($transactionStatus === 'settlement'
+            || ($transactionStatus === 'capture' && ($fraudStatus === null || $fraudStatus === 'accept'))) {
+            $order->payment_status = 'paid';
+            return;
+        }
+
+        if (in_array($transactionStatus, ['cancel', 'deny', 'expire', 'failure'], true)) {
+            if ($order->payment_status !== 'paid') {
+                $order->payment_status = 'unpaid';
+                $order->status = 'cancelled';
+                $order->cancellation_response = match ($transactionStatus) {
+                    'expire' => 'Pembayaran kedaluwarsa di Midtrans.',
+                    'cancel' => 'Pembayaran dibatalkan di Midtrans.',
+                    default => 'Pembayaran gagal atau ditolak oleh Midtrans.',
+                };
+                $order->cancellation_resolved_at = now();
+            }
+
+            return;
+        }
+
+        if ($transactionStatus === 'pending' || ($transactionStatus === 'capture' && $fraudStatus === 'challenge')) {
+            if ($order->payment_status !== 'paid' && $order->status !== 'cancelled') {
+                $order->payment_status = 'unpaid';
+                $order->status = 'pending_payment';
+            }
+        }
     }
 
     private function notifyPaid(Order $order): void

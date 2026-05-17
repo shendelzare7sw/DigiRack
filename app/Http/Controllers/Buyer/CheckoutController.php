@@ -187,7 +187,7 @@ class CheckoutController extends Controller
         // Build full address string
         $fullAddress = $address->full_address . ', ' . $address->city . ', ' . $address->province . ', ' . $address->postal_code;
 
-        $paymentReference = 'PAY/' . date('Ymd') . '/' . strtoupper(uniqid());
+        $paymentReference = 'PAY-' . date('Ymd') . '-' . strtoupper(uniqid());
         $grandTotalGross = 0;
         $createdOrders = [];
         $paymentMethod = $request->payment_method;
