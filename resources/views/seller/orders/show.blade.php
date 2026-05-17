@@ -47,9 +47,10 @@
                             <span class="font-semibold text-gray-800">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</span>
                         </div>
                         <div class="border-t border-gray-100 pt-3 mt-3">
+                            @php $ship = $order->shipping_address ?? []; @endphp
                             <p class="text-gray-500 mb-1">Data Pengiriman</p>
-                            <p class="font-bold text-gray-900 mb-1">{{ $order->shipping_address['name'] }} <span class="font-normal text-gray-600">({{ $order->shipping_address['phone'] }})</span></p>
-                            <p class="text-gray-700 leading-relaxed">{{ $order->shipping_address['full_address'] }}</p>
+                            <p class="font-bold text-gray-900 mb-1">{{ $ship['name'] ?? $order->buyer->name ?? '-' }} <span class="font-normal text-gray-600">({{ $ship['phone'] ?? '-' }})</span></p>
+                            <p class="text-gray-700 leading-relaxed">{{ $ship['full_address'] ?? 'Alamat pengiriman tidak tersedia.' }}</p>
                         </div>
                     </div>
                 </div>

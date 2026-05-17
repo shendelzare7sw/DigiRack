@@ -36,9 +36,10 @@
                     <h3 class="text-lg font-bold text-gray-900 border-b pb-3 mb-4 flex items-center gap-2">
                         <x-icon name="map-pin" class="w-5 h-5 text-brand-navy" /> Alamat Pengiriman
                     </h3>
+                    @php $ship = $order->shipping_address ?? []; @endphp
                     <div class="text-sm">
-                        <p class="font-bold text-gray-900 mb-1">{{ $order->shipping_address['name'] }} <span class="font-normal text-gray-600">({{ $order->shipping_address['phone'] }})</span></p>
-                        <p class="text-gray-700 leading-relaxed">{{ $order->shipping_address['full_address'] }}</p>
+                        <p class="font-bold text-gray-900 mb-1">{{ $ship['name'] ?? $order->buyer->name ?? '-' }} <span class="font-normal text-gray-600">({{ $ship['phone'] ?? '-' }})</span></p>
+                        <p class="text-gray-700 leading-relaxed">{{ $ship['full_address'] ?? 'Alamat pengiriman tidak tersedia.' }}</p>
                     </div>
                 </div>
 
