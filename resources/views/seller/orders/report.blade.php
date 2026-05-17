@@ -37,8 +37,8 @@
         </div>
     </div>
 
-    {{-- Table --}}
-    <div class="overflow-x-auto -mx-1 sm:mx-0">
+    {{-- Desktop / print: table --}}
+    <div class="dr-print-table hidden md:block">
         <table class="min-w-full text-sm">
             <thead>
                 <tr class="border-y border-gray-200 bg-gray-50 text-left text-[11px] uppercase tracking-wide text-gray-500">
@@ -81,5 +81,42 @@
                 </tfoot>
             @endif
         </table>
+    </div>
+
+    {{-- Mobile: cards --}}
+    <div class="dr-print-cards md:hidden space-y-2.5">
+        @forelse($orders as $i => $order)
+            <div class="rounded-xl border border-gray-200 p-3 avoid-break">
+                <div class="flex items-start justify-between gap-2">
+                    <p class="font-semibold text-gray-900 text-sm break-all leading-snug">
+                        <span class="text-gray-400 font-normal">{{ $i + 1 }}.</span> {{ $order->invoice_number }}
+                    </p>
+                    <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
+                        {{ $order->status_label }}
+                    </span>
+                </div>
+                <p class="text-[11px] text-gray-400 mt-0.5">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</p>
+                <div class="flex items-end justify-between gap-2 mt-3">
+                    <div class="min-w-0">
+                        <p class="text-[10px] text-gray-400">Pembeli</p>
+                        <p class="text-sm text-gray-700 truncate">{{ $order->buyer->name ?? '-' }}</p>
+                        <p class="text-[11px] text-gray-400 mt-1">{{ $order->items->sum('quantity') }} item</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <p class="text-[10px] text-gray-400">Nilai</p>
+                        <p class="font-bold text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</p>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-xl border border-gray-200 py-10 text-center text-gray-400 text-sm">Tidak ada data pesanan untuk filter ini.</div>
+        @endforelse
+
+        @if($orders->count())
+            <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-3 flex items-center justify-between">
+                <span class="font-bold text-gray-900 text-sm">Total Nilai Kotor</span>
+                <span class="font-display font-extrabold text-brand-navy">Rp {{ number_format($summary['gross'], 0, ',', '.') }}</span>
+            </div>
+        @endif
     </div>
 </x-print-layout>

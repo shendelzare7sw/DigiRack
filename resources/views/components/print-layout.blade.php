@@ -53,6 +53,9 @@
             .dr-watermark__text { opacity: .055; }
             .dr-sheet { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: 100% !important; }
             .print-page { padding: 0 !important; }
+            /* Always print the full table layout, never the mobile cards */
+            .dr-print-table { display: block !important; }
+            .dr-print-cards { display: none !important; }
             @page { margin: 12mm; }
             tr, .avoid-break { break-inside: avoid; }
         }
