@@ -25,8 +25,16 @@ class BuyerReviewTest extends TestCase
         $this->actingAs($buyer)
             ->get(route('buyer.orders.show', $order->id))
             ->assertOk()
-            ->assertSee('Beri Ulasan Produk')
-            ->assertSee('Kirim Ulasan');
+            ->assertSee('Belum Diulas')
+            ->assertSee(route('buyer.reviews.edit', $item), false)
+            ->assertDontSee('Kirim Ulasan');
+
+        $this->actingAs($buyer)
+            ->get(route('buyer.reviews.edit', $item))
+            ->assertOk()
+            ->assertSee('Tulis Ulasan')
+            ->assertSee('Kirim Ulasan')
+            ->assertSee('Maksimal 5 media');
 
         $response = $this->actingAs($buyer)->post(route('buyer.reviews.store', $item), [
             'rating' => 5,
@@ -87,6 +95,63 @@ class BuyerReviewTest extends TestCase
         foreach ($review->media as $media) {
             Storage::disk('public')->assertExists($media['path']);
         }
+    }
+
+    public function test_review_media_is_limited_to_five_files(): void
+    {
+        Storage::fake('public');
+        [$buyer, , $item] = $this->createOrderWithItem('completed');
+
+        $response = $this->actingAs($buyer)->post(route('buyer.reviews.store', $item), [
+            'rating' => 5,
+            'comment' => 'Terlalu banyak media.',
+            'review_media' => [
+                UploadedFile::fake()->image('review-1.jpg')->size(1024),
+                UploadedFile::fake()->image('review-2.jpg')->size(1024),
+                UploadedFile::fake()->image('review-3.jpg')->size(1024),
+                UploadedFile::fake()->image('review-4.jpg')->size(1024),
+                UploadedFile::fake()->image('review-5.jpg')->size(1024),
+                UploadedFile::fake()->image('review-6.jpg')->size(1024),
+            ],
+        ]);
+
+        $response->assertSessionHasErrors('review_media');
+        $this->assertSame(0, Review::count());
+    }
+
+    public function test_buyer_can_edit_existing_review(): void
+    {
+        [$buyer, $order, $item, $product] = $this->createOrderWithItem('completed');
+
+        Review::create([
+            'buyer_id' => $buyer->id,
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'rating' => 4,
+            'comment' => 'Ulasan awal.',
+        ]);
+
+        $this->actingAs($buyer)
+            ->get(route('buyer.reviews.edit', $item))
+            ->assertOk()
+            ->assertSee('Edit Ulasan')
+            ->assertSee('Perbarui Ulasan');
+
+        $response = $this->actingAs($buyer)->post(route('buyer.reviews.store', $item), [
+            'rating' => 5,
+            'comment' => 'Ulasan sudah diedit.',
+        ]);
+
+        $response->assertRedirect(route('buyer.orders.show', $order->id));
+
+        $this->assertDatabaseHas('reviews', [
+            'buyer_id' => $buyer->id,
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'rating' => 5,
+            'comment' => 'Ulasan sudah diedit.',
+        ]);
+        $this->assertSame(1, Review::count());
     }
 
     public function test_guest_can_view_all_product_reviews_page(): void

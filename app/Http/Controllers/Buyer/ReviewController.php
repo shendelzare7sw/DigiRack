@@ -16,22 +16,40 @@ class ReviewController extends Controller
     private const VIDEO_MIME_TYPES = ['video/mp4', 'video/webm', 'video/quicktime'];
     private const IMAGE_MAX_BYTES = 8 * 1024 * 1024;
     private const VIDEO_MAX_BYTES = 20 * 1024 * 1024;
+    private const MEDIA_MAX_ITEMS = 5;
+
+    public function edit(OrderItem $orderItem)
+    {
+        $orderItem->load(['order.store', 'product.images', 'product.store']);
+        $order = $orderItem->order;
+
+        $guard = $this->guardReviewableOrder($orderItem);
+        if ($guard) {
+            return $guard;
+        }
+
+        $review = Review::where([
+            'buyer_id' => Auth::id(),
+            'order_id' => $order->id,
+            'product_id' => $orderItem->product_id,
+        ])->first();
+
+        return view('buyer.reviews.edit', [
+            'orderItem' => $orderItem,
+            'order' => $order,
+            'review' => $review,
+            'maxMediaItems' => self::MEDIA_MAX_ITEMS,
+        ]);
+    }
 
     public function store(Request $request, OrderItem $orderItem)
     {
         $orderItem->load(['order', 'product']);
         $order = $orderItem->order;
 
-        if (!$order || (int) $order->buyer_id !== (int) Auth::id()) {
-            abort(404);
-        }
-
-        if ($order->status !== 'completed') {
-            return back()->with('error', 'Ulasan hanya bisa diberikan setelah transaksi selesai.');
-        }
-
-        if (!$orderItem->product) {
-            return back()->with('error', 'Produk tidak tersedia untuk diulas.');
+        $guard = $this->guardReviewableOrder($orderItem);
+        if ($guard) {
+            return $guard;
         }
 
         $validated = $request->validate([
@@ -50,6 +68,7 @@ class ReviewController extends Controller
         ])->first();
 
         $media = collect($review?->media ?? [])->values();
+        $pathsToDelete = collect();
 
         if ($request->filled('remove_media')) {
             $removePaths = collect($validated['remove_media'])
@@ -57,11 +76,11 @@ class ReviewController extends Controller
                 ->unique()
                 ->values();
 
-            $media = $media->reject(function ($item) use ($removePaths) {
+            $media = $media->reject(function ($item) use ($removePaths, $pathsToDelete) {
                 $path = $item['path'] ?? null;
 
                 if ($path && $removePaths->contains($path)) {
-                    Storage::disk('public')->delete($path);
+                    $pathsToDelete->push($path);
                     return true;
                 }
 
@@ -69,7 +88,15 @@ class ReviewController extends Controller
             })->values();
         }
 
-        foreach ($this->validatedMediaFiles($request) as $file) {
+        $files = $this->validatedMediaFiles($request);
+
+        if ($media->count() + count($files) > self::MEDIA_MAX_ITEMS) {
+            throw ValidationException::withMessages([
+                'review_media' => 'Media ulasan maksimal ' . self::MEDIA_MAX_ITEMS . ' file termasuk foto dan video.',
+            ]);
+        }
+
+        foreach ($files as $file) {
             $mime = $file->getMimeType();
             $type = in_array($mime, self::IMAGE_MIME_TYPES, true) ? 'image' : 'video';
             $media->push([
@@ -93,11 +120,38 @@ class ReviewController extends Controller
             ]
         );
 
+        $pathsToDelete->each(fn ($path) => Storage::disk('public')->delete($path));
+
         $orderItem->product->update([
             'avg_rating' => round((float) $orderItem->product->reviews()->avg('rating'), 1),
         ]);
 
-        return back()->with('success', 'Terima kasih, ulasan Anda berhasil disimpan.');
+        return redirect()
+            ->route('buyer.orders.show', $order->id)
+            ->with('success', 'Terima kasih, ulasan Anda berhasil disimpan.');
+    }
+
+    private function guardReviewableOrder(OrderItem $orderItem)
+    {
+        $order = $orderItem->order;
+
+        if (!$order || (int) $order->buyer_id !== (int) Auth::id()) {
+            abort(404);
+        }
+
+        if ($order->status !== 'completed') {
+            return redirect()
+                ->route('buyer.orders.show', $order->id)
+                ->with('error', 'Ulasan hanya bisa diberikan setelah transaksi selesai.');
+        }
+
+        if (!$orderItem->product) {
+            return redirect()
+                ->route('buyer.orders.show', $order->id)
+                ->with('error', 'Produk tidak tersedia untuk diulas.');
+        }
+
+        return null;
     }
 
     private function validatedMediaFiles(Request $request): array
