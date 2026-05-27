@@ -40,11 +40,11 @@
 
                     <div>
                         <p class="text-sm font-bold text-gray-900 mb-3">Rating Produk</p>
-                        <div class="grid grid-cols-5 gap-2">
+                        <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.5rem;">
                             @for($rating = 1; $rating <= 5; $rating++)
-                                <button type="button" @click="rating = {{ $rating }}" class="min-h-12 rounded-xl border px-2 py-2 text-sm font-bold transition-colors touch-manipulation" :class="rating === {{ $rating }} ? 'border-yellow-400 bg-yellow-100 text-yellow-800' : 'border-gray-200 bg-white text-gray-600 hover:border-yellow-300'">
-                                    <span class="flex items-center justify-center gap-1">
-                                        <x-icon name="star" class="w-4 h-4 text-yellow-500" />
+                                <button type="button" @click="rating = {{ $rating }}" class="h-10 rounded-lg border px-1 text-sm font-bold transition-colors touch-manipulation" :class="rating === {{ $rating }} ? 'border-yellow-400 bg-yellow-100 text-yellow-800' : 'border-gray-200 bg-white text-gray-600 hover:border-yellow-300'">
+                                    <span class="flex items-center justify-center gap-0.5">
+                                        <x-icon name="star" class="w-3.5 h-3.5 text-yellow-500" />
                                         {{ $rating }}
                                     </span>
                                 </button>
@@ -80,8 +80,8 @@
                                             @else
                                                 <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="w-full h-full object-cover">
                                             @endif
-                                            <span class="absolute right-1 top-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-gray-700 shadow" :class="isRemoved('{{ $mediaPath }}') ? 'text-red-600' : ''">
-                                                <x-icon name="x-mark" class="w-4 h-4" />
+                                            <span class="absolute right-1.5 top-1.5 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow ring-2 ring-white" title="Hapus media">
+                                                <x-icon name="minus" class="w-4 h-4" />
                                             </span>
                                             <span x-show="isRemoved('{{ $mediaPath }}')" x-cloak class="absolute inset-x-1 bottom-1 rounded bg-red-600 px-1 py-0.5 text-[10px] font-bold text-white">Dihapus</span>
                                         </button>
@@ -115,8 +115,8 @@
                                         <template x-if="preview.type === 'video'">
                                             <video :src="preview.url" class="h-full w-full object-cover" muted playsinline preload="metadata"></video>
                                         </template>
-                                        <button type="button" @click="removeMedia(index)" class="absolute right-1 top-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-gray-700 shadow hover:text-red-600" aria-label="Hapus media">
-                                            <x-icon name="x-mark" class="w-4 h-4" />
+                                        <button type="button" @click="removeMedia(index)" class="absolute right-1.5 top-1.5 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow ring-2 ring-white hover:bg-red-700" aria-label="Hapus media">
+                                            <x-icon name="minus" class="w-4 h-4" />
                                         </button>
                                         <span x-show="preview.type === 'video'" class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
                                     </div>
@@ -125,14 +125,14 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-2">
-                        <a href="{{ route('buyer.orders.show', $order->id) }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-colors">
-                            Batal
-                        </a>
-                        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-yellow-500 px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-colors">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <button type="submit" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-blue px-5 py-3 text-sm font-bold text-white shadow-sm hover:bg-blue-600 transition-colors">
                             <x-icon name="paper-airplane" class="w-4 h-4" />
                             {{ $review ? 'Perbarui Ulasan' : 'Kirim Ulasan' }}
                         </button>
+                        <a href="{{ route('buyer.orders.show', $order->id) }}" class="inline-flex min-h-12 items-center justify-center rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-colors">
+                            Batal
+                        </a>
                     </div>
                 </form>
             </div>
