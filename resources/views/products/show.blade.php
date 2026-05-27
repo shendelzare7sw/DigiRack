@@ -215,7 +215,7 @@
                     <div class="flex items-center gap-1.5">
                         <x-star-rating :value="$product->avg_rating" size="w-4 h-4" />
                         <span class="font-semibold text-gray-700">{{ number_format($product->avg_rating, 1) }}</span>
-                        <span class="text-gray-400">({{ $product->reviews->count() }} ulasan)</span>
+                        <a href="{{ route('products.reviews.index', $product->slug) }}" class="text-gray-400 hover:text-brand-navy transition-colors">({{ $reviewCount }} ulasan)</a>
                     </div>
                     <span class="text-gray-300">|</span>
                     <span class="text-gray-500">
@@ -463,7 +463,7 @@
         {{-- Tab Headers --}}
         <div class="border-b border-gray-200 mb-6">
             <nav class="flex gap-1 -mb-px overflow-x-auto hide-scroll">
-                @foreach(['deskripsi' => 'Deskripsi', 'spesifikasi' => 'Spesifikasi', 'ulasan' => 'Ulasan (' . $product->reviews->count() . ')'] as $key => $label)
+                @foreach(['deskripsi' => 'Deskripsi', 'spesifikasi' => 'Spesifikasi', 'ulasan' => 'Ulasan (' . $reviewCount . ')'] as $key => $label)
                     <button @click="activeTab = '{{ $key }}'"
                         class="whitespace-nowrap pb-3 px-5 text-sm font-semibold transition-colors border-b-2 shrink-0"
                         :class="activeTab === '{{ $key }}'
@@ -503,7 +503,7 @@
 
         {{-- Tab: Ulasan --}}
         <div x-show="activeTab === 'ulasan'" x-cloak x-transition class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-            @if($product->reviews->count() > 0)
+            @if($reviewCount > 0)
                 {{-- Rating Summary --}}
                 <div class="flex flex-col sm:flex-row gap-8 mb-8 pb-8 border-b border-gray-100">
                     <div class="text-center sm:text-left shrink-0">
@@ -511,7 +511,7 @@
                         <div class="mt-2">
                             <x-star-rating :value="$product->avg_rating" size="w-5 h-5" />
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">{{ $product->reviews->count() }} ulasan</p>
+                        <p class="text-xs text-gray-400 mt-1">{{ $reviewCount }} ulasan</p>
                     </div>
 
                     {{-- Rating Distribution Bars --}}
@@ -529,6 +529,14 @@
                     </div>
                 </div>
 
+                <div class="mb-6 flex items-center justify-between gap-3">
+                    <p class="text-sm font-bold text-gray-900">Ulasan terbaru</p>
+                    <a href="{{ route('products.reviews.index', $product->slug) }}" class="inline-flex items-center gap-1.5 rounded-xl border border-brand-navy px-3 py-2 text-xs font-bold text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
+                        Lihat Semua Ulasan
+                        <x-icon name="chevron-right" class="w-4 h-4" />
+                    </a>
+                </div>
+
                 {{-- Review list --}}
                 <div class="space-y-6">
                     @foreach($product->reviews as $review)
@@ -543,6 +551,28 @@
                                 <x-star-rating :value="$review->rating" size="w-3.5 h-3.5" />
                                 @if($review->comment)
                                     <p class="mt-2 text-sm text-gray-700 leading-relaxed">{{ $review->comment }}</p>
+                                @endif
+                                @php $reviewMedia = collect($review->media ?? []); @endphp
+                                @if($reviewMedia->isNotEmpty())
+                                    <div class="mt-3 flex flex-wrap gap-2">
+                                        @foreach($reviewMedia->take(4) as $media)
+                                            @php
+                                                $mediaPath = $media['path'] ?? '';
+                                                $mediaUrl = $mediaPath ? asset('storage/' . $mediaPath) : '';
+                                                $mediaType = $media['type'] ?? 'image';
+                                            @endphp
+                                            @if($mediaPath)
+                                                <a href="{{ $mediaUrl }}" target="_blank" class="relative h-20 w-20 overflow-hidden rounded-xl border border-gray-100 bg-gray-50">
+                                                    @if($mediaType === 'video')
+                                                        <video src="{{ $mediaUrl }}" class="h-full w-full object-cover" muted playsinline preload="metadata"></video>
+                                                        <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
+                                                    @else
+                                                        <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="h-full w-full object-cover">
+                                                    @endif
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 @endif
                             </div>
                         </div>

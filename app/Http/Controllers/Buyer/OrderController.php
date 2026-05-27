@@ -39,7 +39,7 @@ class OrderController extends Controller
 
     public function show($id, MidtransService $midtrans)
     {
-        $order = Order::with(['items.product.store', 'store'])->where('buyer_id', Auth::id())->findOrFail($id);
+        $order = Order::with(['items.product.store', 'store', 'reviews'])->where('buyer_id', Auth::id())->findOrFail($id);
 
         // Fallback for a delayed/undelivered Midtrans webhook: confirm payment
         // status server-to-server when the buyer opens an unpaid order.

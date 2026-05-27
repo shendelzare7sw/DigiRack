@@ -43,7 +43,7 @@ Route::middleware(['auth', 'verified', 'role:buyer,seller,admin', \App\Http\Midd
 
     // Reviews
     // Route::get('/reviews', [App\Http\Controllers\Buyer\ReviewController::class, 'index'])->name('reviews.index');
-    // Route::post('/reviews/{order_item_id}', [App\Http\Controllers\Buyer\ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/reviews/{orderItem}', [App\Http\Controllers\Buyer\ReviewController::class, 'store'])->name('reviews.store');
 
     // Profile
     // Route::get('/profile', [App\Http\Controllers\Buyer\ProfileController::class, 'edit'])->name('profile.edit');

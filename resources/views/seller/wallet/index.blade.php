@@ -87,19 +87,19 @@
                     @if($transactions->count() > 0)
                         <div class="divide-y divide-gray-50">
                             @foreach($transactions as $t)
-                                <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center {{ $t->type == 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500' }}">
+                                <div class="px-4 sm:px-6 py-4 flex items-start gap-3 hover:bg-gray-50/50 transition-colors">
+                                    <div class="flex min-w-0 flex-1 items-center gap-3">
+                                        <div class="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center {{ $t->type == 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500' }}">
                                             <x-icon name="{{ $t->type == 'credit' ? 'arrow-down-tray' : 'arrow-up-tray' }}" class="w-4 h-4" />
                                         </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-gray-900 line-clamp-1">{{ $t->description }}</p>
-                                            <p class="text-xs text-gray-400">{{ $t->created_at->translatedFormat('d M Y, H:i') }} · {{ $t->reference }}</p>
+                                        <div class="min-w-0">
+                                            <p class="truncate text-sm font-semibold text-gray-900">{{ $t->description }}</p>
+                                            <p class="truncate text-xs text-gray-400">{{ $t->created_at->translatedFormat('d M Y, H:i') }} · {{ $t->reference }}</p>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-bold text-sm {{ $t->type == 'credit' ? 'text-green-600' : 'text-red-500' }}">
-                                            {{ $t->type == 'credit' ? '+' : '-' }} Rp {{ number_format($t->amount, 0, ',', '.') }}
+                                    <div class="shrink-0 pt-0.5 text-right">
+                                        <p class="whitespace-nowrap text-xs sm:text-sm font-bold {{ $t->type == 'credit' ? 'text-green-600' : 'text-red-500' }}">
+                                            {{ $t->type == 'credit' ? '+' : '-' }}Rp&nbsp;{{ number_format($t->amount, 0, ',', '.') }}
                                         </p>
                                     </div>
                                 </div>

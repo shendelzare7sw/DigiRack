@@ -52,16 +52,145 @@
                     </div>
                     <div class="divide-y divide-gray-100">
                         @foreach($order->items as $item)
-                        <div class="py-4 flex gap-4 items-center">
-                            <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-100">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
-                                <p class="text-sm text-gray-500 mt-1">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
+                            @php
+                                $itemReview = $order->reviews->firstWhere('product_id', $item->product_id);
+                                $reviewMedia = collect($itemReview->media ?? []);
+                                $reviewSectionId = 'review-section-' . $item->id;
+                                $reviewFormId = 'review-form-' . $item->id;
+                            @endphp
+                            <div class="py-4">
+                                <div class="flex gap-4 items-center">
+                                    <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-100">
+                                    <div class="flex-1 min-w-0">
+                                        <h4 class="font-bold text-gray-900 line-clamp-1">{{ $item->product->name }}</h4>
+                                        <p class="text-sm text-gray-500 mt-1">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <p class="font-bold text-brand-orange whitespace-nowrap">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+
+                                @if($order->status === 'completed')
+                                    <div id="{{ $reviewSectionId }}" class="mt-4 rounded-2xl border border-yellow-100 bg-yellow-50/40 p-4" x-data="reviewMediaForm({{ $errors->any() || !$itemReview ? 'true' : 'false' }})">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="min-w-0">
+                                                <p class="font-bold text-sm text-gray-900 flex items-center gap-2">
+                                                    <x-icon name="star" class="w-4 h-4 text-yellow-500" />
+                                                    {{ $itemReview ? 'Ulasan Anda' : 'Beri Ulasan Produk' }}
+                                                </p>
+                                                @if($itemReview)
+                                                    <div class="mt-1 flex items-center gap-2">
+                                                        <x-star-rating :value="$itemReview->rating" size="w-4 h-4" />
+                                                        <span class="text-xs font-semibold text-gray-500">{{ $itemReview->rating }}/5</span>
+                                                    </div>
+                                                    @if($itemReview->comment)
+                                                        <p class="mt-2 text-sm text-gray-700 leading-relaxed">{{ $itemReview->comment }}</p>
+                                                    @endif
+                                                @else
+                                                    <p class="mt-1 text-xs text-gray-500">Bagikan pengalaman Anda untuk membantu pembeli lain.</p>
+                                                @endif
+                                            </div>
+                                            <button type="button" @click="open = !open" class="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-yellow-200 bg-white px-3 py-2 text-xs font-bold text-yellow-700 hover:border-yellow-300 hover:bg-yellow-50 transition-colors">
+                                                <x-icon name="pencil-square" class="w-4 h-4" />
+                                                <span>{{ $itemReview ? 'Edit' : 'Tulis' }}</span>
+                                            </button>
+                                        </div>
+
+                                        @if($reviewMedia->isNotEmpty())
+                                            <div class="mt-3">
+                                                <p class="text-xs font-bold text-gray-600 mb-2">Media ulasan saat ini</p>
+                                                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                                    @foreach($reviewMedia as $media)
+                                                        @php
+                                                            $mediaPath = $media['path'] ?? '';
+                                                            $mediaUrl = $mediaPath ? asset('storage/' . $mediaPath) : '';
+                                                            $mediaType = $media['type'] ?? 'image';
+                                                        @endphp
+                                                        @if($mediaPath)
+                                                            <button type="button" @click="toggleExisting('{{ $mediaPath }}')" class="relative aspect-square overflow-hidden rounded-xl border bg-white transition-all" :class="isRemoved('{{ $mediaPath }}') ? 'border-red-300 opacity-50' : 'border-yellow-100 hover:border-yellow-300'">
+                                                                @if($mediaType === 'video')
+                                                                    <video src="{{ $mediaUrl }}" class="w-full h-full object-cover" muted playsinline preload="metadata"></video>
+                                                                    <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
+                                                                @else
+                                                                    <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="w-full h-full object-cover">
+                                                                @endif
+                                                                <span class="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-gray-700 shadow" :class="isRemoved('{{ $mediaPath }}') ? 'text-red-600' : ''">
+                                                                    <x-icon name="x-mark" class="w-4 h-4" />
+                                                                </span>
+                                                                <span x-show="isRemoved('{{ $mediaPath }}')" x-cloak class="absolute inset-x-1 bottom-1 rounded bg-red-600 px-1 py-0.5 text-[10px] font-bold text-white">Dihapus</span>
+                                                            </button>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <form id="{{ $reviewFormId }}" x-show="open" x-transition x-cloak method="POST" action="{{ route('buyer.reviews.store', $item->id) }}" enctype="multipart/form-data" class="mt-4 space-y-3">
+                                            @csrf
+                                            <template x-for="path in removedMedia" :key="path">
+                                                <input type="hidden" name="remove_media[]" :value="path">
+                                            </template>
+                                            <div>
+                                                <p class="text-xs font-bold text-gray-600 mb-2">Rating</p>
+                                                <div class="flex flex-wrap gap-2">
+                                                    @for($rating = 5; $rating >= 1; $rating--)
+                                                        <label class="cursor-pointer">
+                                                            <input type="radio" name="rating" value="{{ $rating }}" class="peer sr-only" {{ (int) old('rating', $itemReview->rating ?? 5) === $rating ? 'checked' : '' }}>
+                                                            <span class="inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-600 peer-checked:border-yellow-400 peer-checked:bg-yellow-100 peer-checked:text-yellow-800 hover:border-yellow-300 transition-colors">
+                                                                <x-icon name="star" class="w-4 h-4 text-yellow-500" />
+                                                                {{ $rating }}
+                                                            </span>
+                                                        </label>
+                                                    @endfor
+                                                </div>
+                                                <x-input-error :messages="$errors->get('rating')" class="mt-2" />
+                                            </div>
+                                            <div>
+                                                <label for="review-comment-{{ $item->id }}" class="text-xs font-bold text-gray-600">Komentar</label>
+                                                <textarea id="review-comment-{{ $item->id }}" name="comment" rows="3" maxlength="1000" class="mt-2 w-full rounded-xl border-gray-200 text-sm focus:border-yellow-400 focus:ring-yellow-400" placeholder="Ceritakan kualitas produk, kemasan, atau pengalaman penggunaan.">{{ old('comment', $itemReview->comment ?? '') }}</textarea>
+                                                <x-input-error :messages="$errors->get('comment')" class="mt-2" />
+                                            </div>
+                                            <div>
+                                                <label for="review-media-{{ $item->id }}" class="text-xs font-bold text-gray-600">Foto & Video</label>
+                                                <input id="review-media-{{ $item->id }}" x-ref="mediaInput" type="file" name="review_media[]" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime" @change="updateMedia($event)" class="mt-2 block w-full text-sm text-gray-700 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-sm file:font-bold file:text-brand-navy hover:file:bg-yellow-50">
+                                                <p class="mt-1 text-[11px] text-gray-500">Gambar maksimal 8 MB per file. Video maksimal 20 MB per file.</p>
+                                                <p x-show="fileError" x-cloak class="mt-1 text-[11px] font-semibold text-red-600" x-text="fileError"></p>
+                                                <x-input-error :messages="$errors->get('review_media')" class="mt-2" />
+                                                @foreach($errors->get('review_media.*') as $messages)
+                                                    <x-input-error :messages="$messages" class="mt-2" />
+                                                @endforeach
+
+                                                <div x-show="previews.length" x-cloak class="mt-3">
+                                                    <div class="mb-2 flex items-center justify-between gap-2">
+                                                        <span class="text-xs font-semibold text-gray-600">Preview media baru</span>
+                                                        <button type="button" @click="clearMedia()" class="text-xs font-semibold text-red-500 hover:text-red-700">Hapus Pilihan</button>
+                                                    </div>
+                                                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                                        <template x-for="(preview, index) in previews" :key="preview.url">
+                                                            <div class="relative aspect-square overflow-hidden rounded-xl border border-yellow-100 bg-white">
+                                                                <template x-if="preview.type === 'image'">
+                                                                    <img :src="preview.url" :alt="preview.name" class="h-full w-full object-cover">
+                                                                </template>
+                                                                <template x-if="preview.type === 'video'">
+                                                                    <video :src="preview.url" class="h-full w-full object-cover" muted playsinline preload="metadata"></video>
+                                                                </template>
+                                                                <button type="button" @click="removeMedia(index)" class="absolute right-1 top-1 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/95 text-gray-700 shadow hover:text-red-600" aria-label="Hapus media">
+                                                                    <x-icon name="x-mark" class="w-4 h-4" />
+                                                                </button>
+                                                                <span x-show="preview.type === 'video'" class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-yellow-500 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-yellow-600 transition-colors">
+                                                <x-icon name="paper-airplane" class="w-4 h-4" />
+                                                {{ $itemReview ? 'Perbarui Ulasan' : 'Kirim Ulasan' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
                             </div>
-                            <div class="text-right">
-                                <p class="font-bold text-brand-orange">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
-                            </div>
-                        </div>
                         @endforeach
                     </div>
                 </div>
@@ -217,7 +346,13 @@
                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 text-center">
                         <x-icon name="check-badge" class="w-10 h-10 text-green-500 mx-auto mb-2" />
                         <h3 class="font-bold text-green-900 mb-1">Transaksi Selesai</h3>
-                        <p class="text-sm text-green-700">Terima kasih telah berbelanja! Dana telah diteruskan ke pihak toko.</p>
+                        <p class="text-sm text-green-700 mb-4">Terima kasih telah berbelanja! Dana telah diteruskan ke pihak toko.</p>
+                        @if($order->items->isNotEmpty())
+                            <a href="#review-section-{{ $order->items->first()->id }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-green-200 px-4 py-3 text-sm font-bold text-green-700 hover:border-green-300 hover:bg-green-100 transition-colors">
+                                <x-icon name="star" class="w-4 h-4" />
+                                Beri Ulasan
+                            </a>
+                        @endif
                     </div>
                 @elseif($order->status === 'processing')
                     <div class="bg-orange-50 rounded-2xl p-6 border border-orange-100 text-center">
@@ -261,6 +396,99 @@
 
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        window.reviewMediaForm = function(defaultOpen) {
+            return {
+                open: defaultOpen,
+                previews: [],
+                files: [],
+                removedMedia: [],
+                fileError: '',
+                imageMaxBytes: 8 * 1024 * 1024,
+                videoMaxBytes: 20 * 1024 * 1024,
+                allowedImageTypes: ['image/jpeg', 'image/png', 'image/webp'],
+                allowedVideoTypes: ['video/mp4', 'video/webm', 'video/quicktime'],
+
+                updateMedia(event) {
+                    this.clearMedia(false);
+                    this.fileError = '';
+                    const selected = Array.from(event.target.files || []);
+
+                    for (const file of selected) {
+                        const isImage = this.allowedImageTypes.includes(file.type);
+                        const isVideo = this.allowedVideoTypes.includes(file.type);
+
+                        if (!isImage && !isVideo) {
+                            this.fileError = 'Media harus berupa JPG, PNG, WebP, MP4, WebM, atau MOV.';
+                            continue;
+                        }
+
+                        if (isImage && file.size > this.imageMaxBytes) {
+                            this.fileError = 'Ada gambar yang lebih dari 8 MB. File itu tidak dimasukkan.';
+                            continue;
+                        }
+
+                        if (isVideo && file.size > this.videoMaxBytes) {
+                            this.fileError = 'Ada video yang lebih dari 20 MB. File itu tidak dimasukkan.';
+                            continue;
+                        }
+
+                        this.files.push(file);
+                        this.previews.push({
+                            name: file.name,
+                            type: isVideo ? 'video' : 'image',
+                            url: URL.createObjectURL(file),
+                        });
+                    }
+
+                    this.syncInput();
+                },
+
+                removeMedia(index) {
+                    const preview = this.previews[index];
+                    if (preview) {
+                        URL.revokeObjectURL(preview.url);
+                    }
+                    this.previews.splice(index, 1);
+                    this.files.splice(index, 1);
+                    this.syncInput();
+                },
+
+                clearMedia(sync = true) {
+                    this.previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+                    this.previews = [];
+                    this.files = [];
+                    if (sync) {
+                        this.syncInput();
+                    }
+                },
+
+                syncInput() {
+                    if (!this.$refs.mediaInput) return;
+
+                    const transfer = new DataTransfer();
+                    this.files.forEach((file) => transfer.items.add(file));
+                    this.$refs.mediaInput.files = transfer.files;
+                },
+
+                toggleExisting(path) {
+                    if (this.removedMedia.includes(path)) {
+                        this.removedMedia = this.removedMedia.filter((item) => item !== path);
+                        return;
+                    }
+
+                    this.removedMedia.push(path);
+                },
+
+                isRemoved(path) {
+                    return this.removedMedia.includes(path);
+                },
+            };
+        };
+    </script>
+    @endpush
 
     {{-- Midtrans Snap JS (only if pending payment with token) --}}
     @if($order->status === 'pending_payment' && $order->payment_token)

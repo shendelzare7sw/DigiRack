@@ -15,12 +15,14 @@ class Review extends Model
         'order_id',
         'rating',
         'comment',
+        'media',
     ];
 
     protected function casts(): array
     {
         return [
             'rating' => 'integer',
+            'media' => 'array',
         ];
     }
 

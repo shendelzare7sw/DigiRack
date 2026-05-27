@@ -32,6 +32,7 @@ Route::post('/api/midtrans/callback', [\App\Http\Controllers\Api\PaymentCallback
 Route::post('/api/ongkir/calculate', [\App\Http\Controllers\Api\OngkirController::class, 'calculate']);
 // Public Product Routes (no login required)
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{slug}/reviews', [ProductController::class, 'reviews'])->name('products.reviews.index');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
 // Public Storefront (no login required)
@@ -55,7 +56,10 @@ Route::post('/admin-recovery', [\App\Http\Controllers\Auth\AdminRecoveryControll
 Route::middleware('auth')->group(function () {
     // Smart dashboard redirect based on role
     Route::get('/dashboard', function () {
-        return match (auth()->user()->role) {
+        $user = auth()->user();
+        $activeRole = $user->isAdmin() ? 'admin' : session('active_role', $user->role);
+
+        return match ($activeRole) {
             'admin' => redirect()->route('admin.dashboard'),
             'seller' => redirect()->route('seller.dashboard'),
             default => redirect()->route('buyer.dashboard'),

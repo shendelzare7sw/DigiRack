@@ -69,4 +69,28 @@ class RoleSwitchTest extends TestCase
             ->assertOk()
             ->assertSessionHas('active_role', 'buyer');
     }
+
+    public function test_dashboard_redirect_honors_active_buyer_mode_for_seller_accounts(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'seller',
+            'email_verified_at' => now(),
+        ]);
+
+        Store::create([
+            'user_id' => $user->id,
+            'name' => 'Toko Dashboard Buyer',
+            'slug' => 'toko-dashboard-buyer',
+            'is_active' => true,
+            'is_verified' => true,
+            'verification_status' => 'approved',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession(['active_role' => 'buyer'])
+            ->get(route('dashboard'));
+
+        $response->assertRedirect(route('buyer.dashboard'));
+    }
 }

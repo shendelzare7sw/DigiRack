@@ -62,16 +62,16 @@
             </a>
 
             {{-- Reviews --}}
-            <div class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 opacity-70">
+            <a href="{{ route('buyer.orders.index') }}" class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md hover:border-yellow-300 transition-all">
                 <div class="flex items-center justify-between mb-3">
-                    <div class="w-11 h-11 bg-yellow-50 rounded-xl flex items-center justify-center text-yellow-500">
+                    <div class="w-11 h-11 bg-yellow-50 rounded-xl flex items-center justify-center text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors">
                         <x-icon name="star" class="w-6 h-6" />
                     </div>
-                    <span class="text-[10px] bg-gray-100 text-gray-400 font-bold px-2 py-1 rounded-full">SEGERA</span>
+                    <x-icon name="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-yellow-500 transition-colors" />
                 </div>
                 <p class="font-display font-bold text-2xl text-gray-900">{{ $reviewCount }}</p>
                 <p class="text-xs text-gray-500 font-medium mt-1">Ulasan Saya</p>
-            </div>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

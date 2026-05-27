@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Review;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -110,20 +111,21 @@ class ProductController extends Controller
             'reviews' => function ($q) {
                 $q->with('buyer')->latest()->take(10);
             },
-            'reviews.buyer',
         ])
+        ->withCount('reviews')
         ->where('slug', $slug)
         ->where('status', 'active')
         ->firstOrFail();
 
         // Rating distribution
+        $reviewCount = $product->reviews_count;
         $ratingDist = [];
-        if ($product->reviews->count() > 0) {
+        if ($reviewCount > 0) {
             for ($i = 5; $i >= 1; $i--) {
-                $count = $product->reviews->where('rating', $i)->count();
+                $count = Review::where('product_id', $product->id)->where('rating', $i)->count();
                 $ratingDist[$i] = [
                     'count' => $count,
-                    'percent' => round(($count / $product->reviews->count()) * 100),
+                    'percent' => round(($count / $reviewCount) * 100),
                 ];
             }
         }
@@ -157,7 +159,45 @@ class ProductController extends Controller
 
         return view('products.show', compact(
             'product', 'ratingDist', 'specs',
-            'storeProductCount', 'relatedProducts', 'isWishlisted', 'isOwnProduct'
+            'storeProductCount', 'relatedProducts', 'isWishlisted', 'isOwnProduct', 'reviewCount'
+        ));
+    }
+
+    public function reviews(Request $request, string $slug)
+    {
+        $product = Product::with(['store', 'category', 'primaryImage'])
+            ->withCount('reviews')
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->firstOrFail();
+
+        $reviewQuery = Review::with('buyer')
+            ->where('product_id', $product->id);
+
+        if ($request->filled('rating') && in_array((int) $request->rating, [1, 2, 3, 4, 5], true)) {
+            $reviewQuery->where('rating', (int) $request->rating);
+        }
+
+        if ($request->boolean('media')) {
+            $reviewQuery->whereNotNull('media');
+        }
+
+        $reviews = $reviewQuery->latest()->paginate(12)->withQueryString();
+
+        $ratingCounts = Review::where('product_id', $product->id)
+            ->selectRaw('rating, COUNT(*) as total')
+            ->groupBy('rating')
+            ->pluck('total', 'rating');
+
+        $reviewsWithMediaCount = Review::where('product_id', $product->id)
+            ->whereNotNull('media')
+            ->count();
+
+        return view('products.reviews', compact(
+            'product',
+            'reviews',
+            'ratingCounts',
+            'reviewsWithMediaCount'
         ));
     }
 }
