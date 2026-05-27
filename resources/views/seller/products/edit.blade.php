@@ -148,23 +148,53 @@
 
                 {{-- Upload New Images --}}
                 <p class="text-xs text-gray-500 mb-3">Tambah foto baru (opsional, maks 10MB per file):</p>
-                <div x-data="{ previews: [] }" class="space-y-4">
+                <div x-data="{
+                    previews: [],
+                    files: [],
+                    addImages(event) {
+                        this.clearImages(false);
+                        this.files = Array.from(event.target.files || []);
+                        this.previews = this.files.map((file) => ({ name: file.name, url: URL.createObjectURL(file) }));
+                        this.syncInput();
+                    },
+                    removeImage(index) {
+                        const preview = this.previews[index];
+                        if (preview) URL.revokeObjectURL(preview.url);
+                        this.previews.splice(index, 1);
+                        this.files.splice(index, 1);
+                        this.syncInput();
+                    },
+                    clearImages(sync = true) {
+                        this.previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+                        this.previews = [];
+                        this.files = [];
+                        if (sync) this.syncInput();
+                    },
+                    syncInput() {
+                        const transfer = new DataTransfer();
+                        this.files.forEach((file) => transfer.items.add(file));
+                        this.$refs.fileInput.files = transfer.files;
+                    },
+                }" class="space-y-4">
                     <input type="file" x-ref="fileInput" name="new_images[]" multiple accept="image/jpg,image/jpeg,image/png,image/webp"
-                        @change="previews = []; for (let f of $event.target.files) { let r = new FileReader(); r.onload = e => { previews.push(e.target.result); previews = [...previews]; }; r.readAsDataURL(f); }"
+                        @change="addImages($event)"
                         class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-navylight file:text-brand-navy hover:file:bg-brand-navy hover:file:text-white transition-colors cursor-pointer">
 
                     <div x-show="previews.length > 0">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-semibold text-gray-600">Preview Gambar Baru:</span>
-                            <button type="button" @click="$refs.fileInput.value = ''; previews = []" class="text-xs text-red-500 hover:text-red-700 font-semibold transition-colors">
-                                Batal Upload
-                            </button>
+                            <span class="text-xs text-gray-400"><span x-text="previews.length"></span> file</span>
                         </div>
                         <div class="flex gap-3 flex-wrap">
-                            <template x-for="(src, i) in previews" :key="i">
-                                <div class="w-24 h-24 rounded-xl overflow-hidden border-2 border-brand-blue relative">
-                                    <img :src="src" class="w-full h-full object-cover">
-                                    <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">BARU</span>
+                            <template x-for="(preview, i) in previews" :key="preview.url">
+                                <div class="relative w-24 h-24 rounded-xl border-2 border-brand-blue bg-white">
+                                    <div class="absolute inset-0 overflow-hidden rounded-[10px]">
+                                        <img :src="preview.url" :alt="preview.name" class="w-full h-full object-cover">
+                                        <span class="absolute bottom-0 inset-x-0 bg-brand-blue text-white text-[9px] font-bold text-center py-0.5">BARU</span>
+                                    </div>
+                                    <button type="button" @click="removeImage(i)" class="absolute z-20 inline-flex h-7 w-7 items-center justify-center rounded-full text-lg font-black leading-none text-white shadow hover:brightness-95" style="top: -8px; right: -8px; background-color: #dc2626; box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,.18);" aria-label="Hapus gambar">
+                                        &minus;
+                                    </button>
                                 </div>
                             </template>
                         </div>

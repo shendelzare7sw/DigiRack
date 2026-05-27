@@ -73,17 +73,19 @@
                                         $mediaType = $media['type'] ?? 'image';
                                     @endphp
                                     @if($mediaPath)
-                                        <button type="button" @click="toggleExisting('{{ $mediaPath }}')" class="relative aspect-square overflow-hidden rounded-xl border bg-white transition-all" :class="isRemoved('{{ $mediaPath }}') ? 'border-red-300 opacity-50' : 'border-gray-100 hover:border-yellow-300'">
-                                            @if($mediaType === 'video')
-                                                <video src="{{ $mediaUrl }}" class="w-full h-full object-cover" muted playsinline preload="metadata"></video>
-                                                <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
-                                            @else
-                                                <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="w-full h-full object-cover">
-                                            @endif
-                                            <span class="absolute right-1.5 top-1.5 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow ring-2 ring-white" title="Hapus media">
-                                                <x-icon name="minus" class="w-4 h-4" />
+                                        <button type="button" @click="toggleExisting('{{ $mediaPath }}')" class="relative aspect-square rounded-xl border bg-white transition-all" :class="isRemoved('{{ $mediaPath }}') ? 'border-red-300 opacity-50' : 'border-gray-100 hover:border-yellow-300'">
+                                            <span class="absolute inset-0 overflow-hidden rounded-xl">
+                                                @if($mediaType === 'video')
+                                                    <video src="{{ $mediaUrl }}" class="w-full h-full object-cover" muted playsinline preload="metadata"></video>
+                                                    <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
+                                                @else
+                                                    <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="w-full h-full object-cover">
+                                                @endif
                                             </span>
-                                            <span x-show="isRemoved('{{ $mediaPath }}')" x-cloak class="absolute inset-x-1 bottom-1 rounded bg-red-600 px-1 py-0.5 text-[10px] font-bold text-white">Dihapus</span>
+                                            <span class="absolute z-20 inline-flex h-7 w-7 items-center justify-center rounded-full text-lg font-black leading-none text-white shadow" style="top: -8px; right: -8px; background-color: #dc2626; box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,.18);" title="Hapus media">
+                                                &minus;
+                                            </span>
+                                            <span x-show="isRemoved('{{ $mediaPath }}')" x-cloak class="absolute inset-x-1 bottom-1 z-20 rounded bg-red-600 px-1 py-0.5 text-[10px] font-bold text-white">Dihapus</span>
                                         </button>
                                     @endif
                                 @endforeach
@@ -108,17 +110,19 @@
                             <p class="mb-2 text-xs font-semibold text-gray-600">Preview media baru</p>
                             <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
                                 <template x-for="(preview, index) in previews" :key="preview.url">
-                                    <div class="relative aspect-square overflow-hidden rounded-xl border border-gray-100 bg-white">
-                                        <template x-if="preview.type === 'image'">
-                                            <img :src="preview.url" :alt="preview.name" class="h-full w-full object-cover">
-                                        </template>
-                                        <template x-if="preview.type === 'video'">
-                                            <video :src="preview.url" class="h-full w-full object-cover" muted playsinline preload="metadata"></video>
-                                        </template>
-                                        <button type="button" @click="removeMedia(index)" class="absolute right-1.5 top-1.5 z-10 inline-flex h-7 w-7 items-center justify-center rounded-full bg-red-600 text-white shadow ring-2 ring-white hover:bg-red-700" aria-label="Hapus media">
-                                            <x-icon name="minus" class="w-4 h-4" />
+                                    <div class="relative aspect-square rounded-xl border border-gray-100 bg-white">
+                                        <div class="absolute inset-0 overflow-hidden rounded-xl">
+                                            <template x-if="preview.type === 'image'">
+                                                <img :src="preview.url" :alt="preview.name" class="h-full w-full object-cover">
+                                            </template>
+                                            <template x-if="preview.type === 'video'">
+                                                <video :src="preview.url" class="h-full w-full object-cover" muted playsinline preload="metadata"></video>
+                                            </template>
+                                            <span x-show="preview.type === 'video'" class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
+                                        </div>
+                                        <button type="button" @click="removeMedia(index)" class="absolute z-20 inline-flex h-7 w-7 items-center justify-center rounded-full text-lg font-black leading-none text-white shadow hover:brightness-95" style="top: -8px; right: -8px; background-color: #dc2626; box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,.18);" aria-label="Hapus media">
+                                            &minus;
                                         </button>
-                                        <span x-show="preview.type === 'video'" class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
                                     </div>
                                 </template>
                             </div>
