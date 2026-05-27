@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Buyer;
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use App\Models\Review;
+use App\Notifications\ReviewNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class ReviewController extends Controller
@@ -44,7 +47,7 @@ class ReviewController extends Controller
 
     public function store(Request $request, OrderItem $orderItem)
     {
-        $orderItem->load(['order', 'product']);
+        $orderItem->load(['order', 'product.store.user']);
         $order = $orderItem->order;
 
         $guard = $this->guardReviewableOrder($orderItem);
@@ -107,7 +110,9 @@ class ReviewController extends Controller
             ]);
         }
 
-        Review::updateOrCreate(
+        $wasUpdated = $review !== null;
+
+        $savedReview = Review::updateOrCreate(
             [
                 'buyer_id' => Auth::id(),
                 'order_id' => $order->id,
@@ -125,6 +130,8 @@ class ReviewController extends Controller
         $orderItem->product->update([
             'avg_rating' => round((float) $orderItem->product->reviews()->avg('rating'), 1),
         ]);
+
+        $this->notifySellerAboutReview($savedReview, $wasUpdated);
 
         return redirect()
             ->route('buyer.orders.show', $order->id)
@@ -189,5 +196,40 @@ class ReviewController extends Controller
         }
 
         return $files;
+    }
+
+    private function notifySellerAboutReview(Review $review, bool $wasUpdated): void
+    {
+        try {
+            $review->loadMissing(['buyer', 'product.store.user']);
+
+            $seller = $review->product?->store?->user;
+            if (!$seller || (int) $seller->id === (int) $review->buyer_id) {
+                return;
+            }
+
+            $productName = Str::limit($review->product?->name ?? 'produk', 60);
+            $buyerName = Str::limit($review->buyer?->name ?? 'Pembeli', 40);
+            $type = $wasUpdated ? 'review_updated' : 'review_created';
+            $title = $wasUpdated ? 'Ulasan produk diperbarui' : 'Ulasan produk baru';
+            $verb = $wasUpdated ? 'memperbarui ulasan' : 'memberi ulasan';
+            $message = "{$buyerName} {$verb} {$review->rating} bintang untuk {$productName}.";
+
+            if ($review->comment) {
+                $message .= ' "' . Str::limit($review->comment, 80) . '"';
+            }
+
+            $seller->notify(new ReviewNotification(
+                $type,
+                $title,
+                $message,
+                route('products.reviews.index', $review->product->slug),
+            ));
+        } catch (\Throwable $e) {
+            Log::warning('Review notification failed: ' . $e->getMessage(), [
+                'review_id' => $review->id,
+                'product_id' => $review->product_id,
+            ]);
+        }
     }
 }

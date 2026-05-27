@@ -9,8 +9,10 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\Store;
 use App\Models\User;
+use App\Notifications\ReviewNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -53,6 +55,56 @@ class BuyerReviewTest extends TestCase
         ]);
 
         $this->assertSame('5.0', $product->fresh()->avg_rating);
+    }
+
+    public function test_seller_receives_notification_when_buyer_creates_review(): void
+    {
+        Notification::fake();
+        [$buyer, $order, $item, $product] = $this->createOrderWithItem('completed');
+        $seller = $product->store->user;
+
+        $this->actingAs($buyer)->post(route('buyer.reviews.store', $item), [
+            'rating' => 5,
+            'comment' => 'Produk bagus dan sesuai deskripsi.',
+        ])->assertRedirect(route('buyer.orders.show', $order->id));
+
+        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($product, $seller) {
+            $data = $notification->toArray($seller);
+
+            return $data['type'] === 'review_created'
+                && $data['title'] === 'Ulasan produk baru'
+                && $data['action_url'] === route('products.reviews.index', $product->slug)
+                && str_contains($data['message'], '5 bintang');
+        });
+    }
+
+    public function test_seller_receives_notification_when_buyer_updates_review(): void
+    {
+        Notification::fake();
+        [$buyer, $order, $item, $product] = $this->createOrderWithItem('completed');
+        $seller = $product->store->user;
+
+        Review::create([
+            'buyer_id' => $buyer->id,
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'rating' => 4,
+            'comment' => 'Ulasan awal.',
+        ]);
+
+        $this->actingAs($buyer)->post(route('buyer.reviews.store', $item), [
+            'rating' => 5,
+            'comment' => 'Ulasan sudah diedit.',
+        ])->assertRedirect(route('buyer.orders.show', $order->id));
+
+        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($product, $seller) {
+            $data = $notification->toArray($seller);
+
+            return $data['type'] === 'review_updated'
+                && $data['title'] === 'Ulasan produk diperbarui'
+                && $data['action_url'] === route('products.reviews.index', $product->slug)
+                && str_contains($data['message'], 'memperbarui ulasan');
+        });
     }
 
     public function test_buyer_cannot_review_order_before_it_is_completed(): void

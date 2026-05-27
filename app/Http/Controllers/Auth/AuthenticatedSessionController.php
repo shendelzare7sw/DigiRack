@@ -36,21 +36,21 @@ class AuthenticatedSessionController extends Controller
             'last_login_ip' => $request->ip(),
         ]);
 
+        $request->session()->put('active_role', $user->isAdmin() ? 'admin' : 'buyer');
+
         // Intended URL check (avoid API/AJAX endpoints)
         $intendedUrl = redirect()->intended()->getTargetUrl();
         if (str_contains($intendedUrl, 'api/') || str_contains($intendedUrl, 'check-')) {
             $intendedUrl = null;
         }
 
-        if ($intendedUrl && $intendedUrl !== route('dashboard') && $intendedUrl !== url('/')) {
+        if ($user->isAdmin() && $intendedUrl && $intendedUrl !== route('dashboard') && $intendedUrl !== url('/')) {
             return redirect($intendedUrl);
         }
 
-        return match ($user->role) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'seller' => redirect()->route('seller.dashboard'),
-            default => redirect()->intended('/'),
-        };
+        return $user->isAdmin()
+            ? redirect()->route('admin.dashboard')
+            : redirect('/');
     }
 
     /**
