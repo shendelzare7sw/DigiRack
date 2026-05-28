@@ -17,7 +17,10 @@ class StoreController extends Controller
      */
     public function show($slug, Request $request)
     {
-        $store = Store::withCount(['products', 'reviews'])->where('slug', $slug)->firstOrFail();
+        $store = Store::withCount([
+            'products' => fn ($query) => $query->where('status', 'active'),
+            'reviews',
+        ])->where('slug', $slug)->firstOrFail();
 
         // Public visitors cannot open pending/banned stores. Admins may preview a store from the review page.
         if (!$store->is_active && ! Auth::user()?->isAdmin()) {
@@ -48,7 +51,7 @@ class StoreController extends Controller
         $storeReviews = $store->reviews()
             ->with('buyer')
             ->latest()
-            ->take(8)
+            ->take(2)
             ->get();
 
         $wishlistIds = [];
@@ -59,5 +62,32 @@ class StoreController extends Controller
         }
 
         return view('public.seller.storefront', compact('store', 'products', 'storeProductCount', 'storeReviews', 'sort', 'wishlistIds'));
+    }
+
+    public function reviews($slug, Request $request)
+    {
+        $store = Store::withCount(['products', 'reviews'])->where('slug', $slug)->firstOrFail();
+
+        if (!$store->is_active && ! Auth::user()?->isAdmin()) {
+            abort(404, 'Toko ini sedang tidak aktif.');
+        }
+
+        $ratingCounts = $store->reviews()
+            ->selectRaw('rating, COUNT(*) as total')
+            ->groupBy('rating')
+            ->pluck('total', 'rating')
+            ->all();
+
+        $reviewQuery = $store->reviews()
+            ->with(['buyer', 'order'])
+            ->latest();
+
+        if ($request->filled('rating') && in_array((int) $request->rating, [1, 2, 3, 4, 5], true)) {
+            $reviewQuery->where('rating', (int) $request->rating);
+        }
+
+        $storeReviews = $reviewQuery->paginate(12)->withQueryString();
+
+        return view('public.seller.reviews', compact('store', 'storeReviews', 'ratingCounts'));
     }
 }

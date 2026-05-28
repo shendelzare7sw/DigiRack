@@ -373,6 +373,32 @@ class BuyerReviewTest extends TestCase
             ->assertSee('Terima kasih sudah berbelanja di toko kami.');
     }
 
+    public function test_public_storefront_limits_reviews_and_links_to_all_store_reviews(): void
+    {
+        [, , , $product] = $this->createOrderWithItem('completed');
+        $store = $product->store;
+        $store->update(['avg_rating' => 4]);
+
+        $this->createStoreReviewForStore($store, 'Ulasan toko lama tersembunyi.', 3, now()->subDays(3));
+        $this->createStoreReviewForStore($store, 'Ulasan toko kedua tampil.', 4, now()->subDays(2));
+        $this->createStoreReviewForStore($store, 'Ulasan toko terbaru tampil.', 5, now()->subDay());
+
+        $this->get(route('store.show', $store->slug))
+            ->assertOk()
+            ->assertSee('Lihat Semua Ulasan')
+            ->assertSee(route('store.reviews.index', $store->slug), false)
+            ->assertSee('Ulasan toko terbaru tampil.')
+            ->assertSee('Ulasan toko kedua tampil.')
+            ->assertDontSee('Ulasan toko lama tersembunyi.');
+
+        $this->get(route('store.reviews.index', $store->slug))
+            ->assertOk()
+            ->assertSee('Ulasan Toko')
+            ->assertSee('Ulasan toko terbaru tampil.')
+            ->assertSee('Ulasan toko kedua tampil.')
+            ->assertSee('Ulasan toko lama tersembunyi.');
+    }
+
     private function createOrderWithItem(string $status): array
     {
         $buyer = User::factory()->create([
@@ -438,5 +464,45 @@ class BuyerReviewTest extends TestCase
         ]);
 
         return [$buyer, $order, $item, $product];
+    }
+
+    private function createStoreReviewForStore(Store $store, string $comment, int $rating, $createdAt): StoreReview
+    {
+        $buyer = User::factory()->create([
+            'role' => 'buyer',
+            'email_verified_at' => now(),
+        ]);
+
+        $order = Order::create([
+            'invoice_number' => 'INV-STORE-REVIEW-' . strtoupper(uniqid()),
+            'buyer_id' => $buyer->id,
+            'store_id' => $store->id,
+            'status' => 'completed',
+            'total_price' => 315000,
+            'shipping_cost' => 15000,
+            'payment_method' => 'transfer',
+            'payment_status' => 'paid',
+            'shipping_address' => [
+                'name' => $buyer->name,
+                'phone' => '081234567890',
+                'full_address' => 'Jl. Ulasan Toko',
+                'courier' => 'toko_internal',
+            ],
+        ]);
+
+        $review = StoreReview::create([
+            'buyer_id' => $buyer->id,
+            'store_id' => $store->id,
+            'order_id' => $order->id,
+            'rating' => $rating,
+            'comment' => $comment,
+        ]);
+
+        $review->forceFill([
+            'created_at' => $createdAt,
+            'updated_at' => $createdAt,
+        ])->save();
+
+        return $review;
     }
 }

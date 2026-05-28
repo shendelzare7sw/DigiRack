@@ -83,10 +83,18 @@
                     <h2 class="text-xl font-bold text-gray-900">Ulasan Performa Toko</h2>
                     <p class="mt-1 text-sm text-gray-500">Penilaian pembeli terhadap pelayanan toko.</p>
                 </div>
-                <div class="flex items-center gap-2 rounded-xl bg-yellow-50 px-4 py-2 text-yellow-800">
-                    <x-icon name="star" class="w-5 h-5 text-yellow-500" />
-                    <span class="font-display text-2xl font-bold">{{ number_format($store->avg_rating, 1) }}</span>
-                    <span class="text-xs font-semibold">{{ $store->reviews_count }} ulasan</span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-2 rounded-xl bg-yellow-50 px-4 py-2 text-yellow-800">
+                        <x-icon name="star" class="w-5 h-5 text-yellow-500" />
+                        <span class="font-display text-2xl font-bold">{{ number_format($store->avg_rating, 1) }}</span>
+                        <span class="text-xs font-semibold">{{ $store->reviews_count }} ulasan</span>
+                    </div>
+                    @if($store->reviews_count > 0)
+                        <a href="{{ route('store.reviews.index', $store->slug) }}" class="inline-flex items-center justify-center gap-1 rounded-xl border border-brand-navylight px-4 py-2 text-xs font-bold text-brand-navy hover:border-brand-navy hover:bg-brand-navylight/40 transition-colors">
+                            Lihat Semua Ulasan
+                            <x-icon name="chevron-right" class="w-3.5 h-3.5" />
+                        </a>
+                    @endif
                 </div>
             </div>
 

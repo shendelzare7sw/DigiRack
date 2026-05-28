@@ -45,6 +45,7 @@ Route::get('/products/{slug}/reviews', [ProductController::class, 'reviews'])->n
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
 // Public Storefront (no login required)
+Route::get('/toko/{slug}/reviews', [\App\Http\Controllers\Public\StoreController::class, 'reviews'])->name('store.reviews.index');
 Route::get('/toko/{slug}', [\App\Http\Controllers\Public\StoreController::class, 'show'])->name('store.show');
 
 // User Recovery (public, no auth needed)
