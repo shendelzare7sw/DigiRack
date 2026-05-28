@@ -3,6 +3,8 @@
 use App\Http\Controllers\Public\ProductController;
 use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Wishlist;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,7 +14,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $wishlistIds = [];
+    if (Auth::check()) {
+        $wishlistIds = Wishlist::where('user_id', Auth::id())
+            ->pluck('product_id')
+            ->toArray();
+    }
+
+    return view('welcome', compact('wishlistIds'));
 })->name('home');
 
 Route::get('/download-app', [PageController::class, 'downloadApp'])->name('pages.download-app');

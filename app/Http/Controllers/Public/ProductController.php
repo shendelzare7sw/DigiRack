@@ -149,18 +149,20 @@ class ProductController extends Controller
             ->get();
 
         // Wishlist check
+        $wishlistIds = [];
         $isWishlisted = false;
         $isOwnProduct = false;
         if (Auth::check()) {
             $isOwnProduct = $product->isOwnedBy(Auth::user());
-            $isWishlisted = Wishlist::where('user_id', Auth::id())
-                ->where('product_id', $product->id)
-                ->exists();
+            $wishlistIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('product_id')
+                ->toArray();
+            $isWishlisted = in_array($product->id, $wishlistIds);
         }
 
         return view('products.show', compact(
             'product', 'ratingDist', 'specs',
-            'storeProductCount', 'relatedProducts', 'isWishlisted', 'isOwnProduct', 'reviewCount'
+            'storeProductCount', 'relatedProducts', 'isWishlisted', 'isOwnProduct', 'reviewCount', 'wishlistIds'
         ));
     }
 

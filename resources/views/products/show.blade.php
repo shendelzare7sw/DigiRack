@@ -315,33 +315,33 @@
                         </div>
 
                         {{-- Action Buttons --}}
-                        <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-2 sm:gap-3">
                             {{-- Form Beli Langsung --}}
-                            <form action="{{ route('buyer.checkout.init') }}" method="POST" class="flex-1">
+                            <form action="{{ route('buyer.checkout.init') }}" method="POST" class="min-w-0">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <input type="hidden" name="quantity" :value="quantity">
                                 <button type="submit" 
-                                    class="w-full bg-brand-navy hover:bg-brand-navydark text-white font-bold py-3.5 px-6 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all text-sm sm:text-base active:scale-[0.98]">
-                                    <x-icon name="credit-card" class="w-5 h-5" />
-                                    Beli Langsung
+                                    class="w-full h-12 bg-brand-navy hover:bg-brand-navydark text-white font-bold px-3 sm:px-5 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all text-xs sm:text-sm active:scale-[0.98] whitespace-nowrap">
+                                    <x-icon name="credit-card" class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                                    <span>Beli Langsung</span>
                                 </button>
                             </form>
 
                             <button @click="addToCart()"
                                 :disabled="addingToCart"
-                                class="flex-1 bg-brand-blue hover:bg-blue-600 disabled:opacity-60 text-white font-bold py-3.5 px-6 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all text-sm sm:text-base active:scale-[0.98]">
-                                <x-icon name="shopping-cart" class="w-5 h-5" />
-                                <span x-text="addingToCart ? 'Menambahkan...' : '+ Keranjang'"></span>
+                                class="min-w-0 h-12 bg-brand-blue hover:bg-blue-600 disabled:opacity-60 text-white font-bold px-3 sm:px-5 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all text-xs sm:text-sm active:scale-[0.98]">
+                                <x-icon name="shopping-cart" class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                                <span class="truncate" x-text="addingToCart ? 'Menambahkan...' : '+ Keranjang'"></span>
                             </button>
                             <button @click="toggleWishlist()"
                                 :disabled="wishlistLoading"
-                                class="sm:w-auto px-5 py-3.5 rounded-xl font-bold text-sm border-2 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                                :class="isWishlisted ? 'bg-red-50 border-red-300 text-red-500 hover:bg-red-100' : 'border-gray-200 text-gray-600 hover:border-brand-navy hover:text-brand-navy'">
+                                class="h-12 w-12 rounded-full border-2 flex items-center justify-center transition-all active:scale-[0.98] disabled:opacity-60 shrink-0"
+                                :class="isWishlisted ? 'bg-red-50 border-red-200 text-red-500 shadow-sm hover:bg-red-100' : 'bg-white border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-500'">
+                                <span class="sr-only" x-text="isWishlisted ? 'Hapus dari wishlist' : 'Tambah ke wishlist'"></span>
                                 <svg class="w-5 h-5 transition-transform" :class="isWishlisted ? 'scale-110' : ''" viewBox="0 0 24 24" :fill="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                                 </svg>
-                                <span x-text="isWishlisted ? 'Wishlisted' : 'Wishlist'" class="hidden sm:inline"></span>
                             </button>
                         </div>
                     </div>
@@ -617,7 +617,7 @@
                 <div x-ref="related" class="flex overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-1 gap-4 sm:gap-5 snap-x snap-mandatory hide-scroll scroll-smooth">
                     @foreach($relatedProducts as $rp)
                         <div class="w-[220px] sm:w-[240px] md:w-[260px] shrink-0 snap-start">
-                            <x-product-card :product="$rp" />
+                            <x-product-card :product="$rp" :wishlisted="in_array($rp->id, $wishlistIds ?? [])" />
                         </div>
                     @endforeach
                 </div>

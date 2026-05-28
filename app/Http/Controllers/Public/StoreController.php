@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\Store;
 use App\Models\Product;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,6 +51,13 @@ class StoreController extends Controller
             ->take(8)
             ->get();
 
-        return view('public.seller.storefront', compact('store', 'products', 'storeProductCount', 'storeReviews', 'sort'));
+        $wishlistIds = [];
+        if (Auth::check()) {
+            $wishlistIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('product_id')
+                ->toArray();
+        }
+
+        return view('public.seller.storefront', compact('store', 'products', 'storeProductCount', 'storeReviews', 'sort', 'wishlistIds'));
     }
 }

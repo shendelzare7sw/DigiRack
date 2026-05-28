@@ -112,7 +112,7 @@
                     <div x-ref="slider" class="flex overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-1 gap-4 sm:gap-6 snap-x snap-mandatory hide-scroll scroll-smooth">
                         @foreach($flashSales as $fs)
                             <div class="w-[240px] sm:w-[260px] md:w-[280px] shrink-0 snap-start">
-                                <x-product-card :product="$fs->product" />
+                                <x-product-card :product="$fs->product" :wishlisted="in_array($fs->product->id, $wishlistIds ?? [])" />
                             </div>
                         @endforeach
                     </div>
@@ -140,7 +140,7 @@
                 @endphp
                 
                 @forelse($products as $product)
-                    <x-product-card :product="$product" />
+                    <x-product-card :product="$product" :wishlisted="in_array($product->id, $wishlistIds ?? [])" />
                 @empty
                     <!-- Fallback -->
                     <div class="col-span-full">

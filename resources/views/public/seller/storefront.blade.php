@@ -149,7 +149,7 @@
         @if($products->count() > 0)
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                 @foreach($products as $product)
-                    <x-product-card :product="$product" />
+                    <x-product-card :product="$product" :wishlisted="in_array($product->id, $wishlistIds ?? [])" />
                 @endforeach
             </div>
 
