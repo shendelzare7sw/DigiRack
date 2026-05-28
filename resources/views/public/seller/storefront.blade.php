@@ -77,6 +77,9 @@
 
     {{-- Store Reviews --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        @php
+            $storeReviewsUrl = url('/toko/' . $store->slug . '/reviews');
+        @endphp
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div>
@@ -90,7 +93,7 @@
                         <span class="text-xs font-semibold">{{ $store->reviews_count }} ulasan</span>
                     </div>
                     @if($store->reviews_count > 0)
-                        <a href="{{ route('store.reviews.index', $store->slug) }}" class="inline-flex items-center justify-center gap-1 rounded-xl border border-brand-navylight px-4 py-2 text-xs font-bold text-brand-navy hover:border-brand-navy hover:bg-brand-navylight/40 transition-colors">
+                        <a href="{{ $storeReviewsUrl }}" class="inline-flex items-center justify-center gap-1 rounded-xl border border-brand-navylight px-4 py-2 text-xs font-bold text-brand-navy hover:border-brand-navy hover:bg-brand-navylight/40 transition-colors">
                             Lihat Semua Ulasan
                             <x-icon name="chevron-right" class="w-3.5 h-3.5" />
                         </a>

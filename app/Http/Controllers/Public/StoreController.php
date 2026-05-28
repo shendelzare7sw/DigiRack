@@ -18,7 +18,9 @@ class StoreController extends Controller
     public function show($slug, Request $request)
     {
         $store = Store::withCount([
-            'products' => fn ($query) => $query->where('status', 'active'),
+            'products' => function ($query) {
+                $query->where('status', 'active');
+            },
             'reviews',
         ])->where('slug', $slug)->firstOrFail();
 
