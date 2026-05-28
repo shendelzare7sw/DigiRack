@@ -1,7 +1,28 @@
 <x-app-layout>
     <x-slot name="title">Kelola Pesanan</x-slot>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div
+        class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+        x-data="{
+            reviewMediaOpen: false,
+            reviewMediaUrl: '',
+            reviewMediaType: 'image',
+            reviewMediaAlt: '',
+            openReviewMedia(url, type, alt) {
+                this.reviewMediaUrl = url;
+                this.reviewMediaType = type;
+                this.reviewMediaAlt = alt;
+                this.reviewMediaOpen = true;
+            },
+            closeReviewMedia() {
+                this.reviewMediaOpen = false;
+                this.reviewMediaUrl = '';
+                this.reviewMediaType = 'image';
+                this.reviewMediaAlt = '';
+            },
+        }"
+        x-effect="document.body.classList.toggle('overflow-hidden', reviewMediaOpen)"
+        @keydown.escape.window="if (reviewMediaOpen) closeReviewMedia()">
         {{-- Header --}}
         <div class="flex items-start gap-3 mb-6">
             <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
@@ -108,14 +129,14 @@
                                                     $mediaType = $media['type'] ?? 'image';
                                                 @endphp
                                                 @if($mediaPath)
-                                                    <a href="{{ $mediaUrl }}" target="_blank" class="relative aspect-square overflow-hidden rounded-xl border border-yellow-100 bg-white">
+                                                    <button type="button" @click="openReviewMedia({{ Js::from($mediaUrl) }}, {{ Js::from($mediaType) }}, {{ Js::from('Media ulasan ' . $loop->iteration) }})" class="relative aspect-square overflow-hidden rounded-xl border border-yellow-100 bg-white cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
                                                         @if($mediaType === 'video')
                                                             <video src="{{ $mediaUrl }}" class="w-full h-full object-cover" muted playsinline preload="metadata"></video>
                                                             <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
                                                         @else
                                                             <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="w-full h-full object-cover">
                                                         @endif
-                                                    </a>
+                                                    </button>
                                                 @endif
                                             @endforeach
                                         </div>
@@ -356,6 +377,31 @@
                 @endif
             </div>
 
+        </div>
+
+        <div x-show="reviewMediaOpen" x-cloak
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-3 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Preview media ulasan"
+            @click.self="closeReviewMedia()">
+            <button type="button" @click="closeReviewMedia()"
+                class="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-lg hover:bg-gray-100 active:scale-95 transition-all">
+                Tutup media
+            </button>
+
+            <template x-if="reviewMediaType === 'video'">
+                <video :src="reviewMediaUrl" :aria-label="reviewMediaAlt" controls autoplay playsinline class="max-w-[94vw] max-h-[82vh] rounded-lg bg-black shadow-2xl" @click.stop></video>
+            </template>
+            <template x-if="reviewMediaType !== 'video'">
+                <img :src="reviewMediaUrl" :alt="reviewMediaAlt" class="max-w-[94vw] max-h-[82vh] object-contain select-none rounded-lg shadow-2xl" @click.stop>
+            </template>
         </div>
     </div>
 </x-app-layout>

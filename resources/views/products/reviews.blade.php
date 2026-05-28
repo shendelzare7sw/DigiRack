@@ -7,7 +7,28 @@
         $baseQuery = request()->except('page');
     @endphp
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8" x-data="{ mediaOpen: false, mediaUrl: '', mediaType: 'image', mediaAlt: '', openMedia(url, type, alt) { this.mediaUrl = url; this.mediaType = type; this.mediaAlt = alt; this.mediaOpen = true; }, closeMedia() { this.mediaOpen = false; this.mediaUrl = ''; } }" x-effect="document.body.classList.toggle('overflow-hidden', mediaOpen)" @keydown.escape.window="closeMedia()">
+    <div
+        class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8"
+        x-data="{
+            mediaOpen: false,
+            mediaUrl: '',
+            mediaType: 'image',
+            mediaAlt: '',
+            openMedia(url, type, alt) {
+                this.mediaUrl = url;
+                this.mediaType = type;
+                this.mediaAlt = alt;
+                this.mediaOpen = true;
+            },
+            closeMedia() {
+                this.mediaOpen = false;
+                this.mediaUrl = '';
+                this.mediaType = 'image';
+                this.mediaAlt = '';
+            },
+        }"
+        x-effect="document.body.classList.toggle('overflow-hidden', mediaOpen)"
+        @keydown.escape.window="if (mediaOpen) closeMedia()">
         <div class="flex items-start gap-3 mb-6">
             <a href="{{ route('products.show', $product->slug) }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                 <x-icon name="arrow-left" class="w-4 h-4" />
@@ -58,7 +79,7 @@
                 <a href="{{ route('products.reviews.index', array_merge(['slug' => $product->slug], request()->except(['page', 'rating', 'media']))) }}" class="rounded-full px-4 py-2 text-xs font-bold transition-colors {{ !$activeRating && !$mediaActive ? 'bg-brand-navy text-white' : 'bg-white text-gray-700 border border-gray-100 hover:border-brand-navy hover:text-brand-navy' }}">
                     Semua
                 </a>
-                <a href="{{ route('products.reviews.index', array_merge(['slug' => $product->slug], request()->except(['page', 'media']), ['media' => 1])) }}" class="rounded-full px-4 py-2 text-xs font-bold transition-colors {{ $mediaActive ? 'bg-brand-navy text-white' : 'bg-white text-gray-700 border border-gray-100 hover:border-brand-navy hover:text-brand-navy' }}">
+                <a href="{{ route('products.reviews.index', array_merge(['slug' => $product->slug], request()->except(['page', 'media']), ['media' => 1])) }}" class="whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition-colors {{ $mediaActive ? 'bg-brand-navy text-white' : 'bg-white text-gray-700 border border-gray-100 hover:border-brand-navy hover:text-brand-navy' }}">
                     Foto & Video
                 </a>
                 @for($rating = 5; $rating >= 1; $rating--)
@@ -105,7 +126,7 @@
                                                     $mediaType = $media['type'] ?? 'image';
                                                 @endphp
                                                 @if($mediaPath)
-                                                    <button type="button" @click="openMedia({{ Js::from($mediaUrl) }}, {{ Js::from($mediaType) }}, {{ Js::from('Media ulasan ' . $loop->iteration) }})" class="relative h-24 w-24 overflow-hidden rounded-xl border border-gray-100 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
+                                                    <button type="button" @click="openMedia({{ Js::from($mediaUrl) }}, {{ Js::from($mediaType) }}, {{ Js::from('Media ulasan ' . $loop->iteration) }})" class="relative h-24 w-24 overflow-hidden rounded-xl border border-gray-100 bg-gray-50 cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-brand-navy focus:ring-offset-2">
                                                         @if($mediaType === 'video')
                                                             <video src="{{ $mediaUrl }}" class="h-full w-full object-cover" muted playsinline preload="metadata"></video>
                                                             <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
@@ -150,15 +171,26 @@
             @endif
         </div>
 
-        <div x-show="mediaOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[999] flex items-center justify-center bg-black/85 px-4 py-6" @click.self="closeMedia()">
-            <button type="button" @click="closeMedia()" class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-900 shadow-lg hover:bg-gray-100" aria-label="Tutup media">
-                <x-icon name="x-mark" class="w-5 h-5" />
+        <div x-show="mediaOpen" x-cloak
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-3 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Preview media ulasan"
+            @click.self="closeMedia()">
+            <button type="button" @click="closeMedia()" class="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 rounded-full bg-white px-4 py-2 text-sm font-bold text-gray-900 shadow-lg hover:bg-gray-100 active:scale-95 transition-all" aria-label="Tutup media">
+                Tutup media
             </button>
             <template x-if="mediaType === 'video'">
-                <video :src="mediaUrl" :aria-label="mediaAlt" controls autoplay class="max-h-[84vh] max-w-[94vw] rounded-xl bg-black shadow-2xl"></video>
+                <video :src="mediaUrl" :aria-label="mediaAlt" controls autoplay playsinline class="max-h-[82vh] max-w-[94vw] rounded-lg bg-black shadow-2xl" @click.stop></video>
             </template>
             <template x-if="mediaType !== 'video'">
-                <img :src="mediaUrl" :alt="mediaAlt" class="max-h-[84vh] max-w-[94vw] rounded-xl object-contain shadow-2xl">
+                <img :src="mediaUrl" :alt="mediaAlt" class="max-h-[82vh] max-w-[94vw] rounded-lg object-contain select-none shadow-2xl" @click.stop>
             </template>
         </div>
     </div>
