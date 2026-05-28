@@ -281,6 +281,11 @@ class BuyerReviewTest extends TestCase
             ->assertSee('Ulasan')
             ->assertSee('Produk tampil bagus di halaman semua ulasan.')
             ->assertSee('Foto & Video', false);
+
+        $this->get(route('products.reviews.index', ['slug' => $product->slug, 'media' => 1]))
+            ->assertOk()
+            ->assertSee('Produk tampil bagus di halaman semua ulasan.')
+            ->assertSee('sample.jpg', false);
     }
 
     public function test_buyer_can_review_store_after_completed_order(): void

@@ -92,7 +92,7 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden min-h-[280px] sm:min-h-[340px]">
             @if($reviews->count() > 0)
                 <div class="divide-y divide-gray-100">
                     @foreach($reviews as $review)
@@ -163,7 +163,7 @@
                     </div>
                 @endif
             @else
-                <div class="py-16 text-center text-gray-400">
+                <div class="flex min-h-[260px] flex-col items-center justify-center px-6 py-16 text-center text-gray-400">
                     <x-icon name="chat-bubble-bottom-center-text" class="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p class="font-bold text-gray-600">Belum ada ulasan yang cocok</p>
                     <p class="mt-1 text-xs">Coba ubah filter ulasan.</p>

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
@@ -179,10 +180,27 @@ class ProductController extends Controller
         }
 
         if ($request->boolean('media')) {
-            $reviewQuery->whereNotNull('media');
-        }
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $perPage = 12;
+            $mediaReviews = $reviewQuery
+                ->latest()
+                ->get()
+                ->filter(fn (Review $review) => $this->reviewHasMedia($review))
+                ->values();
 
-        $reviews = $reviewQuery->latest()->paginate(12)->withQueryString();
+            $reviews = new LengthAwarePaginator(
+                $mediaReviews->forPage($page, $perPage)->values(),
+                $mediaReviews->count(),
+                $perPage,
+                $page,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->query(),
+                ]
+            );
+        } else {
+            $reviews = $reviewQuery->latest()->paginate(12)->withQueryString();
+        }
 
         $ratingCounts = Review::where('product_id', $product->id)
             ->selectRaw('rating, COUNT(*) as total')
@@ -190,7 +208,8 @@ class ProductController extends Controller
             ->pluck('total', 'rating');
 
         $reviewsWithMediaCount = Review::where('product_id', $product->id)
-            ->whereNotNull('media')
+            ->get()
+            ->filter(fn (Review $review) => $this->reviewHasMedia($review))
             ->count();
 
         return view('products.reviews', compact(
@@ -199,5 +218,11 @@ class ProductController extends Controller
             'ratingCounts',
             'reviewsWithMediaCount'
         ));
+    }
+
+    private function reviewHasMedia(Review $review): bool
+    {
+        return collect($review->media ?? [])
+            ->contains(fn ($media) => filled($media['path'] ?? null));
     }
 }
