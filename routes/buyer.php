@@ -45,6 +45,8 @@ Route::middleware(['auth', 'verified', 'role:buyer,seller,admin', \App\Http\Midd
     // Route::get('/reviews', [App\Http\Controllers\Buyer\ReviewController::class, 'index'])->name('reviews.index');
     Route::get('/reviews/{orderItem}/edit', [App\Http\Controllers\Buyer\ReviewController::class, 'edit'])->name('reviews.edit');
     Route::post('/reviews/{orderItem}', [App\Http\Controllers\Buyer\ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/store-reviews/{order}/edit', [App\Http\Controllers\Buyer\StoreReviewController::class, 'edit'])->name('store-reviews.edit');
+    Route::post('/store-reviews/{order}', [App\Http\Controllers\Buyer\StoreReviewController::class, 'store'])->name('store-reviews.store');
 
     // Profile
     // Route::get('/profile', [App\Http\Controllers\Buyer\ProfileController::class, 'edit'])->name('profile.edit');

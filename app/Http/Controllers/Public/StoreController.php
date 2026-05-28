@@ -16,7 +16,7 @@ class StoreController extends Controller
      */
     public function show($slug, Request $request)
     {
-        $store = Store::withCount('products')->where('slug', $slug)->firstOrFail();
+        $store = Store::withCount(['products', 'reviews'])->where('slug', $slug)->firstOrFail();
 
         // Public visitors cannot open pending/banned stores. Admins may preview a store from the review page.
         if (!$store->is_active && ! Auth::user()?->isAdmin()) {
@@ -44,7 +44,12 @@ class StoreController extends Controller
 
         // Ambil store products count from db
         $storeProductCount = Product::where('store_id', $store->id)->where('status', 'active')->count();
+        $storeReviews = $store->reviews()
+            ->with('buyer')
+            ->latest()
+            ->take(8)
+            ->get();
 
-        return view('public.seller.storefront', compact('store', 'products', 'storeProductCount', 'sort'));
+        return view('public.seller.storefront', compact('store', 'products', 'storeProductCount', 'storeReviews', 'sort'));
     }
 }

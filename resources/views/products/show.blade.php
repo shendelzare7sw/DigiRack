@@ -574,6 +574,12 @@
                                         @endforeach
                                     </div>
                                 @endif
+                                @if($review->seller_reply)
+                                    <div class="mt-3 rounded-xl border border-brand-navylight bg-brand-navylight/20 p-3">
+                                        <p class="text-xs font-bold text-brand-navy">Balasan Seller</p>
+                                        <p class="mt-1 text-sm text-gray-700 leading-relaxed">{{ $review->seller_reply }}</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endforeach

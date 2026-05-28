@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Review;
 use App\Notifications\OrderNotification;
+use App\Notifications\ReviewNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -41,9 +44,50 @@ class OrderController extends Controller
     public function show($id)
     {
         $store = $this->getStore();
-        $order = Order::with(['buyer', 'items.product'])->where('store_id', $store->id)->findOrFail($id);
+        $order = Order::with(['buyer', 'items.product', 'reviews.buyer', 'reviews.product'])->where('store_id', $store->id)->findOrFail($id);
 
         return view('seller.orders.show', compact('order', 'store'));
+    }
+
+    public function replyReview(Request $request, $id, $reviewId)
+    {
+        $store = $this->getStore();
+        $order = Order::with('buyer')->where('store_id', $store->id)->findOrFail($id);
+
+        $review = Review::with(['buyer', 'product'])
+            ->where('order_id', $order->id)
+            ->where('id', $reviewId)
+            ->whereHas('product', fn ($query) => $query->where('store_id', $store->id))
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'seller_reply' => ['required', 'string', 'max:1000'],
+        ]);
+
+        $review->update([
+            'seller_reply' => $validated['seller_reply'],
+            'seller_replied_at' => now(),
+        ]);
+
+        try {
+            if ($review->buyer) {
+                $productName = Str::limit($review->product?->name ?? 'produk', 60);
+
+                $review->buyer->notify(new ReviewNotification(
+                    'review_replied',
+                    'Seller membalas ulasan Anda',
+                    'Penjual membalas ulasan Anda untuk ' . $productName . '.',
+                    route('buyer.orders.show', $order->id),
+                ));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Product review reply notification failed: ' . $e->getMessage(), [
+                'review_id' => $review->id,
+                'order_id' => $order->id,
+            ]);
+        }
+
+        return back()->with('success', 'Balasan ulasan produk berhasil disimpan.');
     }
 
     public function report(Request $request)

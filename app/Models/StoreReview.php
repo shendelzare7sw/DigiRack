@@ -5,26 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Review extends Model
+class StoreReview extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'buyer_id',
-        'product_id',
+        'store_id',
         'order_id',
         'rating',
         'comment',
         'seller_reply',
         'seller_replied_at',
-        'media',
     ];
 
     protected function casts(): array
     {
         return [
             'rating' => 'integer',
-            'media' => 'array',
             'seller_replied_at' => 'datetime',
         ];
     }
@@ -34,9 +32,9 @@ class Review extends Model
         return $this->belongsTo(User::class, 'buyer_id');
     }
 
-    public function product()
+    public function store()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Store::class);
     }
 
     public function order()

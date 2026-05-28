@@ -62,15 +62,91 @@
                     </h3>
                     <div class="divide-y divide-gray-100">
                         @foreach($order->items as $item)
-                        <div class="py-3 flex gap-3 items-center">
-                            <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-14 h-14 rounded-lg object-cover border border-gray-100 shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $item->product->name }}</h4>
-                                <p class="text-xs text-gray-500 mt-0.5">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
+                        @php
+                            $itemReview = $order->reviews->firstWhere('product_id', $item->product_id);
+                            $reviewMedia = collect($itemReview->media ?? []);
+                        @endphp
+                        <div class="py-3">
+                            <div class="flex gap-3 items-center">
+                                <img src="{{ $item->product->primary_image_url }}" alt="{{ $item->product->name }}" class="w-14 h-14 rounded-lg object-cover border border-gray-100 shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-bold text-gray-900 text-sm line-clamp-1">{{ $item->product->name }}</h4>
+                                    <p class="text-xs text-gray-500 mt-0.5">{{ number_format($item->quantity) }} x Rp {{ number_format($item->price_snapshot, 0, ',', '.') }}</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <p class="font-bold text-brand-orange text-sm">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
+                                </div>
                             </div>
-                            <div class="text-right shrink-0">
-                                <p class="font-bold text-brand-orange text-sm">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</p>
-                            </div>
+
+                            @if($itemReview)
+                                <div class="mt-4 rounded-2xl border border-yellow-100 bg-yellow-50/40 p-4">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-sm text-gray-900 flex items-center gap-2">
+                                                <x-icon name="star" class="w-4 h-4 text-yellow-500" />
+                                                Ulasan Pembeli
+                                            </p>
+                                            <div class="mt-1 flex items-center gap-2">
+                                                <x-star-rating :value="$itemReview->rating" size="w-4 h-4" />
+                                                <span class="text-xs font-semibold text-gray-500">{{ $itemReview->rating }}/5</span>
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-400">{{ $itemReview->buyer->name ?? 'Pembeli' }} - {{ $itemReview->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <a href="{{ route('products.reviews.index', $item->product->slug) }}" class="shrink-0 text-xs font-bold text-brand-navy hover:underline">Lihat Publik</a>
+                                    </div>
+
+                                    @if($itemReview->comment)
+                                        <p class="mt-3 text-sm leading-relaxed text-gray-700">{{ $itemReview->comment }}</p>
+                                    @endif
+
+                                    @if($reviewMedia->isNotEmpty())
+                                        <div class="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                            @foreach($reviewMedia as $media)
+                                                @php
+                                                    $mediaPath = $media['path'] ?? '';
+                                                    $mediaUrl = $mediaPath ? asset('storage/' . $mediaPath) : '';
+                                                    $mediaType = $media['type'] ?? 'image';
+                                                @endphp
+                                                @if($mediaPath)
+                                                    <a href="{{ $mediaUrl }}" target="_blank" class="relative aspect-square overflow-hidden rounded-xl border border-yellow-100 bg-white">
+                                                        @if($mediaType === 'video')
+                                                            <video src="{{ $mediaUrl }}" class="w-full h-full object-cover" muted playsinline preload="metadata"></video>
+                                                            <span class="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white">Video</span>
+                                                        @else
+                                                            <img src="{{ $mediaUrl }}" alt="Media ulasan {{ $loop->iteration }}" class="w-full h-full object-cover">
+                                                        @endif
+                                                    </a>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    @if($itemReview->seller_reply)
+                                        <div class="mt-4 rounded-xl border border-brand-navylight bg-white p-3">
+                                            <p class="text-[11px] font-bold uppercase tracking-wide text-brand-navy">Balasan Anda</p>
+                                            <p class="mt-1 text-sm text-gray-700 leading-relaxed">{{ $itemReview->seller_reply }}</p>
+                                            @if($itemReview->seller_replied_at)
+                                                <p class="mt-1 text-[10px] text-gray-400">{{ $itemReview->seller_replied_at->diffForHumans() }}</p>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    <form action="{{ route('seller.orders.reviews.reply', [$order->id, $itemReview->id]) }}" method="POST" class="mt-4 space-y-3">
+                                        @csrf
+                                        <label for="seller_reply_{{ $itemReview->id }}" class="block text-xs font-bold text-gray-700">Balas Ulasan Pembeli</label>
+                                        <textarea id="seller_reply_{{ $itemReview->id }}" name="seller_reply" rows="3" maxlength="1000" class="w-full rounded-xl border-yellow-100 text-sm focus:border-brand-navy focus:ring-brand-navy" placeholder="Tulis balasan yang sopan dan membantu.">{{ old('seller_reply', $itemReview->seller_reply) }}</textarea>
+                                        <x-input-error :messages="$errors->get('seller_reply')" class="mt-1" />
+                                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-4 py-3 text-sm font-bold text-white hover:bg-brand-navydark transition-colors sm:w-auto">
+                                            <x-icon name="paper-airplane" class="w-4 h-4" />
+                                            {{ $itemReview->seller_reply ? 'Perbarui Balasan' : 'Kirim Balasan' }}
+                                        </button>
+                                    </form>
+                                </div>
+                            @elseif($order->status === 'completed')
+                                <div class="mt-4 rounded-2xl border border-gray-100 bg-gray-50 p-4 text-sm text-gray-500">
+                                    Pembeli belum memberikan ulasan untuk produk ini.
+                                </div>
+                            @endif
                         </div>
                         @endforeach
                     </div>

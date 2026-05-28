@@ -81,9 +81,18 @@
                                                         <x-star-rating :value="$itemReview->rating" size="w-4 h-4" />
                                                         <span class="text-xs font-semibold text-gray-500">{{ $itemReview->rating }}/5</span>
                                                     </div>
-                                                    @if($itemReview->comment)
-                                                        <p class="mt-2 text-sm text-gray-700 leading-relaxed">{{ $itemReview->comment }}</p>
-                                                    @endif
+                                                @if($itemReview->comment)
+                                                    <p class="mt-2 text-sm text-gray-700 leading-relaxed">{{ $itemReview->comment }}</p>
+                                                @endif
+                                                @if($itemReview->seller_reply)
+                                                    <div class="mt-3 rounded-xl border border-brand-navylight bg-brand-navylight/20 p-3 text-left">
+                                                        <p class="text-[11px] font-bold uppercase tracking-wide text-brand-navy">Balasan Seller</p>
+                                                        <p class="mt-1 text-sm text-gray-700 leading-relaxed">{{ $itemReview->seller_reply }}</p>
+                                                        @if($itemReview->seller_replied_at)
+                                                            <p class="mt-1 text-[10px] text-gray-400">{{ $itemReview->seller_replied_at->diffForHumans() }}</p>
+                                                        @endif
+                                                    </div>
+                                                @endif
                                                 @else
                                                     <p class="mt-1 text-xs text-gray-500">Bagikan pengalaman Anda untuk membantu pembeli lain.</p>
                                                 @endif
@@ -273,17 +282,24 @@
                         </div>
                     </div>
                 @elseif($order->status === 'completed')
+                    @php $storeReview = $order->storeReview; @endphp
                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 text-center">
                         <x-icon name="check-badge" class="w-10 h-10 text-green-500 mx-auto mb-2" />
                         <h3 class="font-bold text-green-900 mb-1">Transaksi Selesai</h3>
                         <p class="text-sm text-green-700 mb-4">Terima kasih telah berbelanja! Dana telah diteruskan ke pihak toko.</p>
-                        @if($order->items->isNotEmpty())
-                            @php $firstItemReview = $order->reviews->firstWhere('product_id', $order->items->first()->product_id); @endphp
-                            <a href="{{ route('buyer.reviews.edit', $order->items->first()->id) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-green-200 px-4 py-3 text-sm font-bold text-green-700 hover:border-green-300 hover:bg-green-100 transition-colors">
-                                <x-icon name="star" class="w-4 h-4" />
-                                {{ $firstItemReview ? 'Edit Ulasan' : 'Tulis Ulasan' }}
+                        <div class="grid grid-cols-1 gap-3">
+                            @if($order->items->isNotEmpty())
+                                @php $firstItemReview = $order->reviews->firstWhere('product_id', $order->items->first()->product_id); @endphp
+                                <a href="{{ route('buyer.reviews.edit', $order->items->first()->id) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-green-200 px-4 py-3 text-sm font-bold text-green-700 hover:border-green-300 hover:bg-green-100 transition-colors">
+                                    <x-icon name="star" class="w-4 h-4" />
+                                    {{ $firstItemReview ? 'Edit Ulasan Produk' : 'Tulis Ulasan Produk' }}
+                                </a>
+                            @endif
+                            <a href="{{ route('buyer.store-reviews.edit', $order->id) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-brand-navylight px-4 py-3 text-sm font-bold text-brand-navy hover:border-brand-navy hover:bg-brand-navylight/40 transition-colors">
+                                <x-icon name="building-storefront" class="w-4 h-4" />
+                                {{ $storeReview ? 'Edit Ulasan Toko' : 'Tulis Ulasan Toko' }}
                             </a>
-                        @endif
+                        </div>
                     </div>
                 @elseif($order->status === 'processing')
                     <div class="bg-orange-50 rounded-2xl p-6 border border-orange-100 text-center">

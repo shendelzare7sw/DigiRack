@@ -100,6 +100,11 @@ class Store extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(StoreReview::class);
+    }
+
     public function getLogoUrlAttribute(): string
     {
         return $this->logo

@@ -71,6 +71,11 @@ class Order extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function storeReview()
+    {
+        return $this->hasOne(StoreReview::class);
+    }
+
     // Helpers
     public function getFormattedTotalAttribute(): string
     {

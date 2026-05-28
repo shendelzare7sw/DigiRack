@@ -112,6 +112,8 @@
                 $totalSold = $store->total_sold;
                 $totalRevenue = \App\Models\Product::where('store_id', $store->id)->sum(\DB::raw('price * sold_count'));
                 $lowStock = \App\Models\Product::where('store_id', $store->id)->where('stock', '<=', 5)->where('stock', '>', 0)->count();
+                $storeReviewCount = $store->reviews()->count();
+                $latestStoreReviews = $store->reviews()->with(['buyer', 'order'])->latest()->take(5)->get();
             @endphp
 
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
@@ -222,6 +224,7 @@
                                 <span class="font-semibold text-gray-900 flex items-center gap-1">
                                     <x-icon name="star" class="w-4 h-4 text-yellow-400" />
                                     {{ number_format($store->avg_rating, 1) }}
+                                    <span class="text-xs text-gray-400">({{ $storeReviewCount }})</span>
                                 </span>
                             </div>
                             <div class="flex justify-between text-sm">
@@ -235,6 +238,66 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+                            <x-icon name="chat-bubble-bottom-center-text" class="w-5 h-5 text-brand-navy" />
+                            Ulasan Performa Toko
+                        </h2>
+                        <p class="mt-1 text-sm text-gray-500">{{ $storeReviewCount }} ulasan dari pembeli.</p>
+                    </div>
+                    <div class="inline-flex w-fit items-center gap-2 rounded-xl bg-yellow-50 px-4 py-2 text-yellow-800">
+                        <x-icon name="star" class="w-5 h-5 text-yellow-500" />
+                        <span class="font-display text-2xl font-bold">{{ number_format($store->avg_rating, 1) }}</span>
+                    </div>
+                </div>
+
+                @if($latestStoreReviews->isNotEmpty())
+                    <div class="space-y-4">
+                        @foreach($latestStoreReviews as $storeReview)
+                            <article class="rounded-2xl border border-gray-100 bg-gray-50/60 p-4">
+                                <div class="flex items-start gap-3">
+                                    <img src="{{ $storeReview->buyer->avatar_url }}" alt="{{ $storeReview->buyer->name }}" class="h-10 w-10 rounded-full border border-gray-100 object-cover shrink-0">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <p class="font-bold text-sm text-gray-900 truncate">{{ $storeReview->buyer->name }}</p>
+                                                <p class="mt-0.5 text-[11px] text-gray-400">Pesanan #{{ $storeReview->order->invoice_number ?? '-' }} - {{ $storeReview->created_at->diffForHumans() }}</p>
+                                            </div>
+                                            <x-star-rating :value="$storeReview->rating" size="w-4 h-4" />
+                                        </div>
+                                        @if($storeReview->comment)
+                                            <p class="mt-2 text-sm text-gray-700 leading-relaxed">{{ $storeReview->comment }}</p>
+                                        @endif
+                                        @if($storeReview->seller_reply)
+                                            <div class="mt-3 rounded-xl border border-brand-navylight bg-white p-3">
+                                                <p class="text-xs font-bold text-brand-navy">Balasan Anda</p>
+                                                <p class="mt-1 text-sm text-gray-700 leading-relaxed">{{ $storeReview->seller_reply }}</p>
+                                            </div>
+                                        @endif
+                                        <form action="{{ route('seller.store-reviews.reply', $storeReview->id) }}" method="POST" class="mt-3 space-y-3">
+                                            @csrf
+                                            <textarea name="seller_reply" rows="3" maxlength="1000" class="w-full rounded-xl border-gray-200 text-sm focus:border-brand-navy focus:ring-brand-navy" placeholder="Balas ulasan toko ini.">{{ old('seller_reply', $storeReview->seller_reply) }}</textarea>
+                                            <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-4 py-3 text-sm font-bold text-white hover:bg-brand-navydark transition-colors sm:w-auto">
+                                                <x-icon name="paper-airplane" class="w-4 h-4" />
+                                                {{ $storeReview->seller_reply ? 'Perbarui Balasan' : 'Kirim Balasan' }}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-10 text-center text-gray-400">
+                        <x-icon name="chat-bubble-bottom-center-text" class="w-10 h-10 mx-auto mb-3 text-gray-300" />
+                        <p class="font-bold text-gray-600">Belum ada ulasan toko</p>
+                        <p class="mt-1 text-xs">Ulasan akan tampil setelah pembeli menilai performa toko dari pesanan selesai.</p>
+                    </div>
+                @endif
             </div>
         @endif
     </div>

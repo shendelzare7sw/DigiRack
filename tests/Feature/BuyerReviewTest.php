@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\Store;
+use App\Models\StoreReview;
 use App\Models\User;
 use App\Notifications\ReviewNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -68,12 +69,12 @@ class BuyerReviewTest extends TestCase
             'comment' => 'Produk bagus dan sesuai deskripsi.',
         ])->assertRedirect(route('buyer.orders.show', $order->id));
 
-        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($product, $seller) {
+        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($order, $seller) {
             $data = $notification->toArray($seller);
 
             return $data['type'] === 'review_created'
                 && $data['title'] === 'Ulasan produk baru'
-                && $data['action_url'] === route('products.reviews.index', $product->slug)
+                && $data['action_url'] === route('seller.orders.show', $order->id)
                 && str_contains($data['message'], '5 bintang');
         });
     }
@@ -97,14 +98,58 @@ class BuyerReviewTest extends TestCase
             'comment' => 'Ulasan sudah diedit.',
         ])->assertRedirect(route('buyer.orders.show', $order->id));
 
-        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($product, $seller) {
+        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($order, $seller) {
             $data = $notification->toArray($seller);
 
             return $data['type'] === 'review_updated'
                 && $data['title'] === 'Ulasan produk diperbarui'
-                && $data['action_url'] === route('products.reviews.index', $product->slug)
+                && $data['action_url'] === route('seller.orders.show', $order->id)
                 && str_contains($data['message'], 'memperbarui ulasan');
         });
+    }
+
+    public function test_seller_can_reply_to_product_review_from_order_detail(): void
+    {
+        Notification::fake();
+        [$buyer, $order, , $product] = $this->createOrderWithItem('completed');
+        $seller = $product->store->user;
+
+        $review = Review::create([
+            'buyer_id' => $buyer->id,
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'rating' => 5,
+            'comment' => 'Produk sangat membantu.',
+        ]);
+
+        $this->actingAs($seller)
+            ->get(route('seller.orders.show', $order->id))
+            ->assertOk()
+            ->assertSee('Ulasan Pembeli')
+            ->assertSee('Balas Ulasan Pembeli');
+
+        $this->actingAs($seller)
+            ->post(route('seller.orders.reviews.reply', [$order->id, $review->id]), [
+                'seller_reply' => 'Terima kasih, semoga produknya membantu.',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('reviews', [
+            'id' => $review->id,
+            'seller_reply' => 'Terima kasih, semoga produknya membantu.',
+        ]);
+
+        Notification::assertSentTo($buyer, ReviewNotification::class, function ($notification) use ($order, $buyer) {
+            $data = $notification->toArray($buyer);
+
+            return $data['type'] === 'review_replied'
+                && $data['action_url'] === route('buyer.orders.show', $order->id);
+        });
+
+        $this->get(route('products.reviews.index', $product->slug))
+            ->assertOk()
+            ->assertSee('Balasan Seller')
+            ->assertSee('Terima kasih, semoga produknya membantu.');
     }
 
     public function test_buyer_cannot_review_order_before_it_is_completed(): void
@@ -236,6 +281,91 @@ class BuyerReviewTest extends TestCase
             ->assertSee('Ulasan')
             ->assertSee('Produk tampil bagus di halaman semua ulasan.')
             ->assertSee('Foto & Video', false);
+    }
+
+    public function test_buyer_can_review_store_after_completed_order(): void
+    {
+        Notification::fake();
+        [$buyer, $order, , $product] = $this->createOrderWithItem('completed');
+        $seller = $product->store->user;
+
+        $this->actingAs($buyer)
+            ->get(route('buyer.store-reviews.edit', $order->id))
+            ->assertOk()
+            ->assertSee('Tulis Ulasan Toko');
+
+        $this->actingAs($buyer)
+            ->post(route('buyer.store-reviews.store', $order->id), [
+                'rating' => 5,
+                'comment' => 'Pelayanan toko cepat dan ramah.',
+            ])
+            ->assertRedirect(route('buyer.orders.show', $order->id));
+
+        $this->assertDatabaseHas('store_reviews', [
+            'buyer_id' => $buyer->id,
+            'store_id' => $product->store_id,
+            'order_id' => $order->id,
+            'rating' => 5,
+            'comment' => 'Pelayanan toko cepat dan ramah.',
+        ]);
+        $this->assertSame('5.0', $product->store->fresh()->avg_rating);
+
+        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($seller) {
+            $data = $notification->toArray($seller);
+
+            return $data['type'] === 'store_review_created'
+                && $data['title'] === 'Ulasan toko baru'
+                && str_contains($data['message'], '5 bintang');
+        });
+
+        $this->get(route('store.show', $product->store->slug))
+            ->assertOk()
+            ->assertSee('Ulasan Performa Toko')
+            ->assertSee('Pelayanan toko cepat dan ramah.');
+    }
+
+    public function test_seller_can_reply_to_store_review_from_dashboard(): void
+    {
+        Notification::fake();
+        [$buyer, $order, , $product] = $this->createOrderWithItem('completed');
+        $seller = $product->store->user;
+
+        $storeReview = StoreReview::create([
+            'buyer_id' => $buyer->id,
+            'store_id' => $product->store_id,
+            'order_id' => $order->id,
+            'rating' => 4,
+            'comment' => 'Toko responsif.',
+        ]);
+
+        $this->actingAs($seller)
+            ->get(route('seller.dashboard'))
+            ->assertOk()
+            ->assertSee('Ulasan Performa Toko')
+            ->assertSee('Toko responsif.');
+
+        $this->actingAs($seller)
+            ->post(route('seller.store-reviews.reply', $storeReview->id), [
+                'seller_reply' => 'Terima kasih sudah berbelanja di toko kami.',
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('store_reviews', [
+            'id' => $storeReview->id,
+            'seller_reply' => 'Terima kasih sudah berbelanja di toko kami.',
+        ]);
+
+        Notification::assertSentTo($buyer, ReviewNotification::class, function ($notification) use ($order, $buyer) {
+            $data = $notification->toArray($buyer);
+
+            return $data['type'] === 'store_review_replied'
+                && $data['action_url'] === route('buyer.orders.show', $order->id);
+        });
+
+        $this->get(route('store.show', $product->store->slug))
+            ->assertOk()
+            ->assertSee('Balasan Toko')
+            ->assertSee('Terima kasih sudah berbelanja di toko kami.');
     }
 
     private function createOrderWithItem(string $status): array
