@@ -158,52 +158,6 @@
 
             {{-- Kanan: Aksi & Kurir --}}
             <div class="space-y-6">
-                {{-- Payment / Tracking --}}
-                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Informasi Pembelian</h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">No. Invoice</span>
-                            <span class="font-bold text-gray-900 break-all text-right">{{ $order->invoice_number }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Tanggal</span>
-                            <span class="font-semibold text-gray-900">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Kurir</span>
-                            @php
-                                $rawCourier = $order->shipping_address['courier'] ?? '-';
-                                if (str_starts_with(strtolower($rawCourier), 'toko_')) {
-                                    $kurirName = 'Kurir Toko';
-                                } else {
-                                    $kurirName = strtoupper($rawCourier);
-                                }
-                            @endphp
-                            <span class="font-bold text-gray-900">{{ $kurirName }}</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-t border-b border-gray-200 my-2">
-                            <span class="text-gray-600">No. Resi</span>
-                            @if($order->shipping_tracking_number)
-                                <span class="font-mono text-sm font-bold bg-white px-2 py-1 border border-gray-300 rounded break-all text-right">{{ $order->shipping_tracking_number }}</span>
-                            @else
-                                <span class="text-gray-400 italic">Belum Diinput</span>
-                            @endif
-                        </div>
-                        <div class="flex justify-between pt-2">
-                            <span class="text-gray-900 font-bold">Total Pembayaran</span>
-                            <span class="font-bold text-brand-orange text-lg">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Invoice --}}
-                <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank"
-                   class="flex items-center justify-center gap-2 w-full bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-700 font-bold text-sm py-3 rounded-2xl transition-all shadow-sm">
-                    <x-icon name="document-text" class="w-5 h-5" />
-                    Unduh / Cetak Invoice
-                </a>
-
                 {{-- Action Card --}}
                 @if($order->status === 'pending_payment')
                     @php
@@ -360,6 +314,53 @@
                         @endif
                     </div>
                 @endif
+
+                {{-- Payment / Tracking --}}
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Informasi Pembelian</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">No. Invoice</span>
+                            <span class="font-bold text-gray-900 break-all text-right">{{ $order->invoice_number }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tanggal</span>
+                            <span class="font-semibold text-gray-900">{{ $order->created_at->translatedFormat('d M Y, H:i') }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Kurir</span>
+                            @php
+                                $rawCourier = $order->shipping_address['courier'] ?? '-';
+                                if (str_starts_with(strtolower($rawCourier), 'toko_')) {
+                                    $kurirName = 'Kurir Toko';
+                                } else {
+                                    $kurirName = strtoupper($rawCourier);
+                                }
+                            @endphp
+                            <span class="font-bold text-gray-900">{{ $kurirName }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-t border-b border-gray-200 my-2">
+                            <span class="text-gray-600">No. Resi</span>
+                            @if($order->shipping_tracking_number)
+                                <span class="font-mono text-sm font-bold bg-white px-2 py-1 border border-gray-300 rounded break-all text-right">{{ $order->shipping_tracking_number }}</span>
+                            @else
+                                <span class="text-gray-400 italic">Belum Diinput</span>
+                            @endif
+                        </div>
+                        <div class="flex justify-between pt-2">
+                            <span class="text-gray-900 font-bold">Total Pembayaran</span>
+                            <span class="font-bold text-brand-orange text-lg">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Invoice --}}
+                <a href="{{ route('buyer.orders.invoice', $order->id) }}" target="_blank"
+                   class="flex items-center justify-center gap-2 w-full bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-700 font-bold text-sm py-3 rounded-2xl transition-all shadow-sm">
+                    <x-icon name="document-text" class="w-5 h-5" />
+                    Unduh / Cetak Invoice
+                </a>
+
             </div>
 
         </div>
