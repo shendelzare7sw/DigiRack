@@ -4,6 +4,18 @@ DigiRack adalah marketplace untuk produk infrastruktur IT, jaringan, server, dan
 
 Project ini mendukung alur buyer, seller, dan admin dalam satu aplikasi: katalog produk, toko seller, checkout, pembayaran, pengiriman, bukti paket sampai, auto-complete order, wallet seller, payout, serta pengaturan operasional platform.
 
+## Dokumentasi (untuk developer & AI agent)
+
+Dokumentasi teknis lengkap ada di folder [`docs/`](docs/00-README.md) — dipakai agar AI agent maupun developer baru bisa memahami project dengan cepat tanpa scan ulang codebase. Pintu masuk netral untuk AI agent: [`AGENTS.md`](AGENTS.md).
+
+- [docs/00-README.md](docs/00-README.md) — indeks & cara pakai
+- [docs/01-ARCHITECTURE.md](docs/01-ARCHITECTURE.md) — stack, role, middleware, routing
+- [docs/02-ROUTES-MAP.md](docs/02-ROUTES-MAP.md) — peta route → controller → view → data flow
+- [docs/03-FLOWS.md](docs/03-FLOWS.md) — alur bisnis & state machine (diagram)
+- [docs/04-MODELS.md](docs/04-MODELS.md) — model, relasi, enum status
+- [docs/05-VIEWS.md](docs/05-VIEWS.md) — layout, view, komponen, navigasi
+- [docs/06-INTEGRATIONS.md](docs/06-INTEGRATIONS.md) — Midtrans, IRIS, ongkir
+
 ## Fitur Utama
 
 - Marketplace produk IT: katalog, detail produk, galeri gambar, kategori, banner, flash sale, wishlist, dan cart.

@@ -79,13 +79,13 @@
         </div>
 
         {{-- Rating & Sold --}}
-        <div class="mt-2 flex items-center justify-between">
-            <div class="flex items-center gap-1">
+        <div class="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+            <div class="flex items-center gap-1 shrink-0">
                 <x-star-rating :value="$product->avg_rating" size="w-3.5 h-3.5" />
                 <span class="text-xs text-gray-400">{{ number_format($product->avg_rating, 1) }}</span>
             </div>
             @if($product->sold_count > 0)
-                <span class="text-xs text-gray-400">{{ $product->sold_count }} terjual</span>
+                <span class="text-xs text-gray-400 truncate">{{ $product->sold_count }} terjual</span>
             @endif
         </div>
 
