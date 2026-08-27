@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\CustomResetPassword;
 use App\Notifications\CustomVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -83,6 +84,22 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(RecoveryTicket::class);
     }
 
+    public function identityVerification(): HasOne
+    {
+        return $this->hasOne(IdentityVerification::class);
+    }
+
+    public function isIdentityVerified(): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return $this->identityVerification()
+            ->where('status', IdentityVerification::STATUS_VERIFIED)
+            ->exists();
+    }
+
     // Helpers
     public function isAdmin(): bool
     {
@@ -91,7 +108,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isSeller(): bool
     {
-        return $this->role === 'seller';
+        return false;
     }
 
     public function isBuyer(): bool

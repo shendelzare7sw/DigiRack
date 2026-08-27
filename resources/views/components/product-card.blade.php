@@ -100,7 +100,7 @@
         {{-- Add to Cart Button — Native Form, separate from image, always works --}}
         @if($isOwnProduct)
             <div class="mt-3 pt-2">
-                <a href="{{ route('seller.products.edit', $product->id) }}"
+                <a href="{{ route('admin.products.edit', $product->id) }}"
                     class="w-full border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors active:scale-[0.97] touch-manipulation">
                     <x-icon name="pencil-square" class="w-3.5 h-3.5" />
                     Kelola Produk

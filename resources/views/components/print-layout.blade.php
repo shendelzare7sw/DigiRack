@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }} — DigiRack</title>
+    <title>{{ $title }} — Digital Hook</title>
     <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,8 +65,8 @@
 
     @if($watermark)
         <div class="dr-watermark" aria-hidden="true">
-            <div class="dr-watermark__text">{!! str_repeat('DigiRack&nbsp; ', 700) !!}</div>
-            <img class="dr-watermark__logo" src="{{ asset('images/logo-digirack.png') }}" alt="">
+            <div class="dr-watermark__text">{!! str_repeat('Digital Hook&nbsp; ', 700) !!}</div>
+            <img class="dr-watermark__logo" src="{{ asset('images/digital-hook-logo.png') }}" alt="">
         </div>
     @endif
 
@@ -89,7 +89,7 @@
             {{-- Document header --}}
             <div class="px-5 sm:px-8 py-5 sm:py-7 border-b border-gray-100 flex items-start justify-between gap-4">
                 <div class="flex flex-col items-start gap-1.5 min-w-0">
-                    <img src="{{ asset('images/logo-digirack.png') }}" alt="DigiRack" class="h-9 sm:h-11 w-auto">
+                    <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook" class="h-9 sm:h-11 w-auto">
                     <p class="text-[10px] sm:text-xs text-gray-500 leading-tight">PT Infrakarsa Sinergi Digital</p>
                 </div>
                 <div class="text-right shrink-0">
@@ -106,7 +106,7 @@
 
             <div class="px-5 sm:px-8 py-4 border-t border-gray-100 text-center">
                 <p class="text-[10px] sm:text-[11px] text-gray-400 leading-relaxed">
-                    Dokumen ini dihasilkan secara otomatis oleh sistem DigiRack pada {{ now()->translatedFormat('d F Y, H:i') }} WIB.
+                    Dokumen ini dihasilkan secara otomatis oleh sistem Digital Hook pada {{ now()->translatedFormat('d F Y, H:i') }} WIB.
                     Sah tanpa tanda tangan & stempel basah.
                 </p>
             </div>

@@ -223,7 +223,7 @@ class ReviewController extends Controller
                 $type,
                 $title,
                 $message,
-                route('seller.orders.show', $review->order_id),
+                route('admin.orders.show', $review->order_id),
             ));
         } catch (\Throwable $e) {
             Log::warning('Review notification failed: ' . $e->getMessage(), [

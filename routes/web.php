@@ -25,9 +25,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/download-app', [PageController::class, 'downloadApp'])->name('pages.download-app');
-Route::get('/tentang-digirack', [PageController::class, 'about'])->name('pages.about');
-Route::get('/mulai-berjualan', [PageController::class, 'selling'])->name('pages.selling');
-Route::get('/mitra-b2b', [PageController::class, 'b2b'])->name('pages.b2b');
+Route::get('/tentang-digital-hook', [PageController::class, 'about'])->name('pages.about');
+Route::get('/wilayah-pengantaran', [PageController::class, 'b2b'])->name('pages.b2b');
 Route::get('/promo-spesial', [PageController::class, 'promos'])->name('pages.promos');
 Route::get('/pusat-bantuan', [PageController::class, 'help'])->name('pages.help');
 Route::get('/kebijakan-privasi', [PageController::class, 'privacy'])->name('pages.privacy');
@@ -37,8 +36,8 @@ Route::get('/sitemap', [PageController::class, 'sitemap'])->name('pages.sitemap'
 // Public API for locations & Webhooks
 Route::get('/api/locations/provinces', [\App\Http\Controllers\Public\LocationController::class, 'getProvinces']);
 Route::get('/api/locations/cities/{province_id}', [\App\Http\Controllers\Public\LocationController::class, 'getCities']);
+Route::get('/api/locations/districts/{city}', [\App\Http\Controllers\Public\LocationController::class, 'getDistricts']);
 Route::post('/api/midtrans/callback', [\App\Http\Controllers\Api\PaymentCallbackController::class, 'midtransCallback']);
-Route::post('/api/ongkir/calculate', [\App\Http\Controllers\Api\OngkirController::class, 'calculate']);
 // Public Product Routes (no login required)
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/products/{slug}/reviews', [ProductController::class, 'reviews'])->name('products.reviews.index');
@@ -67,13 +66,9 @@ Route::middleware('auth')->group(function () {
     // Smart dashboard redirect based on role
     Route::get('/dashboard', function () {
         $user = auth()->user();
-        $activeRole = $user->isAdmin() ? 'admin' : session('active_role', $user->role);
-
-        return match ($activeRole) {
-            'admin' => redirect()->route('admin.dashboard'),
-            'seller' => redirect()->route('seller.dashboard'),
-            default => redirect()->route('buyer.dashboard'),
-        };
+        return $user->isAdmin()
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('buyer.dashboard');
     })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -85,9 +80,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/addresses/{address}', [\App\Http\Controllers\ProfileAddressController::class, 'update'])->name('profile.addresses.update');
     Route::delete('/profile/addresses/{address}', [\App\Http\Controllers\ProfileAddressController::class, 'destroy'])->name('profile.addresses.destroy');
     Route::patch('/profile/addresses/{address}/primary', [\App\Http\Controllers\ProfileAddressController::class, 'setPrimary'])->name('profile.addresses.set-primary');
-    
-    // Switch Role Endpoint
-    Route::get('/switch-role/{role}', [\App\Http\Controllers\RoleSwitchController::class, 'switchRole'])->name('switch.role');
+
+    Route::get('/profile/verifikasi-ktp', [\App\Http\Controllers\IdentityVerificationController::class, 'edit'])->name('profile.identity.edit');
+    Route::post('/profile/verifikasi-ktp', [\App\Http\Controllers\IdentityVerificationController::class, 'update'])->name('profile.identity.update');
+    Route::get('/profile/dokumen-identitas/{identityVerification}', \App\Http\Controllers\IdentityDocumentController::class)->name('profile.identity.document');
 
     // Notifications
     Route::get('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
@@ -97,5 +93,4 @@ Route::middleware('auth')->group(function () {
 // Termasuk file route berdasarkan peran
 require __DIR__.'/auth.php';
 require __DIR__.'/buyer.php';
-require __DIR__.'/seller.php';
 require __DIR__.'/admin.php';

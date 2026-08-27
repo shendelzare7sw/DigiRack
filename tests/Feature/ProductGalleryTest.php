@@ -16,7 +16,7 @@ class ProductGalleryTest extends TestCase
 
     public function test_product_detail_renders_gallery_lightbox_controls(): void
     {
-        $seller = User::factory()->create(['role' => 'seller']);
+        $seller = User::factory()->create(['role' => 'admin']);
         $store = Store::create([
             'user_id' => $seller->id,
             'name' => 'Jaringan Nusantara',

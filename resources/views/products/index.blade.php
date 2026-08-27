@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Katalog Produk IT Enterprise</x-slot>
+    <x-slot name="title">Katalog Komputer & Aksesori Digital</x-slot>
 
     {{-- Breadcrumb --}}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">

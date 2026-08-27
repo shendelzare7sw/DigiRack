@@ -23,7 +23,7 @@ class CustomResetPassword extends ResetPassword
 
     public function toMail($notifiable): MailMessage
     {
-        $appName = config('app.name', 'DigiRack');
+        $appName = config('app.name', 'Digital Hook');
         $expire = Config::get('auth.passwords.' . Config::get('auth.defaults.passwords') . '.expire', 60);
 
         return (new MailMessage)

@@ -7,7 +7,7 @@
     title="Laporan Stok Produk — {{ $store->name }}"
     subtitle="{{ $stats['total'] }} produk • {{ $statusFilter }}"
     doc-label="LAPORAN STOK"
-    :back-url="route('seller.products.index', request()->only(['status','search','category']))">
+    :back-url="route('admin.products.index', request()->only(['status','search','category']))">
 
     <div class="mb-5">
         <p class="text-sm font-bold text-gray-900">{{ $store->name }}</p>

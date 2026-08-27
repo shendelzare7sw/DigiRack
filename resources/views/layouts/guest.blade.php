@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'DigiRack') }} - Login / Register</title>
+        <title>{{ config('app.name', 'Digital Hook') }} - Login / Register</title>
         <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
         <link rel="shortcut icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
         <link rel="apple-touch-icon" href="{{ asset('images/logo.jpg') }}">
@@ -28,7 +28,7 @@
             <div class="relative z-10 w-full sm:max-w-md flex flex-col items-center">
                 <!-- Logo -->
                 <a href="/" class="mb-8 hover:scale-105 transition-transform">
-                    <img src="{{ asset('images/logo-digirack.png') }}" alt="DigiRack Logo" class="h-14 w-auto drop-shadow-sm" />
+                    <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook Logo" class="h-14 w-auto drop-shadow-sm" />
                 </a>
 
                 <!-- Card -->
@@ -37,7 +37,7 @@
                 </div>
                 
                 <div class="mt-8 text-center text-sm font-medium text-gray-400">
-                    &copy; {{ date('Y') }} DigiRack Marketplace.<br/>Pusat Infrastruktur Jaringan & IT.
+                    &copy; {{ date('Y') }} Digital Hook.<br/>Perangkat & Aksesori Digital Anda.
                 </div>
             </div>
         </div>

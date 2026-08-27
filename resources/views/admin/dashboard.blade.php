@@ -7,7 +7,7 @@
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
                 Dashboard Admin
             </h1>
-            <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Berikut ringkasan sistem DigiRack Enterprise.</p>
+            <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Kelola toko dan administrasi Digital Hook dari satu panel.</p>
         </div>
 
         {{-- System Stats --}}
@@ -24,15 +24,15 @@
                 </div>
                 <p class="font-display font-bold text-2xl text-gray-900">{{ $totalUsers }}</p>
                 <p class="text-xs text-gray-500 font-medium mt-1">Total User</p>
-                <p class="text-[10px] text-gray-400 mt-0.5">{{ $totalBuyers }} buyer • {{ $totalSellers }} seller</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">{{ $totalBuyers }} pembeli terdaftar</p>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center text-purple-500 mb-3">
                     <x-icon name="building-storefront" class="w-5 h-5" />
                 </div>
-                <p class="font-display font-bold text-2xl text-gray-900">{{ $totalStores }}</p>
-                <p class="text-xs text-gray-500 font-medium mt-1">Total Toko</p>
-                <p class="text-[10px] text-gray-400 mt-0.5">{{ $verifiedStores }} terverifikasi</p>
+                <p class="font-display font-bold text-2xl text-gray-900">{{ $pendingIdentityCount }}</p>
+                <p class="text-xs text-gray-500 font-medium mt-1">KTP Menunggu</p>
+                <p class="text-[10px] text-gray-400 mt-0.5">Perlu ditinjau admin</p>
             </div>
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div class="w-10 h-10 bg-brand-bluelight rounded-xl flex items-center justify-center text-brand-blue mb-3">
@@ -86,19 +86,19 @@
                         </a>
 
                         {{-- Kelola Toko (Live) --}}
-                        <a href="{{ route('admin.stores.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 hover:shadow-sm transition-all group">
+                        <a href="{{ route('admin.store.show') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 hover:shadow-sm transition-all group">
                             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
                                 <x-icon name="building-storefront" class="w-6 h-6" />
                             </div>
-                            <span class="text-xs font-bold text-purple-900 text-center">Kelola Toko</span>
+                            <span class="text-xs font-bold text-purple-900 text-center">Profil Digital Hook</span>
                         </a>
 
                         {{-- Pencairan Dana (Live) --}}
-                        <a href="{{ route('admin.payouts.index') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
+                        <a href="{{ route('admin.products.create') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
                             <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
                                 <x-icon name="banknotes" class="w-6 h-6" />
                             </div>
-                            <span class="text-xs font-semibold text-gray-700 text-center">Pencairan Dana</span>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Tambah Produk</span>
                         </a>
 
                         {{-- Biaya Transaksi (Live) --}}
@@ -133,7 +133,7 @@
                             <div class="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                                 <x-icon name="clipboard-document-check" class="w-6 h-6" />
                             </div>
-                            <span class="text-xs font-semibold text-gray-700 text-center">Moderasi Produk</span>
+                            <span class="text-xs font-semibold text-gray-700 text-center">Kelola Produk</span>
                         </a>
 
                         {{-- Kelola Kategori --}}
@@ -202,7 +202,7 @@
                                     <p class="text-xs text-gray-400">{{ $user->email }}</p>
                                 </div>
                                 <span class="text-[10px] font-bold px-2 py-1 rounded-full uppercase
-                                    {{ $user->role === 'admin' ? 'bg-red-50 text-red-600' : ($user->role === 'seller' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600') }}">
+                                    {{ $user->role === 'admin' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600' }}">
                                     {{ $user->role }}
                                 </span>
                             </div>

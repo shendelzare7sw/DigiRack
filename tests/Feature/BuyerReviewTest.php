@@ -74,7 +74,7 @@ class BuyerReviewTest extends TestCase
 
             return $data['type'] === 'review_created'
                 && $data['title'] === 'Ulasan produk baru'
-                && $data['action_url'] === route('seller.orders.show', $order->id)
+                && $data['action_url'] === route('admin.orders.show', $order->id)
                 && str_contains($data['message'], '5 bintang');
         });
     }
@@ -103,7 +103,7 @@ class BuyerReviewTest extends TestCase
 
             return $data['type'] === 'review_updated'
                 && $data['title'] === 'Ulasan produk diperbarui'
-                && $data['action_url'] === route('seller.orders.show', $order->id)
+                && $data['action_url'] === route('admin.orders.show', $order->id)
                 && str_contains($data['message'], 'memperbarui ulasan');
         });
     }
@@ -123,13 +123,13 @@ class BuyerReviewTest extends TestCase
         ]);
 
         $this->actingAs($seller)
-            ->get(route('seller.orders.show', $order->id))
+            ->get(route('admin.orders.show', $order->id))
             ->assertOk()
             ->assertSee('Ulasan Pembeli')
             ->assertSee('Balas Ulasan Pembeli');
 
         $this->actingAs($seller)
-            ->post(route('seller.orders.reviews.reply', [$order->id, $review->id]), [
+            ->post(route('admin.orders.reviews.reply', [$order->id, $review->id]), [
                 'seller_reply' => 'Terima kasih, semoga produknya membantu.',
             ])
             ->assertRedirect();
@@ -148,7 +148,7 @@ class BuyerReviewTest extends TestCase
 
         $this->get(route('products.reviews.index', $product->slug))
             ->assertOk()
-            ->assertSee('Balasan Seller')
+            ->assertSee('Balasan Digital Hook')
             ->assertSee('Terima kasih, semoga produknya membantu.');
     }
 
@@ -344,13 +344,7 @@ class BuyerReviewTest extends TestCase
         ]);
 
         $this->actingAs($seller)
-            ->get(route('seller.dashboard'))
-            ->assertOk()
-            ->assertSee('Ulasan Performa Toko')
-            ->assertSee('Toko responsif.');
-
-        $this->actingAs($seller)
-            ->post(route('seller.store-reviews.reply', $storeReview->id), [
+            ->post(route('admin.store-reviews.reply', $storeReview->id), [
                 'seller_reply' => 'Terima kasih sudah berbelanja di toko kami.',
             ])
             ->assertRedirect();
@@ -406,7 +400,7 @@ class BuyerReviewTest extends TestCase
             'email_verified_at' => now(),
         ]);
         $seller = User::factory()->create([
-            'role' => 'seller',
+            'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 

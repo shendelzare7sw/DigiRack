@@ -7,12 +7,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         @php
-            $activeRole = Auth::user()->isAdmin() ? 'admin' : session('active_role', Auth::user()->role);
-            $backUrl = match($activeRole) {
-                'admin' => route('admin.dashboard'),
-                'seller' => route('seller.dashboard'),
-                default => route('home'),
-            };
+            $backUrl = Auth::user()->isAdmin() ? route('admin.dashboard') : route('home');
         @endphp
         <div class="flex items-start gap-3 mb-6">
             <a href="{{ $backUrl }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
@@ -25,23 +20,10 @@
         </div>
 
         <div class="space-y-8">
-            @if(!Auth::user()->isAdmin() && Auth::user()->store)
-                <div class="p-5 sm:p-6 bg-white shadow-sm border border-gray-100 rounded-2xl">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <h2 class="text-lg font-semibold text-gray-900">Akun Aktif</h2>
-                            <p class="mt-1 text-sm text-gray-500">Gunakan Buyer untuk belanja, dan Seller untuk mengelola toko.</p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 sm:w-64">
-                            <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-xl px-4 py-2.5 text-sm font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
-                                Pembeli
-                            </a>
-                            <a href="{{ route('switch.role', 'seller') }}" class="text-center rounded-xl px-4 py-2.5 text-sm font-bold border transition {{ $activeRole === 'seller' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
-                                Seller
-                            </a>
-                        </div>
-                    </div>
-                </div>
+            @if(!Auth::user()->isAdmin())
+                <a href="{{ route('profile.identity.edit') }}" class="flex items-center justify-between gap-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 hover:border-brand-blue">
+                    <span><strong class="block text-gray-900">Verifikasi KTP Pembeli</strong><span class="text-sm text-gray-600">Diperlukan sebelum checkout untuk mencegah transaksi fiktif.</span></span><x-icon name="chevron-right" class="w-5 h-5 text-brand-blue" />
+                </a>
             @endif
 
             {{-- Personal Data --}}

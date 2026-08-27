@@ -35,7 +35,7 @@
                         @csrf
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Kategori <span class="text-red-500">*</span></label>
-                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Router Enterprise" class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm">
+                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="Contoh: Komponen PC" class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm">
                             @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>

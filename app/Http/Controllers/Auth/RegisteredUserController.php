@@ -160,7 +160,7 @@ class RegisteredUserController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('dashboard')
-            ->with('success', 'Email terverifikasi & akun berhasil dibuat. Selamat datang di ' . config('app.name', 'DigiRack') . '!');
+            ->with('success', 'Email terverifikasi & akun berhasil dibuat. Selamat datang di ' . config('app.name', 'Digital Hook') . '!');
     }
 
     /**

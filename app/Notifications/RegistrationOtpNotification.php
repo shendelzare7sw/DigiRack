@@ -20,7 +20,7 @@ class RegistrationOtpNotification extends Notification
 
     public function toMail(object $notifiable): MailMessage
     {
-        $appName = config('app.name', 'DigiRack');
+        $appName = config('app.name', 'Digital Hook');
 
         return (new MailMessage)
             ->subject('Kode OTP Pendaftaran ' . $appName . ': ' . $this->code)

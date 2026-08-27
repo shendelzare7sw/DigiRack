@@ -9,10 +9,10 @@
                 Navigasi
             </span>
             <h1 class="font-display font-bold text-3xl sm:text-4xl text-gray-900 mt-5 leading-tight">
-                Sitemap DigiRack
+                Sitemap Digital Hook
             </h1>
             <p class="text-gray-600 text-base sm:text-lg leading-relaxed mt-4 max-w-3xl">
-                Daftar halaman utama DigiRack untuk membantu pengguna menemukan area belanja, seller, akun, bantuan, dan dokumen legal.
+                Daftar halaman utama Digital Hook untuk menemukan katalog, akun, bantuan, dan dokumen legal.
             </p>
         </section>
 

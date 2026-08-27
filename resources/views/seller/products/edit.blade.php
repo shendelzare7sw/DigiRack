@@ -3,7 +3,7 @@
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div class="flex items-start gap-3 mb-6">
-            <a href="{{ route('seller.products.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+            <a href="{{ route('admin.products.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                 <x-icon name="arrow-left" class="w-4 h-4" />
             </a>
             <div>
@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('seller.products.update', $product->id) }}" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="{{ route('admin.products.update', $product->id) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             {{-- Informasi Dasar --}}
@@ -237,7 +237,7 @@
 
             {{-- Submit --}}
             <div class="flex items-center justify-end gap-4 pt-4">
-                <a href="{{ route('seller.products.index') }}" class="text-gray-500 hover:text-gray-700 font-semibold text-sm px-6 py-3 transition-colors">
+                <a href="{{ route('admin.products.index') }}" class="text-gray-500 hover:text-gray-700 font-semibold text-sm px-6 py-3 transition-colors">
                     Batal
                 </a>
                 <button type="submit" class="bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-sm transition-colors flex items-center gap-2">

@@ -8,7 +8,6 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Store;
 use App\Models\User;
-use App\Models\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -29,11 +28,7 @@ class AutoCompleteOrdersTest extends TestCase
         Artisan::call('orders:auto-complete');
 
         $order->refresh();
-        $wallet = Wallet::where('store_id', $order->store_id)->first();
-
         $this->assertSame('completed', $order->status);
-        $this->assertNotNull($wallet);
-        $this->assertSame(315000, (int) $wallet->balance);
     }
 
     public function test_recent_delivered_order_is_not_auto_completed_yet(): void
@@ -47,7 +42,6 @@ class AutoCompleteOrdersTest extends TestCase
         $order->refresh();
 
         $this->assertSame('shipped', $order->status);
-        $this->assertNull(Wallet::where('store_id', $order->store_id)->first());
     }
 
     public function test_old_shipped_order_without_delivery_confirmation_is_not_auto_completed(): void
@@ -61,7 +55,6 @@ class AutoCompleteOrdersTest extends TestCase
         $order->refresh();
 
         $this->assertSame('shipped', $order->status);
-        $this->assertNull(Wallet::where('store_id', $order->store_id)->first());
     }
 
     public function test_seller_must_upload_delivery_proof_when_marking_order_delivered(): void
@@ -72,7 +65,7 @@ class AutoCompleteOrdersTest extends TestCase
         $order = $this->createShippedOrder(deliveredAt: null);
         $seller = $order->store->user;
 
-        $response = $this->actingAs($seller)->post(route('seller.orders.delivered', $order->id), [
+        $response = $this->actingAs($seller)->post(route('admin.orders.delivered', $order->id), [
             'delivery_confirmation_note' => 'Diterima oleh Ani.',
             'delivery_proofs' => [
                 UploadedFile::fake()->image('proof-a.jpg')->size(1024),
@@ -97,7 +90,7 @@ class AutoCompleteOrdersTest extends TestCase
     private function createShippedOrder($shippedAt = null, $deliveredAt = null): Order
     {
         $buyer = User::factory()->create(['role' => 'buyer']);
-        $seller = User::factory()->create(['role' => 'seller']);
+        $seller = User::factory()->create(['role' => 'admin']);
 
         $store = Store::create([
             'user_id' => $seller->id,

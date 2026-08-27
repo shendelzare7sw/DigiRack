@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Order;
 use App\Models\SystemSetting;
-use App\Models\Wallet;
-use App\Models\WalletTransaction;
 use App\Notifications\OrderNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -56,51 +54,6 @@ class AutoCompleteOrders extends Command
                     continue;
                 }
 
-                // Hitung dana ke seller (sama seperti logic di OrderController@confirm)
-                $productSubtotal = $order->total_price - $order->shipping_cost;
-
-                $courier = $order->shipping_address['courier'] ?? '';
-                $shippingToSeller = 0;
-                if (str_starts_with(strtolower($courier), 'toko_')) {
-                    $shippingToSeller = $order->shipping_cost;
-                }
-
-                // Potongan platform per-item
-                $totalQty = $order->items->sum('quantity');
-                $feePerItem = SystemSetting::val('platform_fee_per_item', 0);
-                $totalPlatformFee = $totalQty * $feePerItem;
-
-                $netToSeller = $productSubtotal + $shippingToSeller - $totalPlatformFee;
-                if ($netToSeller < 0) {
-                    $netToSeller = 0;
-                }
-
-                if ($netToSeller > 0) {
-                    $wallet = Wallet::firstOrCreate(
-                        ['store_id' => $order->store_id],
-                        ['balance' => 0]
-                    );
-
-                    $wallet->balance += $netToSeller;
-                    $wallet->save();
-
-                    $desc = 'Auto-complete pesanan ' . $order->invoice_number;
-                    if ($shippingToSeller > 0) {
-                        $desc .= ' (+Ongkir Internal: Rp' . number_format($shippingToSeller, 0, ',', '.') . ')';
-                    }
-                    if ($totalPlatformFee > 0) {
-                        $desc .= ' (Dipotong Fee: Rp' . number_format($totalPlatformFee, 0, ',', '.') . ')';
-                    }
-
-                    WalletTransaction::create([
-                        'wallet_id' => $wallet->id,
-                        'type' => 'credit',
-                        'amount' => $netToSeller,
-                        'reference' => 'AUTO-ORDER-' . $order->id,
-                        'description' => $desc,
-                    ]);
-                }
-
                 $order->status = 'completed';
                 $order->save();
 
@@ -113,8 +66,8 @@ class AutoCompleteOrders extends Command
                         $sellerUser->notify(new OrderNotification(
                             'order_auto_completed',
                             '✅ Pesanan Otomatis Selesai',
-                            'Pesanan ' . $order->invoice_number . ' telah otomatis diselesaikan karena buyer tidak mengkonfirmasi dalam ' . $hours . ' jam. Dana Rp ' . number_format($netToSeller, 0, ',', '.') . ' telah masuk ke saldo toko.',
-                            route('seller.wallet.index'),
+                            'Pesanan ' . $order->invoice_number . ' telah otomatis diselesaikan karena pembeli tidak mengonfirmasi dalam ' . $hours . ' jam.',
+                            route('admin.orders.show', $order->id),
                             '💰'
                         ));
                     }
@@ -134,7 +87,7 @@ class AutoCompleteOrders extends Command
                 } catch (\Exception $e) {}
 
                 $completed++;
-                $this->info("✓ {$order->invoice_number} → completed (Rp " . number_format($netToSeller, 0, ',', '.') . " → seller wallet)");
+                $this->info("{$order->invoice_number} selesai otomatis.");
 
             } catch (\Exception $e) {
                 DB::rollBack();

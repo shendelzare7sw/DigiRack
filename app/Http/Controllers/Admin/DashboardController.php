@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\RecoveryTicket;
+use App\Models\IdentityVerification;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -20,9 +21,7 @@ class DashboardController extends Controller
         $stats = [
             'totalUsers' => User::count(),
             'totalBuyers' => User::where('role', 'buyer')->count(),
-            'totalSellers' => User::where('role', 'seller')->count(),
-            'totalStores' => Store::count(),
-            'verifiedStores' => Store::where('is_verified', true)->count(),
+            'pendingIdentityCount' => IdentityVerification::where('status', IdentityVerification::STATUS_PENDING)->count(),
             'totalProducts' => Product::count(),
             'activeProducts' => Product::where('status', 'active')->count(),
             'totalCategories' => Category::count(),

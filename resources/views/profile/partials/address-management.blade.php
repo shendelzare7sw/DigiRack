@@ -20,7 +20,7 @@
                 Daftar Alamat
             </h2>
             <p class="text-sm text-gray-600">
-                Kelola alamat pengiriman atau alamat penjemputan toko Anda.
+                Hanya alamat dalam wilayah kurir same-day Digital Hook yang dapat disimpan.
             </p>
         </div>
         <button @click="openAddModal()" type="button" class="bg-white border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white font-bold py-2.5 px-5 rounded-xl text-sm flex items-center gap-2 transition-colors">
@@ -58,7 +58,7 @@
                         <p class="text-sm font-medium text-gray-700 mb-1">{{ $addr->phone }}</p>
                         <p class="text-sm text-gray-600 line-clamp-2 leading-relaxed h-10 mb-3">{{ $addr->full_address }}</p>
                         <p class="text-xs text-gray-500 bg-gray-100 rounded-md px-2 py-1 inline-block mb-4">
-                            {{ $addr->city }}, {{ $addr->province }} {{ $addr->postal_code }}
+                            Kec. {{ $addr->district }}, {{ $addr->city }}, {{ $addr->province }} {{ $addr->postal_code }}
                         </p>
 
                         <div class="flex items-center gap-3 pt-3 border-t border-gray-100">

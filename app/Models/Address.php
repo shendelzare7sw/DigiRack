@@ -16,6 +16,7 @@ class Address extends Model
         'phone',
         'full_address',
         'city',
+        'district',
         'province',
         'postal_code',
         'province_id',
@@ -47,6 +48,12 @@ class Address extends Model
     public function provinceRelation()
     {
         return $this->belongsTo(\App\Models\Province::class, 'province_id');
+    }
+
+    public function isCovered(): bool
+    {
+        return app(\App\Services\DeliveryAreaService::class)
+            ->isCovered($this->province, $this->city, (string) $this->district);
     }
 
     public function getFullLabelAttribute(): string

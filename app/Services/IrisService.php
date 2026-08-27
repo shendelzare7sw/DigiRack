@@ -50,7 +50,7 @@ class IrisService
                         'beneficiary_account' => $payoutData['beneficiary_account'],
                         'beneficiary_bank' => $payoutData['beneficiary_bank'],
                         'amount' => strval($payoutData['amount']), // iris expects string for amount
-                        'notes' => $payoutData['notes'] ?? 'DigiRack Payout',
+                        'notes' => $payoutData['notes'] ?? 'Digital Hook Payout',
                     ]
                 ]
             ]);

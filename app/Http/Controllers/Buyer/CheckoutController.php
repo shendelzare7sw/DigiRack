@@ -5,12 +5,10 @@ namespace App\Http\Controllers\Buyer;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
 use App\Models\Cart;
-use App\Models\City;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Province;
 use App\Models\SystemSetting;
-use App\Services\RajaOngkirService;
+use App\Services\DeliveryAreaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -64,6 +62,11 @@ class CheckoutController extends Controller
      */
     public function index(Request $request)
     {
+        if (! $request->user()->isIdentityVerified()) {
+            return redirect()->route('profile.identity.edit')
+                ->with('error', 'Verifikasi KTP harus disetujui admin sebelum checkout.');
+        }
+
         $selectedItems = $request->input('selected_items', []);
 
         if (empty($selectedItems)) {
@@ -85,7 +88,8 @@ class CheckoutController extends Controller
         }
 
         // Get user saved addresses (with city_id for ongkir)
-        $addresses = Auth::user()->addresses()->orderByDesc('is_primary')->get();
+        $addresses = Auth::user()->addresses()->orderByDesc('is_primary')->get()
+            ->filter(fn (Address $address) => $address->isCovered())->values();
 
         // If no addresses, redirect to profile to create one
         if ($addresses->isEmpty()) {
@@ -100,14 +104,13 @@ class CheckoutController extends Controller
         foreach ($cartItems as $item) {
             $storeId = $item->product->store_id;
             if (!isset($storesData[$storeId])) {
-                $customCouriers = \App\Models\StoreCourier::where('store_id', $storeId)->where('is_active', true)->get();
                 $storesData[$storeId] = [
                     'store' => $item->product->store,
                     'items' => [],
                     'totalWeight' => 0,
                     'subtotal' => 0,
-                    'custom_couriers' => $customCouriers,
-                    'active_expeditions' => $item->product->store->activeExpeditions(),
+                    'custom_couriers' => collect(),
+                    'active_expeditions' => [],
                 ];
             }
             $storesData[$storeId]['items'][] = $item;
@@ -131,8 +134,13 @@ class CheckoutController extends Controller
     /**
      * Proses pembuatan Order dari form Checkout, lalu get SNAP Token Midtrans atau manual transfer.
      */
-    public function process(Request $request, RajaOngkirService $rajaOngkir)
+    public function process(Request $request, DeliveryAreaService $deliveryAreas)
     {
+        if (! $request->user()->isIdentityVerified()) {
+            return redirect()->route('profile.identity.edit')
+                ->withErrors(['identity' => 'Akun pembeli belum lolos verifikasi KTP oleh admin.']);
+        }
+
         $request->validate([
             'selected_items' => 'required|string',
             'address_id' => 'required|exists:addresses,id',
@@ -142,6 +150,11 @@ class CheckoutController extends Controller
 
         // Verify address belongs to user
         $address = Address::where('user_id', Auth::id())->findOrFail($request->address_id);
+        if (! $address->isCovered()) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Alamat yang dipilih berada di luar wilayah pengantaran Digital Hook.')
+                ->withFragment('address-section');
+        }
 
         $selectedItemIds = json_decode($request->selected_items, true);
 
@@ -185,7 +198,7 @@ class CheckoutController extends Controller
         }
 
         // Build full address string
-        $fullAddress = $address->full_address . ', ' . $address->city . ', ' . $address->province . ', ' . $address->postal_code;
+        $fullAddress = $address->full_address . ', Kec. ' . $address->district . ', ' . $address->city . ', ' . $address->province . ' ' . $address->postal_code;
 
         $paymentReference = 'PAY-' . date('Ymd') . '-' . strtoupper(uniqid());
         $grandTotalGross = 0;
@@ -198,38 +211,10 @@ class CheckoutController extends Controller
             $index = 1;
             foreach ($storesData as $storeId => $data) {
                 $courierCode = $request->couriers[$storeId] ?? '';
-                $shippingCost = 0;
-
-                if ($courierCode === '') {
-                    throw new \Exception('Metode pengiriman untuk toko ' . $data['store']->name . ' belum dipilih.');
+                if ($courierCode !== 'digital_hook_sameday') {
+                    throw new \Exception('Digital Hook hanya menggunakan kurir toko same-day.');
                 }
-
-                if (str_starts_with($courierCode, 'toko_')) {
-                    $courierId = explode('_', $courierCode)[1];
-                    $storeCourier = \App\Models\StoreCourier::where('id', $courierId)
-                        ->where('store_id', $storeId)
-                        ->where('is_active', true)
-                        ->first();
-                    if (! $storeCourier) {
-                        throw new \Exception('Kurir yang dipilih untuk toko ' . $data['store']->name . ' tidak tersedia.');
-                    }
-                    $shippingCost = (int) $storeCourier->price;
-                    $courierCode = 'toko_' . $storeCourier->name;
-                } else {
-                    if (! in_array($courierCode, $data['store']->enabled_expeditions ?? [], true)
-                        || ! array_key_exists($courierCode, \App\Models\Store::EXPEDITIONS)) {
-                        throw new \Exception('Ekspedisi yang dipilih tidak diaktifkan oleh toko ' . $data['store']->name . '.');
-                    }
-                    $originCityId = $data['store']->city_id ?? 153;
-                    $destCityId = $address->city_id ?? 153;
-                    $ongkirResponse = $rajaOngkir->getCost($originCityId, $destCityId, $data['totalWeight'], $courierCode);
-                    
-                    if (isset($ongkirResponse['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value'])) {
-                        $shippingCost = $ongkirResponse['rajaongkir']['results'][0]['costs'][0]['cost'][0]['value'];
-                    } else {
-                        $shippingCost = 25000; // Fallback
-                    }
-                }
+                $shippingCost = $deliveryAreas->shippingFee($address);
 
                 $totalOrderPrice = $data['subtotal'] + $shippingCost;
                 $grandTotalGross += $totalOrderPrice;
@@ -265,8 +250,9 @@ class CheckoutController extends Controller
                         'name' => $address->recipient_name,
                         'phone' => $address->phone,
                         'full_address' => $fullAddress,
-                        'courier' => strtoupper($courierCode),
-                        'destination_city_id' => $address->city_id
+                        'district' => $address->district,
+                        'courier' => config('digitalhook.courier_name'),
+                        'delivery_service' => 'same_day',
                     ],
                     'applied_buyer_fees' => $appliedFeesJson ? json_decode($appliedFeesJson, true) : null
                 ]);

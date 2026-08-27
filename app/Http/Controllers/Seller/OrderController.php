@@ -75,7 +75,7 @@ class OrderController extends Controller
 
                 $review->buyer->notify(new ReviewNotification(
                     'review_replied',
-                    'Seller membalas ulasan Anda',
+                    'Digital Hook membalas ulasan Anda',
                     'Penjual membalas ulasan Anda untuk ' . $productName . '.',
                     route('buyer.orders.show', $order->id),
                 ));
@@ -214,7 +214,7 @@ class OrderController extends Controller
         $order->delivered_at = now();
         $order->delivery_confirmation_note = $request->filled('delivery_confirmation_note')
             ? $request->delivery_confirmation_note
-            : 'Seller menandai paket sudah sampai berdasarkan konfirmasi pengiriman.';
+            : 'Digital Hook menandai paket sudah sampai berdasarkan konfirmasi pengiriman.';
         $proofPaths = collect($request->file('delivery_proofs', []))
             ->map(fn ($file) => $file->store('delivery-proofs', 'public'))
             ->values()

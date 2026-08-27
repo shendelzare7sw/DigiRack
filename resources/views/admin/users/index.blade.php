@@ -8,12 +8,12 @@
             </a>
             <div>
                 <h1 class="text-2xl font-bold font-display text-gray-900">Kelola Users</h1>
-                <p class="text-gray-500 text-sm mt-1">Manajemen akun pengguna platform — buyer, seller, dan admin.</p>
+                <p class="text-gray-500 text-sm mt-1">Kelola akun pembeli, admin, dan status verifikasi KTP.</p>
             </div>
         </div>
 
         {{-- Stats Cards --}}
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
                 <p class="font-display font-bold text-2xl text-gray-900">{{ $totalUsers }}</p>
                 <p class="text-xs text-gray-500 font-medium mt-1">Total User</p>
@@ -23,16 +23,12 @@
                 <p class="text-xs text-gray-500 font-medium mt-1">Buyer</p>
             </div>
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
-                <p class="font-display font-bold text-2xl text-purple-600">{{ $totalSellers }}</p>
-                <p class="text-xs text-gray-500 font-medium mt-1">Seller</p>
-            </div>
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
                 <p class="font-display font-bold text-2xl text-brand-navy">{{ $totalAdmins }}</p>
                 <p class="text-xs text-gray-500 font-medium mt-1">Admin</p>
             </div>
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
-                <p class="font-display font-bold text-2xl text-red-500">{{ $bannedUsers }}</p>
-                <p class="text-xs text-gray-500 font-medium mt-1">Banned</p>
+                <p class="font-display font-bold text-2xl text-yellow-600">{{ $pendingIdentityCount }}</p>
+                <p class="text-xs text-gray-500 font-medium mt-1">KTP Menunggu</p>
             </div>
         </div>
 
@@ -55,8 +51,15 @@
                 <select name="role" class="border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
                     <option value="">Semua Role</option>
                     <option value="buyer" {{ request('role') == 'buyer' ? 'selected' : '' }}>Buyer</option>
-                    <option value="seller" {{ request('role') == 'seller' ? 'selected' : '' }}>Seller</option>
                     <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                </select>
+
+                <select name="verification" class="border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
+                    <option value="">Semua Status KTP</option>
+                    <option value="not_submitted" @selected(request('verification') === 'not_submitted')>Belum Mengirim</option>
+                    <option value="pending" @selected(request('verification') === 'pending')>Menunggu</option>
+                    <option value="verified" @selected(request('verification') === 'verified')>Terverifikasi</option>
+                    <option value="rejected" @selected(request('verification') === 'rejected')>Ditolak</option>
                 </select>
 
                 <select name="status" class="border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
@@ -79,6 +82,7 @@
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">User</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Role</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">KTP</th>
                                 <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Bergabung</th>
                                 <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
@@ -100,7 +104,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     @php
-                                        $roleColors = ['admin' => 'red', 'seller' => 'purple', 'buyer' => 'blue'];
+                                        $roleColors = ['admin' => 'red', 'buyer' => 'blue'];
                                         $c = $roleColors[$user->role] ?? 'gray';
                                     @endphp
                                     <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-{{ $c }}-100 text-{{ $c }}-700 border border-{{ $c }}-200 uppercase">
@@ -118,11 +122,18 @@
                                         </span>
                                     @endif
                                 </td>
+                                <td class="px-6 py-4">
+                                    @php $identityStatus = $user->identityVerification?->status ?? 'not_submitted'; @endphp
+                                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-bold {{ $identityStatus === 'verified' ? 'bg-green-100 text-green-700' : ($identityStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' : ($identityStatus === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600')) }}">
+                                        {{ $user->isAdmin() ? 'Tidak diperlukan' : ($user->identityVerification?->statusLabel() ?? 'Belum Mengirim') }}
+                                    </span>
+                                </td>
                                 <td class="px-6 py-4 text-gray-500 text-xs">
                                     {{ $user->created_at->translatedFormat('d M Y') }}
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.users.show', $user) }}" class="p-2 bg-white border border-gray-200 hover:border-brand-blue hover:text-brand-blue text-gray-500 rounded-lg" title="Detail & verifikasi KTP"><x-icon name="eye" class="w-4 h-4" /></a>
                                         @if($user->id !== auth()->id())
                                             @if($user->is_active)
                                                 <form action="{{ route('admin.users.toggle', $user->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Ban User', message: 'User ini akan dibanned dan tidak bisa mengakses platform. Lanjutkan?', type: 'danger', confirmText: 'Ya, Ban User' })">

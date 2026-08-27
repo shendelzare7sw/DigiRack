@@ -280,12 +280,12 @@
                         </div>
 
                         <div class="mt-4 flex flex-col sm:flex-row gap-3">
-                            <a href="{{ route('seller.products.edit', $product->id) }}"
+                            <a href="{{ route('admin.products.edit', $product->id) }}"
                                 class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-bold text-white hover:bg-brand-navydark transition-colors">
                                 <x-icon name="pencil-square" class="w-4 h-4" />
                                 Kelola Produk
                             </a>
-                            <a href="{{ route('seller.products.index') }}"
+                            <a href="{{ route('admin.products.index') }}"
                                 class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border-2 border-brand-navy px-5 py-3 text-sm font-bold text-brand-navy hover:bg-brand-navy hover:text-white transition-colors">
                                 <x-icon name="squares-2x2" class="w-4 h-4" />
                                 Produk Saya
@@ -576,7 +576,7 @@
                                 @endif
                                 @if($review->seller_reply)
                                     <div class="mt-3 rounded-xl border border-brand-navylight bg-brand-navylight/20 p-3">
-                                        <p class="text-xs font-bold text-brand-navy">Balasan Seller</p>
+                                        <p class="text-xs font-bold text-brand-navy">Balasan Digital Hook</p>
                                         <p class="mt-1 text-sm text-gray-700 leading-relaxed">{{ $review->seller_reply }}</p>
                                     </div>
                                 @endif

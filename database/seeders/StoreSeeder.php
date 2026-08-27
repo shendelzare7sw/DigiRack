@@ -10,32 +10,20 @@ class StoreSeeder extends Seeder
 {
     public function run(): void
     {
-        $seller1 = User::where('email', 'seller1@digirack.test')->first();
-        $seller2 = User::where('email', 'seller2@digirack.test')->first();
+        $admin = User::where('email', 'admin@digihook.test')->firstOrFail();
 
         Store::firstOrCreate(
-            ['slug' => 'jaringan-nusantara'],
+            ['slug' => 'digihook'],
             [
-                'user_id' => $seller1->id,
-                'name' => 'Jaringan Nusantara',
-                'description' => 'Distributor peralatan jaringan terlengkap di Indonesia. Menyediakan berbagai produk networking, server, dan infrastruktur IT berkualitas tinggi.',
+                'user_id' => $admin->id,
+                'name' => 'Digital Hook',
+                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital dengan pengantaran same-day di Tangerang Raya.',
                 'is_active' => true,
                 'is_verified' => true,
-                'avg_rating' => 4.5,
-                'total_sold' => 150,
-            ]
-        );
-
-        Store::firstOrCreate(
-            ['slug' => 'netpro-supply'],
-            [
-                'user_id' => $seller2->id,
-                'name' => 'NetPro Supply',
-                'description' => 'Supplier perangkat jaringan profesional untuk kebutuhan enterprise dan SOHO. Harga bersaing, produk original bergaransi.',
-                'is_active' => true,
-                'is_verified' => true,
-                'avg_rating' => 4.3,
-                'total_sold' => 98,
+                'verification_status' => 'approved',
+                'verified_at' => now(),
+                'avg_rating' => 4.8,
+                'total_sold' => 0,
             ]
         );
     }

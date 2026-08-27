@@ -107,7 +107,7 @@
                                                 @endif
                                                 @if($itemReview->seller_reply)
                                                     <div class="mt-3 rounded-xl border border-brand-navylight bg-brand-navylight/20 p-3 text-left">
-                                                        <p class="text-[11px] font-bold uppercase tracking-wide text-brand-navy">Balasan Seller</p>
+                                                        <p class="text-[11px] font-bold uppercase tracking-wide text-brand-navy">Balasan Digital Hook</p>
                                                         <p class="mt-1 text-sm text-gray-700 leading-relaxed">{{ $itemReview->seller_reply }}</p>
                                                         @if($itemReview->seller_replied_at)
                                                             <p class="mt-1 text-[10px] text-gray-400">{{ $itemReview->seller_replied_at->diffForHumans() }}</p>
@@ -243,7 +243,7 @@
                             </p>
                         @endif
                         
-                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Apakah Anda yakin barang pesanan sudah diterima dengan baik dan sesuai? Dana akan diteruskan ke penjual dan pesanan difinalisasi.', type: 'info', confirmText: 'Ya, Selesai' })">
+                        <form action="{{ route('buyer.orders.confirm', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Pesanan Diterima', message: 'Apakah barang pesanan sudah diterima dengan baik dan sesuai? Pesanan akan ditutup setelah dikonfirmasi.', type: 'info', confirmText: 'Ya, Selesai' })">
                             @csrf
                             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
                                 <x-icon name="check-circle" class="w-5 h-5" /> Pesanan Diterima & Selesai
@@ -281,7 +281,7 @@
                         <x-icon name="clock" class="w-10 h-10 text-brand-orange mx-auto mb-2" />
                         <h3 class="font-bold text-orange-900 mb-1">Sedang Diproses Penjual</h3>
                         <p class="text-sm text-orange-700 mb-4">Pembayaran berhasil! Penjual sedang menyiapkan pesanan Anda untuk dikirim.</p>
-                        <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="text-left" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Ajukan Pembatalan', message: 'Pesanan sudah diproses. Permintaan pembatalan akan dikirim ke penjual dan baru batal jika disetujui.', type: 'danger', confirmText: 'Kirim Permintaan' })">
+                        <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="text-left" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Ajukan Pembatalan', message: 'Pesanan sudah diproses. Permintaan pembatalan akan ditinjau oleh Digital Hook.', type: 'danger', confirmText: 'Kirim Permintaan' })">
                             @csrf
                             <textarea name="cancellation_reason" rows="3" maxlength="500" class="w-full border-orange-200 focus:border-red-400 focus:ring-red-400 rounded-xl text-sm" placeholder="Tulis alasan pembatalan agar penjual bisa mempertimbangkan."></textarea>
                             <button type="submit" class="mt-3 w-full bg-white border border-red-200 hover:border-red-400 text-red-600 font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">

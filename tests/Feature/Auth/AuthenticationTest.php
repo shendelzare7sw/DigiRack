@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Models\Store;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -31,20 +30,11 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/');
     }
 
-    public function test_seller_account_starts_in_buyer_mode_after_login(): void
+    public function test_admin_account_keeps_admin_mode_after_login(): void
     {
         $user = User::factory()->create([
-            'role' => 'seller',
+            'role' => 'admin',
             'email_verified_at' => now(),
-        ]);
-
-        Store::create([
-            'user_id' => $user->id,
-            'name' => 'Toko Login Buyer',
-            'slug' => 'toko-login-buyer',
-            'is_active' => true,
-            'is_verified' => true,
-            'verification_status' => 'approved',
         ]);
 
         $response = $this->post('/login', [
@@ -54,8 +44,8 @@ class AuthenticationTest extends TestCase
 
         $this->assertAuthenticated();
         $response
-            ->assertRedirect('/')
-            ->assertSessionHas('active_role', 'buyer');
+            ->assertRedirect(route('admin.dashboard'))
+            ->assertSessionHas('active_role', 'admin');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

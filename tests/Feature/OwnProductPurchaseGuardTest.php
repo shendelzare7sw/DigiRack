@@ -79,9 +79,7 @@ class OwnProductPurchaseGuardTest extends TestCase
                 'quantity' => 1,
             ]);
 
-        $directResponse
-            ->assertRedirect(route('products.show', $product->slug))
-            ->assertSessionHas('error', 'Produk milik toko sendiri tidak bisa dibeli atau di-checkout.');
+        $directResponse->assertRedirect(route('admin.dashboard'));
 
         $cart = Cart::create([
             'user_id' => $seller->id,
@@ -95,9 +93,7 @@ class OwnProductPurchaseGuardTest extends TestCase
                 'selected_items' => [$cart->id],
             ]);
 
-        $cartResponse
-            ->assertRedirect(route('buyer.cart.index'))
-            ->assertSessionHas('error', 'Keranjang berisi produk milik toko sendiri. Hapus produk tersebut sebelum checkout.');
+        $cartResponse->assertRedirect(route('admin.dashboard'));
     }
 
     public function test_product_listing_marks_own_product_instead_of_purchase_actions(): void
@@ -118,7 +114,7 @@ class OwnProductPurchaseGuardTest extends TestCase
     private function createOwnProduct(): array
     {
         $seller = User::factory()->create([
-            'role' => 'seller',
+            'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 

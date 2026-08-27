@@ -25,7 +25,7 @@
         @keydown.escape.window="if (reviewMediaOpen) closeReviewMedia()">
         {{-- Header --}}
         <div class="flex items-start gap-3 mb-6">
-            <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+            <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                 <x-icon name="arrow-left" class="w-4 h-4" />
             </a>
             <div class="flex-1 min-w-0">
@@ -152,7 +152,7 @@
                                         </div>
                                     @endif
 
-                                    <form action="{{ route('seller.orders.reviews.reply', [$order->id, $itemReview->id]) }}" method="POST" class="mt-4 space-y-3">
+                                    <form action="{{ route('admin.orders.reviews.reply', [$order->id, $itemReview->id]) }}" method="POST" class="mt-4 space-y-3">
                                         @csrf
                                         <label for="seller_reply_{{ $itemReview->id }}" class="block text-xs font-bold text-gray-700">Balas Ulasan Pembeli</label>
                                         <textarea id="seller_reply_{{ $itemReview->id }}" name="seller_reply" rows="3" maxlength="1000" class="w-full rounded-xl border-yellow-100 text-sm focus:border-brand-navy focus:ring-brand-navy" placeholder="Tulis balasan yang sopan dan membantu.">{{ old('seller_reply', $itemReview->seller_reply) }}</textarea>
@@ -179,8 +179,10 @@
                 {{-- Info Kurir --}}
                 @php
                     $rawCourier = $order->shipping_address['courier'] ?? '-';
-                    $isToko = str_starts_with(strtolower($rawCourier), 'toko_');
-                    $kurirName = $isToko ? 'Kurir Toko' : strtoupper($rawCourier);
+                    $isToko = ($order->shipping_address['delivery_service'] ?? null) === 'same_day'
+                        || str_contains(strtolower($rawCourier), 'digital hook')
+                        || str_starts_with(strtolower($rawCourier), 'toko_');
+                    $kurirName = $isToko ? config('digitalhook.courier_name') : strtoupper($rawCourier);
                 @endphp
                 <div class="bg-brand-navylight/30 rounded-2xl p-5 border border-brand-navy/10">
                     <h3 class="text-base font-bold text-brand-navy mb-4 border-b border-brand-navy/20 pb-2">Informasi Kurir</h3>
@@ -235,7 +237,7 @@
                             @endif
                         </div>
 
-                        <form action="{{ route('seller.orders.cancellation', $order->id) }}" method="POST" class="space-y-3" x-data>
+                        <form action="{{ route('admin.orders.cancellation', $order->id) }}" method="POST" class="space-y-3" x-data>
                             @csrf
                             <input type="hidden" name="decision" x-ref="decision" value="">
                             <textarea name="cancellation_response" rows="3" maxlength="500" class="w-full border-orange-200 focus:border-brand-orange focus:ring-brand-orange rounded-xl text-sm" placeholder="Catatan untuk pembeli (opsional)"></textarea>
@@ -259,7 +261,7 @@
                         
                         @if($isToko)
                             <p class="text-xs text-gray-600 mb-4">Pembeli memilih <strong>Kurir Toko</strong>. Segera kirimkan paket. Klik tombol di bawah jika barang sudah dikirim.</p>
-                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Kirim', message: 'Apakah paket sudah dikirim menggunakan Kurir Toko? Status pesanan akan berubah menjadi Dikirim.', type: 'info', confirmText: 'Ya, Sudah Dikirim' })">
+                            <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Kirim', message: 'Apakah paket sudah dikirim menggunakan Kurir Toko? Status pesanan akan berubah menjadi Dikirim.', type: 'info', confirmText: 'Ya, Sudah Dikirim' })">
                                 @csrf
                                 <input type="hidden" name="status" value="shipped">
                                 <input type="hidden" name="shipping_tracking_number" value="KURIR-TOKO">
@@ -269,7 +271,7 @@
                             </form>
                         @else
                             <p class="text-xs text-gray-600 mb-4">Input nomor resi pengiriman setelah paket diserahkan ke ekspedisi.</p>
-                            <form action="{{ route('seller.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Kirim', message: 'Apakah paket sudah diserahkan ke kurir dan nomor resi sudah benar? Status pesanan akan berubah menjadi Dikirim.', type: 'info', confirmText: 'Ya, Kirim Sekarang' })">
+                            <form action="{{ route('admin.orders.status', $order->id) }}" method="POST" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Kirim', message: 'Apakah paket sudah diserahkan ke kurir dan nomor resi sudah benar? Status pesanan akan berubah menjadi Dikirim.', type: 'info', confirmText: 'Ya, Kirim Sekarang' })">
                                 @csrf
                                 <input type="hidden" name="status" value="shipped">
                                 <div class="mb-3">
@@ -298,8 +300,8 @@
                         </h3>
                         <p class="text-xs text-blue-700 text-center">
                             {{ $order->delivered_at
-                                ? 'Menunggu pembeli konfirmasi penerimaan barang. Saldo akan cair setelah dikonfirmasi atau saat batas auto-selesai tercapai.'
-                                : 'Auto-selesai belum berjalan. Tandai paket sudah sampai hanya jika kurir toko/kurir reguler sudah mengonfirmasi sampai di alamat.' }}
+                                ? 'Menunggu pembeli mengonfirmasi penerimaan barang atau batas auto-selesai tercapai.'
+                                : 'Auto-selesai belum berjalan. Tandai paket sudah sampai hanya setelah kurir Digital Hook mengonfirmasi penerimaan.' }}
                         </p>
                         @if($order->delivered_at)
                             <div class="text-[11px] text-blue-800 bg-white/70 border border-blue-100 rounded-xl px-3 py-2 mt-3">
@@ -325,7 +327,7 @@
                                 @endif
                             </div>
                         @else
-                            <form action="{{ route('seller.orders.delivered', $order->id) }}" method="POST" enctype="multipart/form-data" class="mt-4" x-data="{ previews: [], tooMany: false, updatePreviews(event) { this.previews.forEach((preview) => URL.revokeObjectURL(preview.url)); const files = Array.from(event.target.files || []); this.tooMany = files.length > 6; this.previews = files.map((file) => ({ name: file.name, url: URL.createObjectURL(file) })); } }" @submit.prevent="if (tooMany) return; $dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima dan bukti foto sudah benar. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
+                            <form action="{{ route('admin.orders.delivered', $order->id) }}" method="POST" enctype="multipart/form-data" class="mt-4" x-data="{ previews: [], tooMany: false, updatePreviews(event) { this.previews.forEach((preview) => URL.revokeObjectURL(preview.url)); const files = Array.from(event.target.files || []); this.tooMany = files.length > 6; this.previews = files.map((file) => ({ name: file.name, url: URL.createObjectURL(file) })); } }" @submit.prevent="if (tooMany) return; $dispatch('open-confirm-modal', { form: $el, title: 'Tandai Paket Sampai', message: 'Gunakan hanya jika paket sudah terkonfirmasi sampai di alamat penerima dan bukti foto sudah benar. Setelah ini timer auto-selesai pembeli akan dimulai.', type: 'info', confirmText: 'Ya, Paket Sampai' })">
                                 @csrf
                                 <textarea name="delivery_confirmation_note" rows="3" maxlength="500" class="w-full border-blue-200 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm" placeholder="Catatan opsional: diterima oleh siapa, bukti dari tracking, atau konfirmasi kurir..."></textarea>
                                 <div class="mt-3 text-left">
@@ -346,7 +348,7 @@
                                 </button>
                             </form>
                             <p class="text-[11px] text-blue-700 mt-3 text-center">
-                                Untuk TIKI/POS/JNE dan kurir reguler, cek tracking manual lalu tandai saat status kurir sudah delivered.
+                                Pastikan foto bukti dari kurir Digital Hook jelas sebelum menandai paket sudah sampai.
                             </p>
                         @endif
                         <div x-cloak x-show="proofOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-6" @click.self="proofOpen = false" @keydown.escape.window="proofOpen = false">
@@ -360,7 +362,7 @@
                     <div class="bg-green-50 rounded-2xl p-5 border border-green-100 text-center">
                         <x-icon name="check-badge" class="w-10 h-10 text-green-500 mx-auto mb-2" />
                         <h3 class="font-bold text-green-900 mb-1 text-sm">Transaksi Selesai</h3>
-                        <p class="text-xs text-green-700">Dana telah dimasukkan ke Saldo Dompet Toko Anda.</p>
+                        <p class="text-xs text-green-700">Pesanan telah ditutup dan tercatat selesai.</p>
                     </div>
                 @elseif($order->status === 'cancelled')
                     <div class="bg-red-50 rounded-2xl p-5 border border-red-100 text-center">

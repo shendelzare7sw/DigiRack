@@ -143,7 +143,7 @@
                                         <div class="mt-4 rounded-xl border border-brand-navylight bg-brand-navylight/20 p-3">
                                             <div class="flex items-center gap-2">
                                                 <x-icon name="building-storefront" class="w-4 h-4 text-brand-navy" />
-                                                <p class="text-xs font-bold text-brand-navy">Balasan Seller</p>
+                                                <p class="text-xs font-bold text-brand-navy">Balasan Digital Hook</p>
                                                 @if($review->seller_replied_at)
                                                     <span class="text-[10px] text-gray-400">{{ $review->seller_replied_at->diffForHumans() }}</span>
                                                 @endif

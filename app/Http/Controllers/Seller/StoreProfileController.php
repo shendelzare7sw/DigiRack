@@ -25,9 +25,6 @@ class StoreProfileController extends Controller
             'description' => 'nullable|string|max:1000',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
-            'bank_name' => 'nullable|string|max:100',
-            'bank_account_no' => 'nullable|string|max:50',
-            'bank_account_name' => 'nullable|string|max:100',
         ]);
 
         $store->name = $request->name;
@@ -37,9 +34,6 @@ class StoreProfileController extends Controller
         }
         
         $store->description = $request->description;
-        $store->bank_name = $request->bank_name;
-        $store->bank_account_no = $request->bank_account_no;
-        $store->bank_account_name = $request->bank_account_name;
 
         if ($request->hasFile('logo')) {
             if ($store->logo && Storage::disk('public')->exists($store->logo)) {

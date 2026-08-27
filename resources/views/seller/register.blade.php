@@ -9,7 +9,7 @@
                     <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <x-icon name="building-storefront" class="w-8 h-8" />
                     </div>
-                    <h1 class="text-2xl font-bold font-display">Buka Toko di DigiRack</h1>
+                    <h1 class="text-2xl font-bold font-display">Buka Toko di Digital Hook</h1>
                     <p class="text-white/80 text-sm mt-2">Mulai berjualan produk IT & jaringan Anda kepada ribuan pembeli.</p>
                 </div>
 

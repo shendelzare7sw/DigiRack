@@ -16,6 +16,14 @@
             </a>
         </div>
 
+        @php $identityStatus = Auth::user()->identityVerification?->status ?? 'not_submitted'; @endphp
+        @if($identityStatus !== 'verified')
+            <a href="{{ route('profile.identity.edit') }}" class="mb-8 flex flex-col gap-3 rounded-2xl border p-5 transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between {{ $identityStatus === 'rejected' ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50' }}">
+                <span class="flex items-start gap-3"><x-icon name="identification" class="w-9 h-9 shrink-0 {{ $identityStatus === 'rejected' ? 'text-red-600' : 'text-yellow-600' }}" /><span><strong class="block text-gray-900">{{ $identityStatus === 'pending' ? 'KTP sedang ditinjau admin' : ($identityStatus === 'rejected' ? 'Verifikasi KTP perlu diperbaiki' : 'Verifikasi KTP diperlukan') }}</strong><span class="mt-1 block text-sm text-gray-600">Checkout baru dapat digunakan setelah identitas disetujui admin Digital Hook.</span></span></span>
+                <span class="text-sm font-bold text-brand-navy">Buka Verifikasi →</span>
+            </a>
+        @endif
+
         {{-- Quick Stats --}}
         @php
             $cartCount = \App\Models\Cart::where('user_id', Auth::id())->sum('quantity');

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">{{ $store->name }} - DigiRack</x-slot>
+    <x-slot name="title">{{ $store->name }} - Digital Hook</x-slot>
 
     @php
         $previousUrl = url()->previous();

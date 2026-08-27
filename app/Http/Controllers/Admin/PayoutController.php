@@ -28,7 +28,7 @@ class PayoutController extends Controller
         $store = $payout->store;
 
         $payoutData = [
-            'beneficiary_name' => $store->bank_account_name ?? 'DigiRack Seller', // required
+            'beneficiary_name' => $store->bank_account_name ?? 'Digital Hook Seller', // required
             'beneficiary_account' => $store->bank_account_no, // required
             'beneficiary_bank' => strtolower($store->bank_name), // e.g. bca, bni
             'amount' => $payout->net_amount, // The amount after admin fee logic

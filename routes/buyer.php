@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Route;
 | Buyer Routes
 |--------------------------------------------------------------------------
 | prefix: /buyer
-| middleware: auth, role:buyer,seller,admin
+| middleware: auth, role:buyer
 */
 
-Route::middleware(['auth', 'verified', 'role:buyer,seller,admin', \App\Http\Middleware\EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:buyer', \App\Http\Middleware\EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
 
     Route::get('/dashboard', function () {
         return view('buyer.dashboard');

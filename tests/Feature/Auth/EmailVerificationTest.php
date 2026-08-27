@@ -46,7 +46,7 @@ class EmailVerificationTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         Event::fake();
-        URL::forceRootUrl('https://digirack.sipaduhok.my.id');
+        URL::forceRootUrl('https://digihook.sipaduhok.my.id');
 
         try {
             $verificationUrl = URL::temporarySignedRoute(
@@ -58,9 +58,9 @@ class EmailVerificationTest extends TestCase
             $response = $this
                 ->actingAs($user)
                 ->withServerVariables([
-                    'HTTP_HOST' => 'digirack.sipaduhok.my.id',
+                    'HTTP_HOST' => 'digihook.sipaduhok.my.id',
                     'HTTP_X_FORWARDED_PROTO' => 'https',
-                    'HTTP_X_FORWARDED_HOST' => 'digirack.sipaduhok.my.id',
+                    'HTTP_X_FORWARDED_HOST' => 'digihook.sipaduhok.my.id',
                     'HTTP_X_FORWARDED_PORT' => '443',
                 ])
                 ->get($verificationUrl);

@@ -28,7 +28,7 @@ class CustomVerifyEmail extends VerifyEmail
 
     public function toMail($notifiable): MailMessage
     {
-        $appName = config('app.name', 'DigiRack');
+        $appName = config('app.name', 'Digital Hook');
 
         return (new MailMessage)
             ->subject('Aktivasi Akun ' . $appName)

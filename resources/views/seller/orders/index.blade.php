@@ -4,7 +4,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col gap-4 mb-6">
             <div class="flex items-start gap-3">
-                <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                     <x-icon name="arrow-left" class="w-4 h-4" />
                 </a>
                 <div>
@@ -14,7 +14,7 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
-                <form action="{{ route('seller.orders.index') }}" method="GET" class="flex-1">
+                <form action="{{ route('admin.orders.index') }}" method="GET" class="flex-1">
                     <select name="status" onchange="this.form.submit()" class="w-full sm:w-auto border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl text-sm bg-white">
                         <option value="">Semua Status</option>
                         <option value="pending_payment" {{ request('status') == 'pending_payment' ? 'selected' : '' }}>Menunggu Pembayaran</option>
@@ -25,7 +25,7 @@
                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                     </select>
                 </form>
-                <a href="{{ route('seller.orders.report', request()->only(['status'])) }}" target="_blank"
+                <a href="{{ route('admin.orders.report', request()->only(['status'])) }}" target="_blank"
                    class="inline-flex items-center justify-center gap-2 bg-brand-navy hover:bg-brand-navydark text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm transition-colors shrink-0">
                     <x-icon name="document-chart-bar" class="w-4 h-4" />
                     Cetak Laporan
@@ -75,15 +75,15 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     @if($order->status == 'cancellation_requested')
-                                        <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-2 rounded-lg transition-colors">
                                             <x-icon name="exclamation-circle" class="w-4 h-4" /> Review Batal
                                         </a>
                                     @elseif($order->status == 'processing')
-                                        <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">
                                             <x-icon name="truck" class="w-4 h-4" /> Proses Resi
                                         </a>
                                     @else
-                                        <a href="{{ route('seller.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-600 font-bold px-4 py-2 rounded-lg transition-all shadow-sm">
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-600 font-bold px-4 py-2 rounded-lg transition-all shadow-sm">
                                             <x-icon name="eye-outline" class="w-4 h-4" /> Detail
                                         </a>
                                     @endif
@@ -101,8 +101,8 @@
                             role="link"
                             tabindex="0"
                             aria-label="Lihat detail pesanan {{ $order->invoice_number }}"
-                            onclick="window.location.href='{{ route('seller.orders.show', $order->id) }}'"
-                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ route('seller.orders.show', $order->id) }}'; }">
+                            onclick="window.location.href='{{ route('admin.orders.show', $order->id) }}'"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ route('admin.orders.show', $order->id) }}'; }">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-xs text-gray-400 font-mono break-all truncate max-w-[55%]">{{ $order->invoice_number }}</span>
                                 <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-{{ $order->status_color }}-100 text-{{ $order->status_color }}-700 border border-{{ $order->status_color }}-200">
@@ -127,15 +127,15 @@
                                     @endif
                                 </div>
                                 @if($order->status == 'cancellation_requested')
-                                    <a href="{{ route('seller.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
                                         <x-icon name="exclamation-circle" class="w-3.5 h-3.5" /> Review
                                     </a>
                                 @elseif($order->status == 'processing')
-                                    <a href="{{ route('seller.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
                                         <x-icon name="truck" class="w-3.5 h-3.5" /> Proses
                                     </a>
                                 @else
-                                    <a href="{{ route('seller.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="shrink-0 bg-white border border-gray-200 hover:border-brand-navy text-gray-600 hover:text-brand-navy font-bold text-xs px-3 py-1.5 rounded-lg transition-all">Detail</a>
                                 @endif
                             </div>
                         </div>

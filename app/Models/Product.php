@@ -93,7 +93,7 @@ class Product extends Model
             return asset('storage/' . $primary->image_path);
         }
         $first = $this->images->first();
-        return $first ? asset('storage/' . $first->image_path) : asset('images/logo-digirack.png');
+        return $first ? asset('storage/' . $first->image_path) : asset('images/digital-hook-logo.png');
     }
 
     public function isActive(): bool

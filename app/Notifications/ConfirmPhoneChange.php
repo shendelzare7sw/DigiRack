@@ -38,12 +38,12 @@ class ConfirmPhoneChange extends Notification
         );
 
         return (new MailMessage)
-            ->subject('Konfirmasi Perubahan Nomor Telepon DigiRack')
+            ->subject('Konfirmasi Perubahan Nomor Telepon Digital Hook')
             ->greeting('Halo ' . $this->user->name . ',')
-            ->line('Kami menerima permintaan untuk mengganti nomor telepon akun DigiRack Anda menjadi ' . $this->phone . '.')
+            ->line('Kami menerima permintaan untuk mengganti nomor telepon akun Digital Hook Anda menjadi ' . $this->phone . '.')
             ->line('Untuk keamanan akun, perubahan ini perlu dikonfirmasi melalui email yang sudah terverifikasi.')
             ->action('Konfirmasi Nomor Telepon', $url)
             ->line('Link konfirmasi ini berlaku selama ' . $expire . ' menit. Jika Anda tidak meminta perubahan ini, abaikan email ini dan nomor lama Anda tetap digunakan.')
-            ->salutation('Salam aman, Tim DigiRack');
+            ->salutation('Salam aman, Tim Digital Hook');
     }
 }

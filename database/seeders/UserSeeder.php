@@ -12,9 +12,9 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::firstOrCreate(
-            ['email' => 'admin@digirack.test'],
+            ['email' => 'admin@digihook.test'],
             [
-                'name' => 'Admin DigiRack',
+                'name' => 'Admin Digital Hook',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
                 'phone' => '081234567890',
@@ -23,34 +23,9 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Sellers
-        User::firstOrCreate(
-            ['email' => 'seller1@digirack.test'],
-            [
-                'name' => 'Toko Jaringan Nusantara',
-                'password' => Hash::make('password'),
-                'role' => 'seller',
-                'phone' => '081234567891',
-                'is_active' => true,
-                'email_verified_at' => now(),
-            ]
-        );
-
-        User::firstOrCreate(
-            ['email' => 'seller2@digirack.test'],
-            [
-                'name' => 'NetPro Supply',
-                'password' => Hash::make('password'),
-                'role' => 'seller',
-                'phone' => '081234567892',
-                'is_active' => true,
-                'email_verified_at' => now(),
-            ]
-        );
-
         // Buyers
         User::firstOrCreate(
-            ['email' => 'buyer1@digirack.test'],
+            ['email' => 'buyer1@digihook.test'],
             [
                 'name' => 'Budi Santoso',
                 'password' => Hash::make('password'),
@@ -62,7 +37,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'buyer2@digirack.test'],
+            ['email' => 'buyer2@digihook.test'],
             [
                 'name' => 'Siti Rahayu',
                 'password' => Hash::make('password'),
@@ -74,7 +49,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'buyer3@digirack.test'],
+            ['email' => 'buyer3@digihook.test'],
             [
                 'name' => 'Andi Wirawan',
                 'password' => Hash::make('password'),

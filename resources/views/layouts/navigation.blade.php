@@ -17,12 +17,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-9 text-xs text-gray-500 font-medium">
             <div class="flex gap-5">
                 <a href="{{ route('pages.download-app') }}" class="hover:text-brand-navy flex items-center gap-1.5 transition-colors">
-                    <x-icon name="device-phone-mobile" class="w-4 h-4" /> Download App DigiRack
+                    <x-icon name="device-phone-mobile" class="w-4 h-4" /> Download App Digital Hook
                 </a>
                 <span class="text-gray-300">|</span>
-                <a href="{{ route('pages.about') }}" class="hover:text-brand-navy transition-colors">Tentang DigiRack</a>
-                <a href="{{ route('pages.selling') }}" class="hover:text-brand-navy transition-colors">Mulai Berjualan</a>
-                <a href="{{ route('pages.b2b') }}" class="hover:text-brand-navy transition-colors">Mitra B2B</a>
+                <a href="{{ route('pages.about') }}" class="hover:text-brand-navy transition-colors">Tentang Digital Hook</a>
+                <span>Same-day Tangerang Raya</span>
             </div>
             <div class="flex gap-5">
                 <a href="{{ route('pages.promos') }}" class="hover:text-brand-navy transition-colors flex items-center gap-1">
@@ -42,7 +41,7 @@
             <!-- 1. Logo (Left) -->
             <div class="shrink-0 flex items-center">
                 <a href="{{ route('home') }}" class="focus:outline-none">
-                    <img src="{{ asset('images/logo-digirack.png') }}" alt="DigiRack" class="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm transition-transform hover:scale-105">
+                    <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook" class="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm transition-transform hover:scale-105">
                 </a>
             </div>
 
@@ -50,7 +49,7 @@
             <div class="flex-1 max-w-2xl hidden md:flex items-center">
                 <form action="/products" method="GET" class="w-full relative">
                     <div class="flex w-full rounded-xl border-2 border-brand-navy/20 bg-gray-50 focus-within:bg-white focus-within:border-brand-navy focus-within:shadow-sm overflow-hidden transition-all">
-                        <input type="text" name="q" placeholder="Cari router, switch, kabel LAN, server..." 
+                        <input type="text" name="q" placeholder="Cari laptop, processor, keyboard, kabel LAN..."
                             class="w-full border-none bg-transparent focus:ring-0 text-sm px-4 py-2.5 placeholder-gray-400 text-gray-800"
                         >
                         <button type="submit" class="bg-brand-navy hover:bg-brand-navy/90 text-white px-5 flex items-center justify-center transition-colors">
@@ -72,14 +71,7 @@
                     @php
                         $unreadNotifs = Auth::user()->unreadNotifications->take(8);
                         $unreadCount = Auth::user()->unreadNotifications->count();
-                        $activeRole = Auth::user()->isAdmin() ? 'admin' : session('active_role', Auth::user()->role);
-                        $roleLabel = match($activeRole) {
-                            'seller' => 'Seller',
-                            'admin' => 'Admin',
-                            default => 'Buyer',
-                        };
-                        $sellerEntryUrl = Auth::user()->store ? route('switch.role', 'seller') : route('seller.register.form');
-                        $sellerEntryLabel = Auth::user()->store ? 'Seller' : 'Daftar';
+                        $roleLabel = Auth::user()->isAdmin() ? 'Admin & Pemilik Toko' : 'Pembeli';
                     @endphp
                     <x-dropdown align="right" width="w-80 sm:w-96" contentClasses="py-0 overflow-hidden bg-white" class="mobile-dropdown-notif">
                         <x-slot name="trigger">
@@ -168,34 +160,15 @@
                                     <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                                 </div>
-                                @if(!Auth::user()->isAdmin())
-                                    <div class="px-3 py-2 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
-                                        <div class="flex items-center gap-2">
-                                            <x-icon name="building-storefront" class="w-4 h-4 text-brand-navy" />
-                                            <span class="text-xs font-bold text-gray-700">Toko Saya</span>
-                                        </div>
-                                        <a href="{{ $sellerEntryUrl }}" class="text-[10px] bg-brand-blue text-white px-2 py-1 rounded shadow-sm hover:bg-blue-600 font-bold transition">{{ $sellerEntryLabel }}</a>
-                                    </div>
-                                @endif
-                                @if(!Auth::user()->isAdmin() && Auth::user()->store)
-                                    <div class="px-3 py-3 border-b border-gray-100">
-                                        <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">Akun aktif</p>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
-                                                Pembeli
-                                            </a>
-                                            <a href="{{ route('switch.role', 'seller') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'seller' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-navy hover:text-brand-navy' }}">
-                                                Seller
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endif
                                 <x-dropdown-link :href="route('dashboard')">
                                     Dashboard
                                 </x-dropdown-link>
                                 <x-dropdown-link :href="route('profile.edit')">
                                     Profil Saya
                                 </x-dropdown-link>
+                                @if(!Auth::user()->isAdmin())
+                                    <x-dropdown-link :href="route('profile.identity.edit')">Verifikasi KTP</x-dropdown-link>
+                                @endif
                                 <div class="border-t border-gray-100"></div>
                                 <form method="POST" action="{{ route('logout') }}" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Konfirmasi Keluar', message: 'Apakah Anda yakin ingin mengakhiri sesi ini?', type: 'danger', confirmText: 'Ya, Keluar Sesi' })">
                                     @csrf
@@ -287,37 +260,15 @@
                         </button>
                     </form>
                 </div>
-                @if(!Auth::user()->isAdmin() && Auth::user()->store)
-                    <div class="px-4 mb-3">
-                        <div class="rounded-xl border border-gray-100 bg-gray-50 p-2">
-                            <p class="px-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Akun aktif</p>
-                            <div class="grid grid-cols-2 gap-2">
-                                <a href="{{ route('switch.role', 'buyer') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'buyer' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200' }}">
-                                    Pembeli
-                                </a>
-                                <a href="{{ route('switch.role', 'seller') }}" class="text-center rounded-lg px-3 py-2 text-xs font-bold border transition {{ $activeRole === 'seller' ? 'bg-brand-navy text-white border-brand-navy' : 'bg-white text-gray-600 border-gray-200' }}">
-                                    Seller
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-                
                 <div class="space-y-1 px-2">
                     @if(!Auth::user()->isAdmin())
-                        <div class="bg-gray-50 rounded-xl p-3 mb-2 flex justify-between items-center border border-gray-100">
-                            <div class="flex items-center gap-2">
-                                <x-icon name="building-storefront" class="w-5 h-5 text-brand-navy" />
-                                <span class="text-sm font-bold text-gray-700">Toko Saya</span>
-                            </div>
-                            <a href="{{ $sellerEntryUrl }}" class="text-xs bg-brand-blue text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-600 font-bold transition">{{ Auth::user()->store ? 'Buka Toko' : 'Daftar Toko' }}</a>
-                        </div>
                         <x-responsive-nav-link :href="route('buyer.cart.index')">
                             Keranjang ({{ $cartCount ?? 0 }})
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('buyer.wishlist.index')">
                             Wishlist ({{ $wishlistCount ?? 0 }})
                         </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('profile.identity.edit')">Verifikasi KTP</x-responsive-nav-link>
                     @endif
                     <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         Dashboard Utama
@@ -328,7 +279,7 @@
                 </div>
 
                 <div class="mt-4 mx-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Info DigiRack</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Info Digital Hook</p>
                     <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
                         <a href="{{ route('pages.download-app') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
                             Download App
@@ -336,11 +287,8 @@
                         <a href="{{ route('pages.about') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
                             Tentang
                         </a>
-                        <a href="{{ route('pages.selling') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
-                            Mulai Berjualan
-                        </a>
                         <a href="{{ route('pages.b2b') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
-                            Mitra B2B
+                            Wilayah Pengantaran
                         </a>
                         <a href="{{ route('pages.promos') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
                             Promo
@@ -362,7 +310,7 @@
                 </a>
 
                 <div class="rounded-2xl border border-gray-100 bg-gray-50 p-4">
-                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Info DigiRack</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Info Digital Hook</p>
                     <div class="grid grid-cols-2 gap-2 text-sm font-semibold">
                         <a href="{{ route('pages.download-app') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
                             Download App
@@ -370,11 +318,8 @@
                         <a href="{{ route('pages.about') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
                             Tentang
                         </a>
-                        <a href="{{ route('pages.selling') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
-                            Mulai Berjualan
-                        </a>
                         <a href="{{ route('pages.b2b') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
-                            Mitra B2B
+                            Wilayah Pengantaran
                         </a>
                         <a href="{{ route('pages.promos') }}" class="rounded-xl bg-white px-3 py-2.5 text-gray-700 border border-gray-100 hover:text-brand-blue hover:border-brand-blue/30 transition-colors">
                             Promo

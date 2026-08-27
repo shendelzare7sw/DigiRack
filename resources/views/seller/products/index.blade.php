@@ -14,7 +14,7 @@
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
             <div class="flex items-start gap-3">
-                <a href="{{ route('seller.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
+                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-gray-200 hover:bg-brand-navy hover:text-white hover:border-brand-navy text-gray-500 transition-all shadow-sm shrink-0 mt-0.5" title="Kembali">
                     <x-icon name="arrow-left" class="w-4 h-4" />
                 </a>
                 <div>
@@ -23,12 +23,12 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row gap-2 self-stretch sm:self-start">
-                <a href="{{ route('seller.products.report', request()->only(['search','status','category'])) }}" target="_blank"
+                <a href="{{ route('admin.products.report', request()->only(['search','status','category'])) }}" target="_blank"
                    class="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 hover:border-brand-navy hover:text-brand-navy text-gray-700 font-bold text-sm px-5 py-3 rounded-xl shadow-sm transition-all">
                     <x-icon name="document-chart-bar" class="w-4 h-4" />
                     Cetak Laporan
                 </a>
-                <a href="{{ route('seller.products.create') }}" class="inline-flex items-center justify-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors">
+                <a href="{{ route('admin.products.create') }}" class="inline-flex items-center justify-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors">
                     <x-icon name="plus" class="w-4 h-4" />
                     Tambah Produk
                 </a>
@@ -37,7 +37,7 @@
 
         {{-- Filters --}}
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6">
-            <form method="GET" action="{{ route('seller.products.index') }}" class="flex flex-wrap gap-3 items-end">
+            <form method="GET" action="{{ route('admin.products.index') }}" class="flex flex-wrap gap-3 items-end">
                 <div class="flex-1 min-w-[200px]">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari produk..."
                         class="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:border-brand-navy focus:ring-brand-navy/20">
@@ -62,7 +62,7 @@
                     Filter
                 </button>
                 @if(request()->hasAny(['search', 'status', 'category']))
-                    <a href="{{ route('seller.products.index') }}" class="text-sm text-red-500 hover:text-red-700 font-medium px-3 py-2.5 transition-colors">
+                    <a href="{{ route('admin.products.index') }}" class="text-sm text-red-500 hover:text-red-700 font-medium px-3 py-2.5 transition-colors">
                         Reset
                     </a>
                 @endif
@@ -78,7 +78,7 @@
                     </div>
                     <h3 class="font-bold text-lg text-gray-700 mb-2">Belum Ada Produk</h3>
                     <p class="text-gray-500 text-sm mb-6">Mulai berjualan dengan menambahkan produk pertama Anda.</p>
-                    <a href="{{ route('seller.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors">
+                    <a href="{{ route('admin.products.create') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors">
                         <x-icon name="plus" class="w-4 h-4" /> Tambah Produk
                     </a>
                 </div>
@@ -144,11 +144,11 @@
                                                 class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Lihat">
                                                 <x-icon name="eye-outline" class="w-4 h-4" />
                                             </a>
-                                            <a href="{{ route('seller.products.edit', $product->id) }}"
+                                            <a href="{{ route('admin.products.edit', $product->id) }}"
                                                 class="p-2 text-gray-400 hover:text-brand-navy hover:bg-brand-navylight rounded-lg transition-colors" title="Edit">
                                                 <x-icon name="pencil-square" class="w-4 h-4" />
                                             </a>
-                                            <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline"
+                                            <form method="POST" action="{{ route('admin.products.destroy', $product->id) }}" class="inline"
                                                 x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
@@ -170,8 +170,8 @@
                             role="link"
                             tabindex="0"
                             aria-label="Edit produk {{ $product->name }}"
-                            onclick="window.location.href='{{ route('seller.products.edit', $product->id) }}'"
-                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ route('seller.products.edit', $product->id) }}'; }">
+                            onclick="window.location.href='{{ route('admin.products.edit', $product->id) }}'"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ route('admin.products.edit', $product->id) }}'; }">
                             <div class="flex items-start gap-3 mb-3">
                                 <img src="{{ $product->primary_image_url }}" alt="{{ $product->name }}"
                                     class="w-16 h-16 rounded-xl object-cover border border-gray-100 shrink-0">
@@ -199,10 +199,10 @@
                                     <a href="{{ route('products.show', $product->slug) }}" target="_blank" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors" title="Lihat" aria-label="Lihat produk">
                                         <x-icon name="eye-outline" class="w-4 h-4" />
                                     </a>
-                                    <a href="{{ route('seller.products.edit', $product->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="p-2 bg-brand-navylight text-brand-navy rounded-lg hover:bg-brand-navy hover:text-white transition-colors" title="Edit" aria-label="Edit produk">
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" class="p-2 bg-brand-navylight text-brand-navy rounded-lg hover:bg-brand-navy hover:text-white transition-colors" title="Edit" aria-label="Edit produk">
                                         <x-icon name="pencil-square" class="w-4 h-4" />
                                     </a>
-                                    <form method="POST" action="{{ route('seller.products.destroy', $product->id) }}" class="inline" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
+                                    <form method="POST" action="{{ route('admin.products.destroy', $product->id) }}" class="inline" onclick="event.stopPropagation()" onkeydown="event.stopPropagation()" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Hapus Produk', message: 'Yakin ingin menghapus produk katalog ini secara permanen?', type: 'danger', confirmText: 'Ya, Hapus' })">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors" title="Hapus">
                                             <x-icon name="trash" class="w-4 h-4" />

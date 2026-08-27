@@ -56,29 +56,33 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-1">Provinsi <span class="text-red-500">*</span></label>
-                                        <select name="province_id" x-model="form.province_id" @change="onProvinceChange()" required
+                                        <select name="province" x-model="form.province" @change="onProvinceChange()" required
                                             class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3 bg-white">
                                             <option value="">Pilih Provinsi</option>
                                             <template x-for="prov in provincesList" :key="prov.id">
                                                 <option :value="prov.id" x-text="prov.name"></option>
                                             </template>
                                         </select>
-                                        {{-- Hidden text field auto-filled --}}
-                                        <input type="hidden" name="province" :value="selectedProvinceName">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-1">Kota/Kabupaten <span class="text-red-500">*</span></label>
-                                        <select name="city_id" x-model="form.city_id" @change="onCityChange()" :disabled="citiesList.length === 0" required
+                                        <select name="city" x-model="form.city" @change="onCityChange()" :disabled="citiesList.length === 0" required
                                             class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3 bg-white disabled:bg-gray-100">
                                             <option value="">Pilih Kota</option>
                                             <template x-for="c in citiesList" :key="c.id">
-                                                <option :value="c.id" x-text="c.type + ' ' + c.name"></option>
+                                                <option :value="c.full_name" x-text="c.full_name"></option>
                                             </template>
                                         </select>
-                                        <input type="hidden" name="city" :value="selectedCityName">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                                        <select name="district" x-model="form.district" :disabled="districtsList.length === 0" required class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3 bg-white disabled:bg-gray-100">
+                                            <option value="">Pilih Kecamatan</option>
+                                            <template x-for="district in districtsList" :key="district.id"><option :value="district.name" x-text="district.name"></option></template>
+                                        </select>
+                                    </div>
                                     <div>
                                         <label class="block text-sm font-semibold text-gray-700 mb-1">Kode Pos</label>
                                         <input type="text" name="postal_code" x-model="form.postal_code" required class="w-full border-gray-300 focus:border-brand-navy focus:ring-brand-navy rounded-xl py-2 px-3">
@@ -141,30 +145,31 @@
             formAction: '{{ route('profile.addresses.store') }}',
             provincesList: [],
             citiesList: [],
+            districtsList: [],
             form: {
                 id: null,
                 label: '',
                 recipient_name: '{{ Auth::user()->name }}',
                 phone: '{{ Auth::user()->phone }}',
                 province: '',
-                province_id: '',
+                province: 'Banten',
                 city: '',
-                city_id: '',
+                district: '',
                 postal_code: '',
                 full_address: '',
                 is_primary: false,
-                lat: '-6.200000',
-                lng: '106.816666'
+                lat: '-6.178306',
+                lng: '106.631889'
             },
 
             get selectedProvinceName() {
-                const p = this.provincesList.find(x => x.id == this.form.province_id);
+                const p = this.provincesList.find(x => x.id == this.form.province);
                 return p ? p.name : this.form.province;
             },
 
             get selectedCityName() {
-                const c = this.citiesList.find(x => x.id == this.form.city_id);
-                return c ? (c.type + ' ' + c.name) : this.form.city;
+                const c = this.citiesList.find(x => x.full_name == this.form.city);
+                return c ? c.full_name : this.form.city;
             },
 
             async loadProvinces() {
@@ -176,19 +181,28 @@
 
             async onProvinceChange() {
                 this.citiesList = [];
-                this.form.city_id = '';
-                if (!this.form.province_id) return;
+                this.districtsList = [];
+                this.form.city = '';
+                this.form.district = '';
+                if (!this.form.province) return;
                 try {
-                    const res = await fetch(`/api/locations/cities/${this.form.province_id}`);
+                    const res = await fetch(`/api/locations/cities/${encodeURIComponent(this.form.province)}`);
                     this.citiesList = await res.json();
                 } catch(e) { console.error('Gagal load kota'); }
             },
 
-            onCityChange() {
-                const c = this.citiesList.find(x => x.id == this.form.city_id);
+            async onCityChange() {
+                this.districtsList = [];
+                this.form.district = '';
+                const c = this.citiesList.find(x => x.full_name == this.form.city);
                 if (c && c.postal_code) {
                     this.form.postal_code = c.postal_code;
                 }
+                if (!this.form.city) return;
+                try {
+                    const res = await fetch(`/api/locations/districts/${encodeURIComponent(this.form.city)}`);
+                    this.districtsList = await res.json();
+                } catch(e) { console.error('Gagal load kecamatan'); }
             },
 
             async handleModalOpen(detail) {
@@ -203,20 +217,21 @@
                         recipient_name: detail.address.recipient_name,
                         phone: detail.address.phone,
                         province: detail.address.province,
-                        province_id: detail.address.province_id || '',
                         city: detail.address.city,
-                        city_id: detail.address.city_id || '',
+                        district: detail.address.district || '',
                         postal_code: detail.address.postal_code,
                         full_address: detail.address.full_address,
                         is_primary: detail.address.is_primary,
                         lat: detail.address.latitude || '-6.200000',
                         lng: detail.address.longitude || '106.816666'
                     };
-                    // Load cities for the saved province
-                    if (this.form.province_id) {
-                        await this.onProvinceChange();
-                        // Re-set city_id after cities load
-                        this.form.city_id = detail.address.city_id || '';
+                    if (this.form.province) {
+                        const savedCity = detail.address.city;
+                        const savedDistrict = detail.address.district || '';
+                        await this.loadCitiesForEdit();
+                        this.form.city = savedCity;
+                        await this.loadDistrictsForEdit();
+                        this.form.district = savedDistrict;
                     }
                 } else {
                     this.formAction = '{{ route('profile.addresses.store') }}';
@@ -226,16 +241,18 @@
                         recipient_name: '{{ Auth::user()->name }}',
                         phone: '{{ Auth::user()->phone }}',
                         province: '',
-                        province_id: '',
+                        province: 'Banten',
                         city: '',
-                        city_id: '',
+                        district: '',
                         postal_code: '',
                         full_address: '',
                         is_primary: false,
-                        lat: '-6.200000',
-                        lng: '106.816666'
+                        lat: '-6.178306',
+                        lng: '106.631889'
                     };
                     this.citiesList = [];
+                    this.districtsList = [];
+                    await this.loadCitiesForEdit();
                     
                     if("geolocation" in navigator) {
                         navigator.geolocation.getCurrentPosition((pos) => {
@@ -252,6 +269,18 @@
                 
                 this.open = true;
                 setTimeout(() => { this.initMap(); }, 300);
+            },
+
+            async loadCitiesForEdit() {
+                if (!this.form.province) return;
+                const res = await fetch(`/api/locations/cities/${encodeURIComponent(this.form.province)}`);
+                this.citiesList = await res.json();
+            },
+
+            async loadDistrictsForEdit() {
+                if (!this.form.city) return;
+                const res = await fetch(`/api/locations/districts/${encodeURIComponent(this.form.city)}`);
+                this.districtsList = await res.json();
             },
 
             initMap() {

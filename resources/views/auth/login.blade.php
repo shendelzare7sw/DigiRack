@@ -4,7 +4,7 @@
 
     <div class="text-center mb-8">
         <h1 class="font-display font-bold text-2xl text-brand-navy">Selamat Datang Kembali</h1>
-        <p class="text-sm text-gray-500 mt-1">Masuk ke akun DigiRack Anda</p>
+        <p class="text-sm text-gray-500 mt-1">Masuk ke akun Digital Hook Anda</p>
     </div>
 
     <form method="POST" action="{{ route('login') }}">

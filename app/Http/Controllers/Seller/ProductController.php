@@ -20,7 +20,7 @@ class ProductController extends Controller
     {
         $store = Auth::user()->store;
         if (!$store) {
-            return redirect()->route('seller.dashboard')
+            return redirect()->route('admin.dashboard')
                 ->with('error', 'Anda belum memiliki toko. Silakan buat toko terlebih dahulu.');
         }
 
@@ -64,7 +64,7 @@ class ProductController extends Controller
     {
         $store = Auth::user()->store;
         if (!$store) {
-            return redirect()->route('seller.dashboard')
+            return redirect()->route('admin.dashboard')
                 ->with('error', 'Anda belum memiliki toko.');
         }
 
@@ -102,7 +102,7 @@ class ProductController extends Controller
     {
         $store = Auth::user()->store;
         if (!$store) {
-            return redirect()->route('seller.dashboard')
+            return redirect()->route('admin.dashboard')
                 ->with('error', 'Anda belum memiliki toko.');
         }
 
@@ -117,7 +117,7 @@ class ProductController extends Controller
     {
         $store = Auth::user()->store;
         if (!$store) {
-            return redirect()->route('seller.dashboard')->with('error', 'Anda belum memiliki toko.');
+            return redirect()->route('admin.dashboard')->with('error', 'Anda belum memiliki toko.');
         }
 
         $validated = $request->validate([
@@ -190,7 +190,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('seller.products.index')
+        return redirect()->route('admin.products.index')
             ->with('success', 'Produk "' . $product->name . '" berhasil ditambahkan!');
     }
 
@@ -312,7 +312,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('seller.products.index')
+        return redirect()->route('admin.products.index')
             ->with('success', 'Produk "' . $product->name . '" berhasil diperbarui!');
     }
 
@@ -333,7 +333,7 @@ class ProductController extends Controller
         $productName = $product->name;
         $product->delete();
 
-        return redirect()->route('seller.products.index')
+        return redirect()->route('admin.products.index')
             ->with('success', 'Produk "' . $productName . '" berhasil dihapus.');
     }
 }

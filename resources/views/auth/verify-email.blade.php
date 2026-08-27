@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="text-center mb-8">
         <h1 class="font-display font-bold text-2xl text-brand-navy">Verifikasi Email Anda</h1>
-        <p class="text-sm text-gray-500 mt-1">Satu langkah lagi sebelum akun DigiRack aktif sepenuhnya.</p>
+        <p class="text-sm text-gray-500 mt-1">Satu langkah lagi sebelum akun Digital Hook aktif sepenuhnya.</p>
     </div>
 
     @if(session('success'))

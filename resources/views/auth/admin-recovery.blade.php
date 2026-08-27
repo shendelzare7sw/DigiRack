@@ -17,7 +17,7 @@
         <!-- Identifier -->
         <div class="mb-4">
             <x-input-label for="identifier" value="Email atau Username Admin" class="text-gray-700 font-semibold text-sm" />
-            <x-text-input id="identifier" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-xl text-sm" type="text" name="identifier" :value="old('identifier')" required autofocus placeholder="admin@digirack.com" />
+            <x-text-input id="identifier" class="block mt-1 w-full border-gray-300 focus:border-red-500 focus:ring-red-500 rounded-xl text-sm" type="text" name="identifier" :value="old('identifier')" required autofocus placeholder="admin@digihook.com" />
             <x-input-error :messages="$errors->get('identifier')" class="mt-1" />
         </div>
 

@@ -71,7 +71,7 @@ class MidtransPaymentStatusTest extends TestCase
     private function createPendingOrder(): array
     {
         $buyer = User::factory()->create(['role' => 'buyer']);
-        $seller = User::factory()->create(['role' => 'seller']);
+        $seller = User::factory()->create(['role' => 'admin']);
 
         $store = Store::create([
             'user_id' => $seller->id,

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'DigiRack') }} - {{ $title ?? 'Pusat Peralatan Jaringan & IT' }}</title>
+        <title>{{ config('app.name', 'Digital Hook') }} - {{ $title ?? 'Pusat Peralatan Jaringan & IT' }}</title>
         <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
         <link rel="shortcut icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
         <link rel="apple-touch-icon" href="{{ asset('images/logo.jpg') }}">
@@ -44,10 +44,10 @@
                     
                     <!-- Col 1: Brand Info (4 cols on lg) -->
                     <div class="col-span-1 md:col-span-4 lg:col-span-4 lg:pr-8">
-                        <img src="{{ asset('images/logo-digirack.png') }}" alt="DigiRack" class="h-10 w-auto bg-white px-3 py-1.5 rounded-xl mb-6 shadow-sm">
-                        <h3 class="text-xl font-bold text-white mb-3">DigiRack Enterprise</h3>
+                        <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook" class="h-10 w-auto bg-white px-3 py-1.5 rounded-xl mb-6 shadow-sm">
+                        <h3 class="text-xl font-bold text-white mb-3">Digital Hook</h3>
                         <p class="text-gray-300 text-[15px] leading-relaxed mb-6">
-                            Marketplace B2B/B2C khusus infrastruktur jaringan, server, dan peralatan IT enterprise terpercaya di Indonesia yang dapat bersaing di kelas internasional.
+                            Komponen komputer, laptop second, periferal, dan aksesori digital dengan pengantaran same-day di Tangerang Raya.
                         </p>
                         
                         <!-- Social Icons -->
@@ -64,53 +64,10 @@
                         </div>
                     </div>
 
-                    <!-- Col 2: Jelajahi DigiRack (2 cols on lg) -->
+                    <!-- Col 2: Jelajahi Digital Hook (2 cols on lg) -->
                     <div class="col-span-1 md:col-span-2 lg:col-span-2">
-                        <h4 class="font-bold text-[17px] mb-6 text-blue-400 tracking-wide">Jelajahi DigiRack</h4>
+                        <h4 class="font-bold text-[17px] mb-6 text-blue-400 tracking-wide">Jelajahi Digital Hook</h4>
                         <ul class="space-y-4 text-[15px] text-gray-300">
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.about') }}" class="hover:text-white transition-colors">Tentang DigiRack</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.download-app') }}" class="hover:text-white transition-colors">Download App</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.selling') }}" class="hover:text-white transition-colors">Mulai Berjualan</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.b2b') }}" class="hover:text-white transition-colors">Mitra B2B</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.promos') }}" class="hover:text-white transition-colors">Promo Spesial</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <!-- Col 3: Layanan Pelanggan (3 cols on lg) -->
-                    <div class="col-span-1 md:col-span-2 lg:col-span-3">
-                        <h4 class="font-bold text-[17px] mb-6 text-green-400 tracking-wide">Layanan Pelanggan</h4>
-                        <ul class="space-y-4 text-[15px] text-gray-300">
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.help') }}" class="hover:text-white transition-colors">Pusat Bantuan</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('user.recovery.form') }}" class="hover:text-white transition-colors">Pemulihan Akun</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('products.index') }}" class="hover:text-white transition-colors">Belanja Produk</a>
-                            </li>
-                            <li class="flex items-center gap-2 group">
-                                <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
-                                <a href="{{ route('pages.selling') }}" class="hover:text-white transition-colors">Panduan Seller</a>
-                            </li>
                             <li class="flex items-center gap-2 group">
                                 <span class="text-white/50 group-hover:text-white transition-colors">›</span> 
                                 <a href="{{ auth()->check() ? route('profile.edit') : route('login') }}" class="hover:text-white transition-colors">Profil Saya</a>
@@ -121,26 +78,9 @@
                     <!-- Col 4: Pengiriman & Pembayaran (3 cols on lg) -->
                     <div class="col-span-1 md:col-span-4 lg:col-span-3">
                         <h4 class="font-bold text-[17px] mb-6 text-brand-blue tracking-wide">Metode Pengiriman</h4>
-                        <!-- Tampilan Grid (Kebawah) dengan Faux-Logo Cards -->
-                        <div class="grid grid-cols-3 gap-2 mb-8 pr-4 sm:pr-0">
-                            <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                <span class="text-[10px] font-black tracking-tight text-green-600">go<span class="text-black">send</span></span>
-                            </div>
-                            <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                <span class="text-[10px] font-black tracking-tight text-green-500">Grab</span>
-                            </div>
-                            <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                <span class="text-[12px] font-black tracking-tighter text-blue-800 italic">JNE</span>
-                            </div>
-                            <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                <span class="text-[12px] font-black tracking-tighter text-red-600">J&T</span>
-                            </div>
-                            <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                <span class="text-[10px] font-black tracking-tight text-red-600">SiCepat</span>
-                            </div>
-                            <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                <span class="text-[10px] font-black tracking-tight text-pink-500">AnterAja</span>
-                            </div>
+                        <div class="rounded-xl border border-white/15 bg-white/5 p-4 mb-8">
+                            <div class="flex items-center gap-3"><x-icon name="truck" class="w-8 h-8 text-cyan-300" /><div><strong class="block text-white">Kurir Digital Hook</strong><span class="text-xs text-blue-100">Same-day · Tangerang Raya</span></div></div>
+                            <p class="mt-3 text-xs leading-5 text-gray-300">Tidak menggunakan ekspedisi reguler. Ketersediaan alamat ditentukan sampai tingkat kecamatan.</p>
                         </div>
 
                         <div class="mt-8 pt-6 border-t border-white/10">
@@ -177,7 +117,7 @@
 
                 <!-- Footer Bottom -->
                 <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[14px] text-gray-400 gap-4 mt-8 pb-4">
-                    <p>&copy; {{ date('Y') }} PT Infrakarsa Sinergi Digital. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} Digital Hook. All rights reserved.</p>
                     <div class="flex flex-wrap justify-center gap-4 sm:gap-6 mt-4 md:mt-0">
                         <a href="{{ route('pages.privacy') }}" class="hover:text-white transition-colors">Kebijakan Privasi</a>
                         <a href="{{ route('pages.terms') }}" class="hover:text-white transition-colors">Syarat & Ketentuan</a>

@@ -5,26 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\DeliveryAreaService;
+use Illuminate\Validation\ValidationException;
 
 class ProfileAddressController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, DeliveryAreaService $deliveryAreas)
     {
-        $validated = $request->validate([
-            'label' => 'required|string|max:50',
-            'recipient_name' => 'required|string|max:100',
-            'phone' => 'required|string|max:20',
-            'full_address' => 'required|string',
-            'province' => 'required|string|max:100',
-            'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
-            'province_id' => 'nullable|exists:provinces,id',
-            'city_id' => 'nullable|exists:cities,id',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'is_primary' => 'nullable|boolean',
-        ]);
-
+        $validated = $this->validateAddress($request, $deliveryAreas);
+        $validated['province_id'] = null;
+        $validated['city_id'] = null;
         $user = Auth::user();
 
         // If it's the first address, force it to primary
@@ -46,27 +36,15 @@ class ProfileAddressController extends Controller
         return redirect()->back()->with('success', 'Alamat berhasil ditambahkan.');
     }
 
-    public function update(Request $request, Address $address)
+    public function update(Request $request, Address $address, DeliveryAreaService $deliveryAreas)
     {
         if ($address->user_id !== Auth::id()) {
             abort(403);
         }
 
-        $validated = $request->validate([
-            'label' => 'required|string|max:50',
-            'recipient_name' => 'required|string|max:100',
-            'phone' => 'required|string|max:20',
-            'full_address' => 'required|string',
-            'province' => 'required|string|max:100',
-            'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
-            'province_id' => 'nullable|exists:provinces,id',
-            'city_id' => 'nullable|exists:cities,id',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'is_primary' => 'nullable|boolean',
-        ]);
-
+        $validated = $this->validateAddress($request, $deliveryAreas);
+        $validated['province_id'] = null;
+        $validated['city_id'] = null;
         $isPrimary = $request->has('is_primary') ? true : false;
 
         if ($isPrimary && !$address->is_primary) {
@@ -114,5 +92,30 @@ class ProfileAddressController extends Controller
         $address->update(['is_primary' => true]);
 
         return redirect()->back()->with('success', 'Alamat utama berhasil diubah.');
+    }
+
+    private function validateAddress(Request $request, DeliveryAreaService $deliveryAreas): array
+    {
+        $validated = $request->validate([
+            'label' => 'required|string|max:50',
+            'recipient_name' => 'required|string|max:100',
+            'phone' => 'required|string|max:20',
+            'full_address' => 'required|string|max:1000',
+            'province' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'district' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:10',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'is_primary' => 'nullable|boolean',
+        ]);
+
+        if (! $deliveryAreas->isCovered($validated['province'], $validated['city'], $validated['district'])) {
+            throw ValidationException::withMessages([
+                'district' => 'Kecamatan yang dipilih belum masuk wilayah pengantaran same-day Digital Hook.',
+            ]);
+        }
+
+        return $validated;
     }
 }

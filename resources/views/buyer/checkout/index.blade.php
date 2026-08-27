@@ -14,9 +14,10 @@
                 'phone' => $a->phone,
                 'full_address' => $a->full_address,
                 'city' => $a->city,
+                'district' => $a->district,
                 'province' => $a->province,
                 'postal_code' => $a->postal_code,
-                'city_id' => $a->city_id,
+                'shipping_fee' => app(\App\Services\DeliveryAreaService::class)->shippingFee($a),
                 'is_primary' => $a->is_primary,
             ])) }}
         })">
@@ -65,13 +66,11 @@
                                         <template x-if="addr.is_primary">
                                             <span class="text-[10px] font-bold bg-brand-blue text-white px-2 py-0.5 rounded-full">UTAMA</span>
                                         </template>
-                                        <template x-if="!addr.city_id">
-                                            <span class="text-[10px] font-bold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full border border-yellow-300">Perlu diperbarui</span>
-                                        </template>
+                                        <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-200">TERJANGKAU</span>
                                     </div>
                                     <p class="text-sm font-semibold text-gray-700" x-text="addr.recipient_name + ' (' + addr.phone + ')'"></p>
                                     <p class="text-sm text-gray-600 mt-1 line-clamp-2" x-text="addr.full_address"></p>
-                                    <p class="text-xs text-gray-400 mt-1" x-text="addr.city + ', ' + addr.province + ' ' + addr.postal_code"></p>
+                                    <p class="text-xs text-gray-400 mt-1" x-text="'Kec. ' + addr.district + ', ' + addr.city + ', ' + addr.province + ' ' + addr.postal_code"></p>
                                 </div>
                             </label>
                         </template>
@@ -84,14 +83,6 @@
                         </a>
                     </div>
 
-                    {{-- Warning if selected address has no city_id --}}
-                    <div x-show="selectedAddressId && !selectedAddress?.city_id" class="mt-4 bg-yellow-50 border border-yellow-200 text-yellow-700 p-3 rounded-xl text-sm flex items-start gap-2">
-                        <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
-                        <div>
-                            Alamat ini belum memiliki data kota yang valid untuk menghitung ongkir. 
-                            <a href="{{ route('profile.edit') }}#address-section" class="font-bold underline">Edit alamat ini</a> dan pilih provinsi/kota dari dropdown.
-                        </div>
-                    </div>
                 </div>
 
                 {{-- Daftar Produk Per Toko --}}
@@ -123,61 +114,9 @@
                         @endforeach
                     </div>
                     
-                    {{-- Pilihan Kurir Per Toko --}}
-                    @php
-                        $hasInternal = isset($data['custom_couriers']) && $data['custom_couriers']->count() > 0;
-                        $hasExpeditions = !empty($data['active_expeditions']);
-                    @endphp
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <p class="text-sm font-semibold text-gray-700 mb-3 block">Metode Pengiriman</p>
-
-                        @if(!$hasInternal && !$hasExpeditions)
-                            <div class="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 flex items-start gap-2">
-                                <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
-                                <div>
-                                    <span class="font-bold">Tidak ada pengiriman yang tersedia.</span>
-                                    Toko ini belum mengaktifkan kurir apa pun, sehingga produknya belum dapat di-checkout. Silakan hapus produk toko ini dari pilihan atau hubungi penjual.
-                                </div>
-                            </div>
-                        @else
-                            <div x-show="!selectedAddress?.city_id" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                                Pilih alamat dengan data kota valid terlebih dahulu untuk menghitung ongkir.
-                            </div>
-
-                            <div x-show="selectedAddress?.city_id" class="space-y-3">
-                                <select name="couriers[{{ $storeId }}]" x-model="selectedCouriers[{{ $storeId }}]" @change="calculateShipping({{ $storeId }})" required
-                                    class="w-full border border-gray-200 rounded-xl px-4 py-2 text-sm focus:border-brand-navy focus:ring-brand-navy/20 bg-white">
-                                    <option value="">Pilih Kurir</option>
-                                    @if($hasInternal)
-                                        <optgroup label="Kurir Internal / Instan">
-                                            @foreach($data['custom_couriers'] as $customC)
-                                                <option value="toko_{{ $customC->id }}">{{ $customC->name }} - Rp {{ number_format($customC->price, 0, ',', '.') }}{{ $customC->estimation ? ' ('.$customC->estimation.')' : '' }}</option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endif
-                                    @if($hasExpeditions)
-                                        <optgroup label="Ekspedisi Reguler">
-                                            @foreach($data['active_expeditions'] as $expCode => $expLabel)
-                                                <option value="{{ $expCode }}">{{ $expLabel }}</option>
-                                            @endforeach
-                                        </optgroup>
-                                    @endif
-                                </select>
-
-                                <div x-show="isCalculating[{{ $storeId }}]" class="text-xs text-gray-500 flex items-center gap-2">
-                                    <svg class="animate-spin h-3 w-3 text-brand-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    Menghitung tarif...
-                                </div>
-
-                                <div x-show="ongkirError[{{ $storeId }}]" x-text="ongkirError[{{ $storeId }}]" class="text-xs text-red-500 font-medium"></div>
-
-                                <div x-show="shippingCosts[{{ $storeId }}] > 0" class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600">Biaya Kirim (<span x-text="stores.find(s => s.id == {{ $storeId }}).weight"></span>g)</span>
-                                    <span class="font-bold text-gray-900" x-text="'Rp ' + formatRupiah(shippingCosts[{{ $storeId }}])"></span>
-                                </div>
-                            </div>
-                        @endif
-
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <input type="hidden" name="couriers[{{ $storeId }}]" value="digital_hook_sameday">
+                        <div class="flex items-start gap-3"><x-icon name="truck" class="w-6 h-6 text-brand-blue shrink-0" /><div class="flex-1"><p class="text-sm font-bold text-gray-900">{{ config('digitalhook.courier_name') }}</p><p class="text-xs text-gray-600 mt-1">Diantar langsung pada hari yang sama untuk pesanan sebelum pukul {{ config('digitalhook.order_cutoff') }}.</p><div class="mt-2 flex justify-between text-sm"><span>Tarif wilayah</span><strong x-text="selectedAddress ? 'Rp ' + formatRupiah(selectedAddress.shipping_fee) : '-' "></strong></div></div></div>
                     </div>
                 </div>
                 @endforeach
@@ -262,10 +201,6 @@
                 addresses: config.addresses,
                 productSubtotal: config.productSubtotal,
                 totalBuyerFees: config.totalBuyerFees,
-                customCouriersData: {!! json_encode(collect($storesData)->mapWithKeys(function($data, $id) {
-                    return [$id => $data['custom_couriers']->map(fn($c) => ['id' => 'toko_'.$c->id, 'price' => $c->price])];
-                })) !!},
-                
                 selectedAddressId: config.addresses.find(a => a.is_primary)?.id || config.addresses[0]?.id || '',
                 
                 selectedCouriers: {},
@@ -279,74 +214,19 @@
 
                 init() {
                     this.stores.forEach(store => {
-                        this.selectedCouriers[store.id] = "";
-                        this.shippingCosts[store.id] = 0;
+                        this.selectedCouriers[store.id] = "digital_hook_sameday";
+                        this.shippingCosts[store.id] = this.selectedAddress?.shipping_fee || 0;
                         this.isCalculating[store.id] = false;
                         this.ongkirError[store.id] = null;
                     });
                 },
 
                 onAddressChange() {
-                    // Reset all shipping when address changes
                     this.stores.forEach(store => {
-                        this.selectedCouriers[store.id] = "";
-                        this.shippingCosts[store.id] = 0;
+                        this.selectedCouriers[store.id] = "digital_hook_sameday";
+                        this.shippingCosts[store.id] = this.selectedAddress?.shipping_fee || 0;
                         this.ongkirError[store.id] = null;
                     });
-                },
-
-                async calculateShipping(storeId) {
-                    const courier = this.selectedCouriers[storeId];
-                    const addr = this.selectedAddress;
-                    if (!courier || !addr?.city_id) return;
-
-                    const store = this.stores.find(s => s.id == storeId);
-                    
-                    this.isCalculating[storeId] = true;
-                    this.ongkirError[storeId] = null;
-                    this.shippingCosts[storeId] = 0;
-
-                    if (courier.startsWith('toko_')) {
-                        let customCouriers = this.customCouriersData[storeId] || [];
-                        let customItem = customCouriers.find(c => c.id === courier);
-                        if(customItem) {
-                            this.shippingCosts[storeId] = parseFloat(customItem.price);
-                        } else {
-                            this.ongkirError[storeId] = "Tarif kurir toko tidak valid.";
-                        }
-                        this.isCalculating[storeId] = false;
-                        return;
-                    }
-
-                    try {
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                        const res = await fetch('/api/ongkir/calculate', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken
-                            },
-                            body: JSON.stringify({
-                                origin: store.origin_city_id,
-                                destination: addr.city_id,
-                                weight: store.weight,
-                                courier: courier
-                            })
-                        });
-
-                        const data = await res.json();
-                        if (data.success && data.data.length > 0) {
-                            this.shippingCosts[storeId] = data.data[0].cost[0].value;
-                        } else {
-                            this.ongkirError[storeId] = data.message || "Layanan tidak didukung untuk rute ini.";
-                            this.selectedCouriers[storeId] = "";
-                        }
-                    } catch (e) {
-                        this.ongkirError[storeId] = "Gagal menghubungi server ongkir.";
-                    } finally {
-                        this.isCalculating[storeId] = false;
-                    }
                 },
 
                 get isAnyCalculating() {

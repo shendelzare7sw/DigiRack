@@ -81,7 +81,7 @@ class WishlistStateSyncTest extends TestCase
         ]);
 
         $seller = User::factory()->create([
-            'role' => 'seller',
+            'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 

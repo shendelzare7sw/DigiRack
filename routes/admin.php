@@ -18,6 +18,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
     Route::post('/users/{id}/toggle-active', [\App\Http\Controllers\Admin\UserController::class, 'toggleActive'])->name('users.toggle');
+    Route::patch('/users/{user}/identity/approve', [\App\Http\Controllers\Admin\UserController::class, 'approveIdentity'])->name('users.identity.approve');
+    Route::patch('/users/{user}/identity/reject', [\App\Http\Controllers\Admin\UserController::class, 'rejectIdentity'])->name('users.identity.reject');
 
     // Recovery Tickets
     Route::get('/recovery-tickets', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'index'])->name('recovery-tickets.index');
@@ -25,22 +27,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/recovery-tickets/{ticket}/resolve', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'resolve'])->name('recovery-tickets.resolve');
     Route::post('/recovery-tickets/{ticket}/expire', [\App\Http\Controllers\Admin\RecoveryTicketController::class, 'expire'])->name('recovery-tickets.expire');
 
-    // Stores
-    Route::get('/stores', [\App\Http\Controllers\Admin\StoreController::class, 'index'])->name('stores.index');
-    Route::get('/stores/{id}', [\App\Http\Controllers\Admin\StoreController::class, 'show'])->name('stores.show');
-    Route::post('/stores/{id}/toggle-active', [\App\Http\Controllers\Admin\StoreController::class, 'toggleActive'])->name('stores.toggle');
-    Route::post('/stores/{id}/toggle-verify', [\App\Http\Controllers\Admin\StoreController::class, 'toggleVerification'])->name('stores.verify');
-    Route::post('/stores/{id}/reject', [\App\Http\Controllers\Admin\StoreController::class, 'reject'])->name('stores.reject');
-
-    // Products (moderation)
-    Route::get('/products', [\App\Http\Controllers\Admin\ProductModerationController::class, 'index'])->name('products.index');
-    Route::get('/products/{id}', [\App\Http\Controllers\Admin\ProductModerationController::class, 'show'])->name('products.show');
-    Route::post('/products/{id}/toggle-status', [\App\Http\Controllers\Admin\ProductModerationController::class, 'toggleStatus'])->name('products.toggle');
+    // Single-store operations (admin is also the only seller).
+    Route::get('/store', [\App\Http\Controllers\Seller\StoreProfileController::class, 'show'])->name('store.show');
+    Route::post('/store', [\App\Http\Controllers\Seller\StoreProfileController::class, 'update'])->name('store.update');
+    Route::get('/products', [\App\Http\Controllers\Seller\ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/report', [\App\Http\Controllers\Seller\ProductController::class, 'report'])->name('products.report');
+    Route::get('/products/create', [\App\Http\Controllers\Seller\ProductController::class, 'create'])->name('products.create');
+    Route::post('/products/create', [\App\Http\Controllers\Seller\ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}/edit', [\App\Http\Controllers\Seller\ProductController::class, 'edit'])->name('products.edit');
+    Route::post('/products/{id}/edit', [\App\Http\Controllers\Seller\ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [\App\Http\Controllers\Seller\ProductController::class, 'destroy'])->name('products.destroy');
 
     // Orders
-    Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/report', [\App\Http\Controllers\Admin\OrderController::class, 'report'])->name('orders.report');
-    Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders', [\App\Http\Controllers\Seller\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/report', [\App\Http\Controllers\Seller\OrderController::class, 'report'])->name('orders.report');
+    Route::get('/orders/{id}', [\App\Http\Controllers\Seller\OrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{id}/status', [\App\Http\Controllers\Seller\OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::post('/orders/{id}/delivered', [\App\Http\Controllers\Seller\OrderController::class, 'markDelivered'])->name('orders.delivered');
+    Route::post('/orders/{id}/cancellation', [\App\Http\Controllers\Seller\OrderController::class, 'resolveCancellation'])->name('orders.cancellation');
+    Route::post('/orders/{id}/reviews/{review}/reply', [\App\Http\Controllers\Seller\OrderController::class, 'replyReview'])->name('orders.reviews.reply');
+    Route::post('/store-reviews/{storeReview}/reply', [\App\Http\Controllers\Seller\StoreReviewController::class, 'reply'])->name('store-reviews.reply');
 
     // Categories
     Route::get('/categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('categories.index');
@@ -62,11 +68,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/flash-sales/{id}', [\App\Http\Controllers\Admin\FlashSaleController::class, 'update'])->name('flash-sales.update');
     Route::post('/flash-sales/{id}/toggle-active', [\App\Http\Controllers\Admin\FlashSaleController::class, 'toggleActive'])->name('flash-sales.toggle');
     Route::delete('/flash-sales/{id}', [\App\Http\Controllers\Admin\FlashSaleController::class, 'destroy'])->name('flash-sales.destroy');
-
-    // Payout logic
-    Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
-    Route::post('/payouts/{id}/approve', [\App\Http\Controllers\Admin\PayoutController::class, 'approve'])->name('payouts.approve');
-    Route::post('/payouts/{id}/reject', [\App\Http\Controllers\Admin\PayoutController::class, 'reject'])->name('payouts.reject');
 
     // Settings
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');

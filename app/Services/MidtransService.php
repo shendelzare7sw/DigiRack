@@ -191,7 +191,7 @@ class MidtransService
                     'new_order',
                     '🎉 Pesanan Baru Masuk!',
                     'Pesanan ' . $order->invoice_number . ' senilai Rp ' . number_format($order->total_price, 0, ',', '.') . ' telah dibayar. Segera proses dan kirimkan!',
-                    route('seller.orders.show', $order->id),
+                    route('admin.orders.show', $order->id),
                     '🛒'
                 ));
             }

@@ -51,7 +51,7 @@ class PasswordResetTest extends TestCase
     {
         Notification::fake();
 
-        config(['app.url' => 'https://digirack.sipaduhok.my.id']);
+        config(['app.url' => 'https://digihook.sipaduhok.my.id']);
 
         $user = User::factory()->create();
 
@@ -61,7 +61,7 @@ class PasswordResetTest extends TestCase
             $mail = $notification->toMail($user);
 
             $this->assertStringStartsWith(
-                'https://digirack.sipaduhok.my.id/reset-password/',
+                'https://digihook.sipaduhok.my.id/reset-password/',
                 $mail->actionUrl
             );
             $this->assertStringContainsString('email='.urlencode($user->email), $mail->actionUrl);

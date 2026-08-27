@@ -5,7 +5,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            Kelola nama, email, dan nomor kontak akun DigiRack Anda.
+            Kelola nama, email, dan nomor kontak akun Digital Hook Anda.
         </p>
     </header>
 

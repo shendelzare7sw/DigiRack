@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="text-center mb-8">
         <h1 class="font-display font-bold text-2xl text-brand-navy">Buat Akun Baru</h1>
-        <p class="text-sm text-gray-500 mt-1">Gabung di ekosistem DigiRack — belanja & jualan dalam satu akun</p>
+        <p class="text-sm text-gray-500 mt-1">Daftar sebagai pembeli Digital Hook untuk belanja di wilayah Tangerang Raya.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}">

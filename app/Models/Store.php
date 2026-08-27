@@ -14,9 +14,7 @@ class Store extends Model
      * Keyed by the code used in checkout / OngkirController.
      */
     public const EXPEDITIONS = [
-        'jne' => 'JNE',
-        'pos' => 'POS Indonesia',
-        'tiki' => 'TIKI',
+        // Digital Hook intentionally does not use third-party expeditions.
     ];
 
     protected $fillable = [
@@ -65,11 +63,7 @@ class Store extends Model
      */
     public function activeExpeditions(): array
     {
-        $enabled = $this->enabled_expeditions ?? [];
-
-        return collect(self::EXPEDITIONS)
-            ->only($enabled)
-            ->all();
+        return [];
     }
 
     /**
@@ -109,7 +103,7 @@ class Store extends Model
     {
         return $this->logo
             ? asset('storage/' . $this->logo)
-            : asset('images/logo-digirack.png');
+            : asset('images/digital-hook-logo.png');
     }
 
     public function getBannerUrlAttribute(): ?string

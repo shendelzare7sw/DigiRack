@@ -123,7 +123,7 @@ class StoreReviewController extends Controller
                 $type,
                 $title,
                 $message,
-                route('seller.dashboard'),
+                route('admin.dashboard'),
             ));
         } catch (\Throwable $e) {
             Log::warning('Store review notification failed: ' . $e->getMessage(), [

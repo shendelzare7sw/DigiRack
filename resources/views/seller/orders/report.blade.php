@@ -10,7 +10,7 @@
     title="Laporan Penjualan — {{ $store->name }}"
     subtitle="{{ $period }} • {{ $statusFilter }}"
     doc-label="LAPORAN PENJUALAN"
-    :back-url="route('seller.orders.index', request()->only(['status']))">
+    :back-url="route('admin.orders.index', request()->only(['status']))">
 
     <div class="mb-5">
         <p class="text-sm font-bold text-gray-900">{{ $store->name }}</p>

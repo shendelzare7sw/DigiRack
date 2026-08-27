@@ -42,7 +42,7 @@
                     <x-icon name="building-storefront" class="w-14 h-14 text-brand-navy/50" />
                 </div>
                 <h2 class="font-display font-bold text-xl text-gray-700 mb-2">Belum Ada Toko</h2>
-                <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Buat toko Anda untuk mulai menjual produk infrastruktur IT di DigiRack.</p>
+                <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Buat toko Anda untuk mulai menjual produk infrastruktur IT di Digital Hook.</p>
                 <a href="{{ route('seller.register.form') }}" class="inline-flex items-center gap-2 bg-brand-navy hover:bg-brand-navydark text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-colors">
                     <x-icon name="plus" class="w-4 h-4" />
                     Buat Toko
