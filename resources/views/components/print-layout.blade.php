@@ -12,7 +12,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title }} — Digital Hook</title>
-    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/digital-hook-icon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
@@ -66,7 +66,7 @@
     @if($watermark)
         <div class="dr-watermark" aria-hidden="true">
             <div class="dr-watermark__text">{!! str_repeat('Digital Hook&nbsp; ', 700) !!}</div>
-            <img class="dr-watermark__logo" src="{{ asset('images/digital-hook-logo.png') }}" alt="">
+            <img class="dr-watermark__logo" src="{{ asset('images/digital-hook-logo-white.png') }}" alt="">
         </div>
     @endif
 
@@ -89,7 +89,7 @@
             {{-- Document header --}}
             <div class="px-5 sm:px-8 py-5 sm:py-7 border-b border-gray-100 flex items-start justify-between gap-4">
                 <div class="flex flex-col items-start gap-1.5 min-w-0">
-                    <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook" class="h-9 sm:h-11 w-auto">
+                    <img src="{{ asset('images/digital-hook-logo-white.png') }}" alt="Digital Hook" class="h-9 sm:h-11 w-auto">
                     <p class="text-[10px] sm:text-xs text-gray-500 leading-tight">PT Infrakarsa Sinergi Digital</p>
                 </div>
                 <div class="text-right shrink-0">

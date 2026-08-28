@@ -6,9 +6,9 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Digital Hook') }} - Login / Register</title>
-        <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
-        <link rel="shortcut icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
-        <link rel="apple-touch-icon" href="{{ asset('images/logo.jpg') }}">
+        <link rel="icon" type="image/png" href="{{ asset('images/digital-hook-icon.png') }}">
+        <link rel="shortcut icon" type="image/png" href="{{ asset('images/digital-hook-icon.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/digital-hook-icon.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
             <div class="relative z-10 w-full sm:max-w-md flex flex-col items-center">
                 <!-- Logo -->
                 <a href="/" class="mb-8 hover:scale-105 transition-transform">
-                    <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook Logo" class="h-14 w-auto drop-shadow-sm" />
+                    <img src="{{ asset('images/digital-hook-logo-white.png') }}" alt="Digital Hook Logo" class="h-14 w-auto drop-shadow-sm" />
                 </a>
 
                 <!-- Card -->

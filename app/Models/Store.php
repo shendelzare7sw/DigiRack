@@ -103,7 +103,7 @@ class Store extends Model
     {
         return $this->logo
             ? asset('storage/' . $this->logo)
-            : asset('images/digital-hook-logo.png');
+            : asset('images/digital-hook-logo-white.png');
     }
 
     public function getBannerUrlAttribute(): ?string

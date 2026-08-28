@@ -24,7 +24,7 @@
             </div>
             
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900 mb-2">Pesanan Dibuat!</h1>
-            <p class="text-gray-500 text-sm mb-6">Satu langkah lagi. Silakan selesaikan pembayaran Anda via Midtrans.</p>
+            <p class="text-gray-500 text-sm mb-6">Satu langkah lagi. Pilih metode pembayaran yang paling nyaman untuk Anda.</p>
             
             <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 mb-8 text-left inline-block w-full max-w-sm mx-auto">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 text-sm gap-0.5">

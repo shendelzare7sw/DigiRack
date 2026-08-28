@@ -218,7 +218,7 @@
                             <x-icon name="clock" class="w-5 h-5" />
                             Menunggu Pembayaran Buyer
                         </h3>
-                        <p class="text-xs text-gray-600">Pesanan ini sedang menunggu pembayaran dari pembeli via Midtrans.</p>
+                        <p class="text-xs text-gray-600">Pesanan ini sedang menunggu pembayaran dari pembeli.</p>
                     </div>
                 @elseif($order->status === 'cancellation_requested')
                     <div class="bg-orange-50 rounded-2xl shadow-sm border border-orange-200 p-5 relative overflow-hidden">

@@ -171,7 +171,7 @@
                             <x-icon name="clock" class="w-5 h-5" />
                             Menunggu Pembayaran
                         </h3>
-                        <p class="text-sm text-gray-600 mb-4">Selesaikan pembayaran Anda agar pesanan bisa segera diproses oleh penjual.</p>
+                        <p class="text-sm text-gray-600 mb-4">Selesaikan pembayaran agar pesanan bisa segera diproses oleh Digital Hook.</p>
 
                         @if($order->payment_token)
                             <button type="button" id="pay-now-btn"
@@ -212,7 +212,7 @@
                         </h3>
                         <p class="text-sm text-gray-600 mb-4">
                             {{ $order->delivered_at
-                                ? 'Pastikan paket sudah Anda terima dalam kondisi baik. Dana akan dicairkan ke penjual setelah konfirmasi.'
+                                ? 'Pastikan paket sudah Anda terima dalam kondisi baik sebelum mengonfirmasi.'
                                 : 'Paket sedang dikirim. Jika barang sudah Anda terima lebih dulu, Anda tetap bisa mengonfirmasi pesanan.' }}
                         </p>
                         @if($autoCompleteAt)
@@ -283,7 +283,7 @@
                         <p class="text-sm text-orange-700 mb-4">Pembayaran berhasil! Penjual sedang menyiapkan pesanan Anda untuk dikirim.</p>
                         <form action="{{ route('buyer.orders.cancel', $order->id) }}" method="POST" class="text-left" x-data @submit.prevent="$dispatch('open-confirm-modal', { form: $el, title: 'Ajukan Pembatalan', message: 'Pesanan sudah diproses. Permintaan pembatalan akan ditinjau oleh Digital Hook.', type: 'danger', confirmText: 'Kirim Permintaan' })">
                             @csrf
-                            <textarea name="cancellation_reason" rows="3" maxlength="500" class="w-full border-orange-200 focus:border-red-400 focus:ring-red-400 rounded-xl text-sm" placeholder="Tulis alasan pembatalan agar penjual bisa mempertimbangkan."></textarea>
+                            <textarea name="cancellation_reason" rows="3" maxlength="500" class="w-full border-orange-200 focus:border-red-400 focus:ring-red-400 rounded-xl text-sm" placeholder="Tulis alasan pembatalan agar admin dapat meninjaunya."></textarea>
                             <button type="submit" class="mt-3 w-full bg-white border border-red-200 hover:border-red-400 text-red-600 font-bold py-3 text-sm rounded-xl transition-all flex items-center justify-center gap-2">
                                 <x-icon name="x-circle" class="w-5 h-5" /> Minta Pembatalan
                             </button>

@@ -12,14 +12,14 @@ class PageController extends Controller
             'title' => 'Download App Digital Hook',
             'eyebrow' => 'Mobile App',
             'heading' => 'Aplikasi mobile Digital Hook sedang dalam pengembangan.',
-            'description' => 'Kami sedang menyiapkan pengalaman belanja dan pengelolaan toko yang lebih ringkas melalui aplikasi Android dan iOS.',
+            'description' => 'Kami sedang menyiapkan pengalaman belanja yang lebih ringkas melalui aplikasi Android dan iOS.',
             'accent' => 'blue',
             'primaryAction' => ['label' => 'Belanja via Website', 'url' => route('products.index')],
             'secondaryAction' => ['label' => 'Kembali ke Beranda', 'url' => route('home')],
             'highlights' => [
                 ['icon' => 'device-phone-mobile', 'title' => 'Coming Soon', 'body' => 'Aplikasi mobile belum tersedia untuk diunduh. Semua fitur utama tetap bisa digunakan dari website.'],
-                ['icon' => 'bell', 'title' => 'Notifikasi Lebih Praktis', 'body' => 'Rencana pengembangan mencakup notifikasi pesanan, status pembayaran, dan aktivitas toko.'],
-                ['icon' => 'shopping-cart', 'title' => 'Belanja Lebih Cepat', 'body' => 'Kami ingin membuat pencarian produk IT, checkout, dan tracking pesanan lebih nyaman di ponsel.'],
+                ['icon' => 'bell', 'title' => 'Notifikasi Lebih Praktis', 'body' => 'Rencana pengembangan mencakup notifikasi pesanan, pembayaran, dan pengiriman.'],
+                ['icon' => 'shopping-cart', 'title' => 'Belanja Lebih Cepat', 'body' => 'Kami ingin membuat pencarian produk komputer, checkout, dan pelacakan pesanan lebih nyaman di ponsel.'],
             ],
             'sections' => [
                 ['title' => 'Sementara ini gunakan website', 'body' => 'Digital Hook versi website sudah mendukung katalog, verifikasi KTP, checkout, wishlist, dan pelacakan pesanan. Simpan halaman ini di layar utama browser ponsel agar aksesnya terasa seperti aplikasi.'],
@@ -83,7 +83,7 @@ class PageController extends Controller
             'secondaryAction' => ['label' => 'Cek Flash Sale', 'url' => route('home') . '#kategori'],
             'highlights' => [
                 ['icon' => 'fire', 'title' => 'Flash Sale', 'body' => 'Produk tertentu bisa masuk program diskon berbatas waktu saat promo aktif.'],
-                ['icon' => 'tag', 'title' => 'Kategori Pilihan', 'body' => 'Promo dapat diarahkan untuk kategori populer seperti jaringan, kabel, wireless, server, dan tools.'],
+                ['icon' => 'tag', 'title' => 'Kategori Pilihan', 'body' => 'Promo tersedia untuk kategori populer seperti komponen PC, laptop, periferal, penyimpanan, dan aksesori digital.'],
                 ['icon' => 'bell-alert', 'title' => 'Pantau Notifikasi', 'body' => 'Login untuk melihat notifikasi terkait pesanan dan pembaruan penting dari Digital Hook.'],
             ],
             'sections' => [
@@ -141,7 +141,7 @@ class PageController extends Controller
                         'Membuat dan mengamankan akun pengguna, termasuk OTP pendaftaran dan verifikasi email.',
                         'Memproses checkout, pembayaran, invoice, pengiriman, pembatalan, dan konfirmasi penerimaan barang.',
                         'Memverifikasi identitas pembeli untuk membantu mencegah transaksi fiktif dan penyalahgunaan layanan kurir toko.',
-                        'Mengirim notifikasi penting terkait akun, pesanan, pembayaran, pengiriman, pemulihan akun, dan aktivitas toko.',
+                        'Mengirim notifikasi penting terkait akun, pesanan, pembayaran, pengiriman, dan pemulihan akun.',
                         'Meningkatkan keamanan, mencegah penyalahgunaan, dan memastikan operasional platform berjalan stabil.',
                     ],
                 ],

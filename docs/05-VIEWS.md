@@ -1,6 +1,6 @@
 # View dan Navigasi
 
-Desain Blade, Alpine.js, dan Tailwind lama dipertahankan. Branding aktif menggunakan nama Digital Hook dan aset `public/images/digital-hook-logo.png`.
+Desain Blade, Alpine.js, dan Tailwind lama dipertahankan. Branding aktif menggunakan `public/images/digital-hook-logo-white.png` untuk wordmark dan `public/images/digital-hook-icon.png` untuk favicon.
 
 ## Navigasi buyer
 

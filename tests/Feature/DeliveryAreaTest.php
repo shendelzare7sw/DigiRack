@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Address;
 use App\Services\DeliveryAreaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,7 +20,12 @@ class DeliveryAreaTest extends TestCase
         $this->assertTrue($service->isCovered('Banten', 'Kota Tangerang Selatan', 'Pamulang'));
         $this->assertTrue($service->isCovered('Banten', 'Kabupaten Tangerang', 'Kelapa Dua'));
         $this->assertFalse($service->isCovered('Banten', 'Kabupaten Tangerang', 'Kronjo'));
-        $this->assertSame(20_000, $service->shippingFee('Banten', 'Kota Tangerang', 'Karawaci'));
+        $address = new Address([
+            'province' => 'Banten',
+            'city' => 'Kota Tangerang',
+            'district' => 'Karawaci',
+        ]);
+        $this->assertSame(20_000, $service->shippingFee($address));
     }
 
     public function test_buyer_cannot_save_address_outside_delivery_coverage(): void

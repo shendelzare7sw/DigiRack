@@ -166,7 +166,7 @@ class OrderController extends Controller
                 Log::warning('Order cancellation request notification failed: ' . $e->getMessage(), ['order_id' => $order->id]);
             }
 
-            return back()->with('success', 'Permintaan pembatalan dikirim ke penjual. Pesanan akan dibatalkan setelah disetujui penjual.');
+            return back()->with('success', 'Permintaan pembatalan dikirim ke Digital Hook dan akan ditinjau oleh admin.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Order cancellation request error: ' . $e->getMessage(), ['order_id' => $id]);

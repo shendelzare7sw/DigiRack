@@ -5,10 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Digital Hook') }} - {{ $title ?? 'Pusat Peralatan Jaringan & IT' }}</title>
-        <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
-        <link rel="shortcut icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">
-        <link rel="apple-touch-icon" href="{{ asset('images/logo.jpg') }}">
+        <title>{{ config('app.name', 'Digital Hook') }} - {{ $title ?? 'Komputer & Aksesori Digital' }}</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/digital-hook-icon.png') }}">
+        <link rel="shortcut icon" type="image/png" href="{{ asset('images/digital-hook-icon.png') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/digital-hook-icon.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,9 +42,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-10 lg:gap-8 mb-12">
                     
-                    <!-- Col 1: Brand Info (4 cols on lg) -->
-                    <div class="col-span-1 md:col-span-4 lg:col-span-4 lg:pr-8">
-                        <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook" class="h-10 w-auto bg-white px-3 py-1.5 rounded-xl mb-6 shadow-sm">
+                    <!-- Col 1: Brand Info -->
+                    <div class="col-span-1 md:col-span-4 lg:col-span-5 lg:pr-10">
+                        <img src="{{ asset('images/digital-hook-logo-white.png') }}" alt="Digital Hook" class="h-10 w-auto bg-white px-3 py-1.5 rounded-xl mb-6 shadow-sm">
                         <h3 class="text-xl font-bold text-white mb-3">Digital Hook</h3>
                         <p class="text-gray-300 text-[15px] leading-relaxed mb-6">
                             Komponen komputer, laptop second, periferal, dan aksesori digital dengan pengantaran same-day di Tangerang Raya.
@@ -64,8 +64,8 @@
                         </div>
                     </div>
 
-                    <!-- Col 2: Jelajahi Digital Hook (2 cols on lg) -->
-                    <div class="col-span-1 md:col-span-2 lg:col-span-2">
+                    <!-- Col 2: Jelajahi Digital Hook -->
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3">
                         <h4 class="font-bold text-[17px] mb-6 text-blue-400 tracking-wide">Jelajahi Digital Hook</h4>
                         <ul class="space-y-4 text-[15px] text-gray-300">
                             <li class="flex items-center gap-2 group">
@@ -75,41 +75,25 @@
                         </ul>
                     </div>
 
-                    <!-- Col 4: Pengiriman & Pembayaran (3 cols on lg) -->
-                    <div class="col-span-1 md:col-span-4 lg:col-span-3">
-                        <h4 class="font-bold text-[17px] mb-6 text-brand-blue tracking-wide">Metode Pengiriman</h4>
-                        <div class="rounded-xl border border-white/15 bg-white/5 p-4 mb-8">
-                            <div class="flex items-center gap-3"><x-icon name="truck" class="w-8 h-8 text-cyan-300" /><div><strong class="block text-white">Kurir Digital Hook</strong><span class="text-xs text-blue-100">Same-day · Tangerang Raya</span></div></div>
-                            <p class="mt-3 text-xs leading-5 text-gray-300">Tidak menggunakan ekspedisi reguler. Ketersediaan alamat ditentukan sampai tingkat kecamatan.</p>
-                        </div>
-
-                        <div class="mt-8 pt-6 border-t border-white/10">
-                            <h4 class="font-bold text-[17px] mb-6 text-brand-blue tracking-wide">Metode Pembayaran</h4>
-                            <div class="grid grid-cols-3 gap-2 pr-4 sm:pr-0">
-                                <!-- Midtrans takes full width of its row or 2 cols -->
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm col-span-3 sm:col-span-2">
-                                    <span class="text-[11px] font-black text-brand-navy flex items-center gap-1">
-                                        <x-icon name="shield-check" class="w-4 h-4 text-green-500" /> Midtrans Gateway
-                                    </span>
-                                </div>
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                    <span class="text-[12px] font-black tracking-tighter text-blue-800 italic">BCA</span>
-                                </div>
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                    <span class="text-[12px] font-black tracking-tighter text-blue-500 italic">BNI</span>
-                                </div>
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                    <span class="text-[11px] font-black tracking-tight text-yellow-500">mandiri</span>
-                                </div>
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                    <span class="text-[11px] font-bold tracking-tight text-blue-500">gopay</span>
-                                </div>
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                    <span class="text-[11px] font-black tracking-tight text-purple-600">OVO</span>
-                                </div>
-                                <div class="bg-white rounded p-1.5 flex items-center justify-center h-9 shadow-sm">
-                                    <span class="text-[11px] font-black tracking-tighter text-red-600">QRIS</span>
-                                </div>
+                    <!-- Col 3: Pembayaran -->
+                    <div class="col-span-1 md:col-span-2 lg:col-span-4">
+                        <h4 class="font-bold text-[17px] mb-6 text-brand-blue tracking-wide">Metode Pembayaran</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="flex items-center gap-3 rounded-xl bg-white px-3 py-3 text-brand-navy shadow-sm">
+                                <x-icon name="building-library" class="h-6 w-6 shrink-0 text-blue-700" />
+                                <span class="text-xs font-bold leading-tight">Transfer Bank<br><span class="font-medium text-gray-500">Virtual Account</span></span>
+                            </div>
+                            <div class="flex items-center gap-3 rounded-xl bg-white px-3 py-3 text-brand-navy shadow-sm">
+                                <x-icon name="qr-code" class="h-6 w-6 shrink-0 text-red-600" />
+                                <span class="text-sm font-black">QRIS</span>
+                            </div>
+                            <div class="flex items-center gap-3 rounded-xl bg-white px-3 py-3 text-brand-navy shadow-sm">
+                                <x-icon name="device-phone-mobile" class="h-6 w-6 shrink-0 text-cyan-600" />
+                                <span class="text-xs font-bold leading-tight">E-Wallet</span>
+                            </div>
+                            <div class="flex items-center gap-3 rounded-xl bg-white px-3 py-3 text-brand-navy shadow-sm">
+                                <x-icon name="credit-card" class="h-6 w-6 shrink-0 text-amber-600" />
+                                <span class="text-xs font-bold leading-tight">Kartu Debit<br><span class="font-medium text-gray-500">atau Kredit</span></span>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="title">Pusat Peralatan Jaringan & IT</x-slot>
+    <x-slot name="title">Komputer & Aksesori Digital</x-slot>
 
     <!-- 1. Hero Banner Section -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

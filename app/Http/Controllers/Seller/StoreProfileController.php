@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class StoreProfileController extends Controller
 {
@@ -28,10 +27,8 @@ class StoreProfileController extends Controller
         ]);
 
         $store->name = $request->name;
-        // Only update slug if name actually changed significantly
-        if ($store->isDirty('name')) {
-            $store->slug = Str::slug($request->name) . '-' . uniqid();
-        }
+        // Public URL is a permanent Digital Hook identity, not derived from the display name.
+        $store->slug = 'digihook';
         
         $store->description = $request->description;
 

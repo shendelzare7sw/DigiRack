@@ -41,7 +41,7 @@
             <!-- 1. Logo (Left) -->
             <div class="shrink-0 flex items-center">
                 <a href="{{ route('home') }}" class="focus:outline-none">
-                    <img src="{{ asset('images/digital-hook-logo.png') }}" alt="Digital Hook" class="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm transition-transform hover:scale-105">
+                    <img src="{{ asset('images/digital-hook-logo-white.png') }}" alt="Digital Hook" class="h-10 sm:h-12 md:h-14 w-auto drop-shadow-sm transition-transform hover:scale-105">
                 </a>
             </div>
 

@@ -119,7 +119,7 @@
                     <x-icon name="shopping-cart" class="w-14 h-14 text-brand-blue/50" />
                 </div>
                 <h2 class="font-display font-bold text-xl text-gray-700 mb-2">Keranjang Masih Kosong</h2>
-                <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Ayo mulai belanja dan temukan produk infrastruktur IT terbaik untuk kebutuhan Anda.</p>
+                <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">Temukan komponen komputer, laptop, periferal, dan aksesori digital yang Anda butuhkan.</p>
                 <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white font-bold px-8 py-3.5 rounded-xl shadow-sm transition-colors">
                     <x-icon name="magnifying-glass" class="w-5 h-5" />
                     Jelajahi Produk

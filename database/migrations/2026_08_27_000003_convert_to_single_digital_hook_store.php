@@ -14,7 +14,18 @@ return new class extends Migration
             return;
         }
 
-        $store = DB::table('stores')->where('user_id', $admin->id)->oldest('id')->first();
+        $adminStore = DB::table('stores')->where('user_id', $admin->id)->oldest('id')->first();
+        $slugStore = DB::table('stores')->where('slug', 'digihook')->oldest('id')->first();
+
+        if ($adminStore && $slugStore && $adminStore->id !== $slugStore->id) {
+            DB::table('stores')->where('id', $slugStore->id)->update([
+                'slug' => 'legacy-store-'.$slugStore->id,
+                'updated_at' => now(),
+            ]);
+            $store = $adminStore;
+        } else {
+            $store = $slugStore ?? $adminStore;
+        }
         if (! $store) {
             $storeId = DB::table('stores')->insertGetId([
                 'user_id' => $admin->id,
@@ -34,6 +45,7 @@ return new class extends Migration
         } else {
             $storeId = $store->id;
             DB::table('stores')->where('id', $storeId)->update([
+                'user_id' => $admin->id,
                 'name' => 'Digital Hook',
                 'slug' => 'digihook',
                 'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang Raya.',

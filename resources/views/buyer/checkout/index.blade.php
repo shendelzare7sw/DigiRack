@@ -160,20 +160,19 @@
                     <div class="border-t border-gray-100 pt-5 mb-5">
                         <p class="text-sm font-semibold text-gray-700 mb-3">Metode Pembayaran</p>
                         @if($midtransReady)
-                            <div class="flex items-center gap-3 p-3 rounded-xl border-2 border-brand-navy bg-brand-navylight/10">
-                                <x-icon name="shield-check" class="w-6 h-6 text-green-500 shrink-0" />
-                                <div>
-                                    <span class="text-sm font-semibold text-gray-900">Midtrans Payment Gateway</span>
-                                    <p class="text-xs text-gray-500">Virtual Account, E-Wallet (GoPay, OVO, DANA), Kartu Kredit, QRIS</p>
-                                </div>
+                            <div class="grid grid-cols-2 gap-2 rounded-xl border-2 border-brand-navy bg-brand-navylight/10 p-3">
+                                <div class="flex items-center gap-2 text-xs font-semibold text-gray-800"><x-icon name="building-library" class="h-5 w-5 text-blue-700" /> Transfer Bank</div>
+                                <div class="flex items-center gap-2 text-xs font-semibold text-gray-800"><x-icon name="qr-code" class="h-5 w-5 text-red-600" /> QRIS</div>
+                                <div class="flex items-center gap-2 text-xs font-semibold text-gray-800"><x-icon name="device-phone-mobile" class="h-5 w-5 text-cyan-600" /> E-Wallet</div>
+                                <div class="flex items-center gap-2 text-xs font-semibold text-gray-800"><x-icon name="credit-card" class="h-5 w-5 text-amber-600" /> Kartu</div>
                             </div>
                             <input type="hidden" name="payment_method" value="midtrans">
                         @else
                             <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700 flex items-start gap-2">
                                 <x-icon name="exclamation-triangle" class="w-5 h-5 shrink-0 mt-0.5" />
                                 <div>
-                                    <p class="font-bold">Payment Gateway belum dikonfigurasi</p>
-                                    <p class="text-xs mt-1">Hubungi admin untuk mengaktifkan Midtrans agar checkout dapat dilakukan.</p>
+                                    <p class="font-bold">Pembayaran online belum tersedia</p>
+                                    <p class="text-xs mt-1">Hubungi admin Digital Hook agar checkout dapat dilakukan.</p>
                                 </div>
                             </div>
                         @endif
@@ -186,7 +185,7 @@
 
                     <div class="mt-5 flex items-center justify-center gap-2 text-xs text-gray-400">
                         <x-icon name="lock-closed" class="w-4 h-4" />
-                        Pembayaran dijamin aman via Midtrans
+                        Pembayaran online diproses melalui koneksi terenkripsi
                     </div>
                 </div>
             </div>

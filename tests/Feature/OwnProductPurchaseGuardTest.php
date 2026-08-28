@@ -79,7 +79,7 @@ class OwnProductPurchaseGuardTest extends TestCase
                 'quantity' => 1,
             ]);
 
-        $directResponse->assertRedirect(route('admin.dashboard'));
+        $directResponse->assertForbidden();
 
         $cart = Cart::create([
             'user_id' => $seller->id,
@@ -93,7 +93,7 @@ class OwnProductPurchaseGuardTest extends TestCase
                 'selected_items' => [$cart->id],
             ]);
 
-        $cartResponse->assertRedirect(route('admin.dashboard'));
+        $cartResponse->assertForbidden();
     }
 
     public function test_product_listing_marks_own_product_instead_of_purchase_actions(): void

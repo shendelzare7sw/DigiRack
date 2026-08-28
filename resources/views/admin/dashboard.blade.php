@@ -213,7 +213,7 @@
                 {{-- System Info --}}
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h2 class="font-bold text-base text-gray-900 mb-4 flex items-center gap-2">
-                        <x-icon name="server" class="w-5 h-5 text-brand-navy" />
+                        <x-icon name="computer-desktop" class="w-5 h-5 text-brand-navy" />
                         Informasi Sistem
                     </h2>
                     <div class="space-y-3 text-sm">
