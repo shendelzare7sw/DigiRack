@@ -98,12 +98,20 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email dukungan</label>
-                            <input type="email" name="platform_email" value="{{ $settings['platform_email'] ?? 'support@digihook.com' }}" class="w-full border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                            <input type="email" name="platform_email" value="{{ old('platform_email', $settings['platform_email'] ?? '') }}" placeholder="nama@domain.com" class="w-full border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                            <x-input-error :messages="$errors->get('platform_email')" class="mt-1" />
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">WhatsApp</label>
-                            <input type="text" name="platform_phone" value="{{ $settings['platform_phone'] ?? '' }}" placeholder="08xxxxxxxxxx" class="w-full border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nomor telepon / WhatsApp</label>
+                            <input type="text" name="platform_phone" value="{{ old('platform_phone', $settings['platform_phone'] ?? '') }}" placeholder="08xxxxxxxxxx" class="w-full border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                            <x-input-error :messages="$errors->get('platform_phone')" class="mt-1" />
                         </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Alamat toko</label>
+                        <textarea name="platform_address" rows="3" placeholder="Masukkan alamat lengkap toko" class="w-full border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">{{ old('platform_address', $settings['platform_address'] ?? '') }}</textarea>
+                        <p class="text-xs text-gray-400 mt-1">Nomor telepon, email, dan alamat yang diisi akan tampil pada footer publik.</p>
+                        <x-input-error :messages="$errors->get('platform_address')" class="mt-1" />
                     </div>
                 </div>
             </section>

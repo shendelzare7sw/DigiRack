@@ -57,6 +57,18 @@
             </label>
         </div>
 
+        @if($turnstileEnabled)
+            <div class="mt-5">
+                <div class="cf-turnstile w-full"
+                    data-sitekey="{{ $turnstileSiteKey }}"
+                    data-theme="light"
+                    data-size="flexible"
+                    data-language="id"
+                    data-action="login"></div>
+                <x-input-error :messages="$errors->get('cf-turnstile-response')" class="mt-2" />
+            </div>
+        @endif
+
         <div class="mt-8">
             <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-brand-navy hover:bg-brand-navy/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-navy transition-all active:scale-[0.98]">
                 Masuk
@@ -70,4 +82,13 @@
             </a>
         </div>
     </form>
+
+    @if($turnstileEnabled)
+        @push('head')
+            <link rel="preconnect" href="https://challenges.cloudflare.com">
+        @endpush
+        @push('scripts')
+            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+        @endpush
+    @endif
 </x-guest-layout>

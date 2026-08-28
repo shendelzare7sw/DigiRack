@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
+use App\Rules\ValidTurnstile;
+use App\Services\TurnstileService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
@@ -23,9 +25,26 @@ class LoginRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'identifier' => ['required', 'string'],
             'password' => ['required', 'string'],
+        ];
+
+        if (app(TurnstileService::class)->enabled()) {
+            $rules['cf-turnstile-response'] = ['required', 'string', 'max:2048', new ValidTurnstile($this->ip())];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get custom validation messages for the login form.
+     */
+    public function messages(): array
+    {
+        return [
+            'cf-turnstile-response.required' => 'Selesaikan verifikasi keamanan terlebih dahulu.',
+            'cf-turnstile-response.max' => 'Respons verifikasi keamanan tidak valid. Silakan muat ulang halaman.',
         ];
     }
 
@@ -48,7 +67,7 @@ class LoginRequest extends FormRequest
         // Find user first
         $user = User::where($fieldType, $identifier)->first();
 
-        if (!$user || !Auth::attempt([$fieldType => $identifier, 'password' => $password], $remember)) {
+        if (! $user || ! Auth::attempt([$fieldType => $identifier, 'password' => $password], $remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

@@ -49,6 +49,35 @@
                         <p class="text-gray-300 text-[15px] leading-relaxed mb-6">
                             Komponen komputer, laptop second, periferal, dan aksesori digital dengan pengantaran same-day untuk Tangerang dan sekitarnya.
                         </p>
+
+                        @if(filled($footerContact['phone']) || filled($footerContact['email']) || filled($footerContact['address']))
+                            <address class="not-italic space-y-3 text-sm text-gray-300 mb-7">
+                                @if(filled($footerContact['phone']))
+                                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $footerContact['phone']) }}" class="group flex items-start gap-3 hover:text-white transition-colors">
+                                        <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-blue-300 group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                            <x-icon name="phone" class="h-4 w-4" />
+                                        </span>
+                                        <span class="leading-8">{{ $footerContact['phone'] }}</span>
+                                    </a>
+                                @endif
+                                @if(filled($footerContact['email']))
+                                    <a href="mailto:{{ $footerContact['email'] }}" class="group flex items-start gap-3 hover:text-white transition-colors">
+                                        <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-blue-300 group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                                            <x-icon name="envelope" class="h-4 w-4" />
+                                        </span>
+                                        <span class="break-all leading-8">{{ $footerContact['email'] }}</span>
+                                    </a>
+                                @endif
+                                @if(filled($footerContact['address']))
+                                    <div class="flex items-start gap-3">
+                                        <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10 text-blue-300">
+                                            <x-icon name="map-pin" class="h-4 w-4" />
+                                        </span>
+                                        <span class="whitespace-pre-line leading-6 pt-1">{{ $footerContact['address'] }}</span>
+                                    </div>
+                                @endif
+                            </address>
+                        @endif
                         
                         <!-- Social Icons -->
                         <div class="flex gap-4">

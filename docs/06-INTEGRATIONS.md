@@ -19,6 +19,17 @@ Kode kurir order adalah `digital_hook_sameday`. Bukti sampai dan histori tetap d
 
 Email digunakan untuk verifikasi akun, OTP pendaftaran, reset password, dan konfirmasi perubahan nomor telepon. Notifikasi database memberi tahu admin ketika KTP diajukan dan memberi tahu buyer ketika KTP disetujui/ditolak serta saat status pesanan berubah.
 
+## Cloudflare Turnstile
+
+Halaman login menampilkan widget Cloudflare Turnstile bila `TURNSTILE_ENABLED=true` dan site key serta secret key tersedia. Token selalu diverifikasi server-to-server melalui Siteverify sebelum autentikasi dijalankan. Konfigurasi yang digunakan:
+
+- `TURNSTILE_ENABLED`
+- `TURNSTILE_SITE_KEY`
+- `TURNSTILE_SECRET_KEY`
+- `TURNSTILE_ALLOWED_HOSTNAMES` (pisahkan lebih dari satu hostname dengan koma)
+
+Kredensial Turnstile hanya disimpan di `.env`, bukan pada database atau pengaturan admin. Untuk pengembangan lokal, gunakan test key resmi Cloudflare dan masukkan hostname lokal pada whitelist.
+
 ## Penyimpanan dokumen
 
 Foto produk/logo menggunakan disk `public`. KTP menggunakan disk privat `local`; jangan membuat symbolic link ke folder dokumen identitas.
