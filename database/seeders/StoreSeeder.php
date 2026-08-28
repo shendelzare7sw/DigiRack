@@ -18,12 +18,6 @@ class StoreSeeder extends Seeder
                 'user_id' => $admin->id,
                 'name' => 'Digital Hook',
                 'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital dengan pengantaran same-day di Tangerang Raya.',
-                'is_active' => true,
-                'is_verified' => true,
-                'verification_status' => 'approved',
-                'verified_at' => now(),
-                'avg_rating' => 4.8,
-                'total_sold' => 0,
             ]
         );
     }

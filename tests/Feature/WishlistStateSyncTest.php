@@ -14,7 +14,7 @@ class WishlistStateSyncTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_storefront_product_card_reflects_wishlist_added_from_product_detail(): void
+    public function test_catalog_product_card_reflects_wishlist_added_from_product_detail(): void
     {
         [$buyer, $product] = $this->createPublicProduct('intel-xeon-sync');
 
@@ -31,16 +31,16 @@ class WishlistStateSyncTest extends TestCase
             ->assertJsonPath('status', 'added');
 
         $this->actingAs($buyer)
-            ->get(route('store.show', $product->store->slug))
+            ->get(route('products.index'))
             ->assertOk()
-            ->assertSee('data-product-id="' . $product->id . '"', false)
+            ->assertSee('data-product-id="'.$product->id.'"', false)
             ->assertSee('data-wishlisted="1"', false)
             ->assertSee('aria-label="Hapus dari wishlist"', false);
 
         $this->actingAs($buyer)
             ->get(route('home'))
             ->assertOk()
-            ->assertSee('data-product-id="' . $product->id . '"', false)
+            ->assertSee('data-product-id="'.$product->id.'"', false)
             ->assertSee('data-wishlisted="1"', false);
     }
 
@@ -69,7 +69,7 @@ class WishlistStateSyncTest extends TestCase
         $this->actingAs($buyer)
             ->get(route('products.show', $product->slug))
             ->assertOk()
-            ->assertSee('data-product-id="' . $related->id . '"', false)
+            ->assertSee('data-product-id="'.$related->id.'"', false)
             ->assertSee('data-wishlisted="1"', false);
     }
 
@@ -88,15 +88,12 @@ class WishlistStateSyncTest extends TestCase
         $store = Store::create([
             'user_id' => $seller->id,
             'name' => 'Wishlist Sync Store',
-            'slug' => 'wishlist-sync-store-' . uniqid(),
-            'is_active' => true,
-            'is_verified' => true,
-            'verification_status' => 'approved',
+            'slug' => 'wishlist-sync-store-'.uniqid(),
         ]);
 
         $category = Category::create([
             'name' => 'Wishlist Sync Category',
-            'slug' => 'wishlist-sync-category-' . uniqid(),
+            'slug' => 'wishlist-sync-category-'.uniqid(),
             'is_active' => true,
         ]);
 
@@ -104,7 +101,7 @@ class WishlistStateSyncTest extends TestCase
             'store_id' => $store->id,
             'category_id' => $category->id,
             'name' => 'Intel Xeon Sync',
-            'slug' => $slug . '-' . uniqid(),
+            'slug' => $slug.'-'.uniqid(),
             'description' => 'Produk untuk test sinkron wishlist.',
             'price' => 300000,
             'stock' => 14,

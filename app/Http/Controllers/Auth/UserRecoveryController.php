@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\RecoveryTicket;
 use App\Models\User;
-use App\Notifications\StoreStatusNotification;
+use App\Notifications\SystemNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -35,20 +34,20 @@ class UserRecoveryController extends Controller
 
         // Find user flexibly
         $user = User::where('email', $identifier)
-                    ->orWhere('username', $identifier)
-                    ->orWhere('phone', $identifier)
-                    ->first();
+            ->orWhere('username', $identifier)
+            ->orWhere('phone', $identifier)
+            ->first();
 
-        if (!$user) {
+        if (! $user) {
             return back()->withInput()->withErrors([
-                'identifier' => 'Akun dengan data tersebut tidak ditemukan di sistem kami.'
+                'identifier' => 'Akun dengan data tersebut tidak ditemukan di sistem kami.',
             ]);
         }
 
         // Block admin accounts from using public recovery
         if ($user->isAdmin()) {
             return back()->withInput()->withErrors([
-                'identifier' => 'Akun administrator tidak dapat direset melalui jalur ini. Hubungi tim internal.'
+                'identifier' => 'Akun administrator tidak dapat direset melalui jalur ini. Hubungi tim internal.',
             ]);
         }
 
@@ -56,8 +55,8 @@ class UserRecoveryController extends Controller
 
         // Clean up old pending tickets for this user
         RecoveryTicket::where('user_id', $user->id)
-                      ->whereIn('status', ['processing', 'pending_admin', 'sent'])
-                      ->update(['status' => 'expired']);
+            ->whereIn('status', ['processing', 'pending_admin', 'sent'])
+            ->update(['status' => 'expired']);
 
         // Scenario A: User has email → send reset via Laravel Password Broker
         if ($user->email) {
@@ -74,7 +73,8 @@ class UserRecoveryController extends Controller
 
             if ($status === Password::RESET_LINK_SENT) {
                 $ticket->update(['status' => 'sent']);
-                return redirect()->route('login')->with('success', 'Link pemulihan password telah dikirim ke email ' . Str::mask($user->email, '*', 3, -8) . '. Periksa inbox Anda.');
+
+                return redirect()->route('login')->with('success', 'Link pemulihan password telah dikirim ke email '.Str::mask($user->email, '*', 3, -8).'. Periksa inbox Anda.');
             } else {
                 // Email failed → fallback to admin
                 $ticket->update(['status' => 'pending_admin']);
@@ -82,7 +82,7 @@ class UserRecoveryController extends Controller
                 // Notify all admins about pending ticket
                 $this->notifyAdmins($ticket);
 
-                return redirect()->route('login')->with('warning', 'Sistem email sedang bermasalah. Tiket pemulihan #' . $ticket->id . ' telah diteruskan ke tim Customer Service. Harap tunggu.');
+                return redirect()->route('login')->with('warning', 'Sistem email sedang bermasalah. Tiket pemulihan #'.$ticket->id.' telah diteruskan ke tim Customer Service. Harap tunggu.');
             }
         }
 
@@ -97,7 +97,7 @@ class UserRecoveryController extends Controller
 
         $this->notifyAdmins($ticket);
 
-        return redirect()->route('login')->with('info', 'Tiket pemulihan #' . $ticket->id . ' telah dibuat. Tim Customer Service akan menghubungi Anda melalui nomor telepon terdaftar untuk verifikasi identitas.');
+        return redirect()->route('login')->with('info', 'Tiket pemulihan #'.$ticket->id.' telah dibuat. Tim Customer Service akan menghubungi Anda melalui nomor telepon terdaftar untuk verifikasi identitas.');
     }
 
     /**
@@ -108,10 +108,10 @@ class UserRecoveryController extends Controller
         try {
             $admins = User::where('role', 'admin')->get();
             foreach ($admins as $admin) {
-                $admin->notify(new StoreStatusNotification(
+                $admin->notify(new SystemNotification(
                     'recovery_ticket',
                     '🎫 Tiket Pemulihan Akun Baru',
-                    'User "' . $ticket->user->name . '" meminta reset password. Tiket #' . $ticket->id . ' menunggu verifikasi manual.',
+                    'User "'.$ticket->user->name.'" meminta reset password. Tiket #'.$ticket->id.' menunggu verifikasi manual.',
                     route('admin.recovery-tickets.index'),
                     '🆘'
                 ));

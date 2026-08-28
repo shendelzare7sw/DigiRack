@@ -27,7 +27,7 @@ class ProductController extends Controller
             $search = $request->q;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -113,10 +113,10 @@ class ProductController extends Controller
                 $q->with('buyer')->latest()->take(10);
             },
         ])
-        ->withCount('reviews')
-        ->where('slug', $slug)
-        ->where('status', 'active')
-        ->firstOrFail();
+            ->withCount('reviews')
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->firstOrFail();
 
         // Rating distribution
         $reviewCount = $product->reviews_count;
@@ -133,11 +133,6 @@ class ProductController extends Controller
 
         // Specs dari JSON
         $specs = is_array($product->specs) ? $product->specs : [];
-
-        // Store info
-        $storeProductCount = Product::where('store_id', $product->store_id)
-            ->where('status', 'active')
-            ->count();
 
         // Produk serupa (kategori yang sama, exclude current)
         $relatedProducts = Product::with(['store', 'category', 'primaryImage', 'flashSale'])
@@ -162,7 +157,7 @@ class ProductController extends Controller
 
         return view('products.show', compact(
             'product', 'ratingDist', 'specs',
-            'storeProductCount', 'relatedProducts', 'isWishlisted', 'isOwnProduct', 'reviewCount', 'wishlistIds'
+            'relatedProducts', 'isWishlisted', 'isOwnProduct', 'reviewCount', 'wishlistIds'
         ));
     }
 

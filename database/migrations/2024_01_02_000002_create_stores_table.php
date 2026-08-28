@@ -15,11 +15,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('logo')->nullable();
-            $table->string('banner')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->boolean('is_verified')->default(false);
-            $table->decimal('avg_rating', 2, 1)->default(0);
-            $table->integer('total_sold')->default(0);
             $table->timestamps();
         });
     }

@@ -426,36 +426,6 @@
         </div>
     </section>
 
-    {{-- Store Info Card --}}
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <img src="{{ $product->store->logo_url }}" alt="{{ $product->store->name }}"
-                class="w-14 h-14 rounded-full border-2 border-gray-100 object-cover shrink-0">
-            <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-gray-900 truncate">{{ $product->store->name }}</h3>
-                <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-500">
-                    @if($product->store->is_verified)
-                        <span class="inline-flex items-center gap-1 text-green-600 font-semibold">
-                            <x-icon name="check-badge" class="w-4 h-4" />
-                            Terverifikasi
-                        </span>
-                    @endif
-                    <span class="flex items-center gap-1">
-                        <x-icon name="star" class="w-3.5 h-3.5 text-yellow-400" />
-                        {{ number_format($product->store->avg_rating, 1) }}
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <x-icon name="cube" class="w-3.5 h-3.5 text-gray-400" />
-                        {{ $storeProductCount }} produk
-                    </span>
-                </div>
-            </div>
-            <a href="{{ route('store.show', $product->store->slug) }}" class="shrink-0 border-2 border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white font-bold text-sm px-5 py-2.5 rounded-xl transition-colors">
-                Kunjungi Toko
-            </a>
-        </div>
-    </section>
-
     {{-- Tabs: Deskripsi / Spesifikasi / Ulasan --}}
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10"
         x-data="{ activeTab: 'deskripsi' }">

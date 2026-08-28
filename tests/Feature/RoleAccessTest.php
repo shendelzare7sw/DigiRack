@@ -21,6 +21,9 @@ class RoleAccessTest extends TestCase
         $this->assertFalse($buyer->isSeller());
         $this->assertFalse(Route::has('switch.role'));
         $this->assertFalse(Route::has('seller.dashboard'));
+        $this->assertFalse(Route::has('store.show'));
+        $this->assertFalse(Route::has('buyer.store-reviews.edit'));
+        $this->assertFalse(Route::has('admin.stores.index'));
     }
 
     public function test_dashboard_redirects_each_role_to_its_panel(): void

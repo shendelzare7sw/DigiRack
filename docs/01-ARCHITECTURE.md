@@ -13,7 +13,7 @@ Namespace controller `Seller` masih dipakai pada beberapa operasi katalog/pesana
 | `admin` | `/admin/*`, operasional toko dan administrasi |
 | `buyer` | katalog, profil, alamat, keranjang, checkout, pesanan, ulasan |
 
-Tidak ada role switching. `/dashboard` mengarahkan pengguna ke panel sesuai `users.role`. Berkas rute aktif adalah `web.php`, `auth.php`, `buyer.php`, dan `admin.php`; `seller.php` tidak dimuat.
+Tidak ada role switching, registrasi seller, storefront publik, maupun moderasi toko. `/dashboard` mengarahkan pengguna ke panel sesuai `users.role`. Berkas rute aktif adalah `web.php`, `auth.php`, `buyer.php`, dan `admin.php`.
 
 ## Keamanan penting
 

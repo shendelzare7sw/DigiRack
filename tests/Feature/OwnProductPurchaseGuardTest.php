@@ -8,7 +8,6 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Store;
 use App\Models\User;
-use App\Models\Wishlist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -122,9 +121,6 @@ class OwnProductPurchaseGuardTest extends TestCase
             'user_id' => $seller->id,
             'name' => 'Toko Seller',
             'slug' => 'toko-seller',
-            'is_active' => true,
-            'is_verified' => true,
-            'verification_status' => 'approved',
         ]);
 
         $category = Category::create([

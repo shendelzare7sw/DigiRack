@@ -146,7 +146,6 @@
                     <img src="{{ $orderItem->product->primary_image_url }}" alt="{{ $orderItem->product->name }}" class="w-full aspect-square rounded-xl border border-gray-100 object-cover bg-gray-50">
                     <h2 class="mt-4 font-bold text-gray-900 leading-snug">{{ $orderItem->product->name }}</h2>
                     <p class="mt-1 text-sm text-gray-500">{{ number_format($orderItem->quantity) }} x Rp {{ number_format($orderItem->price_snapshot, 0, ',', '.') }}</p>
-                    <p class="mt-3 text-xs text-gray-400">{{ $order->store->name }}</p>
                 </div>
             </div>
         </div>

@@ -71,20 +71,15 @@ class Order extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function storeReview()
-    {
-        return $this->hasOne(StoreReview::class);
-    }
-
     // Helpers
     public function getFormattedTotalAttribute(): string
     {
-        return 'Rp ' . number_format($this->total_price, 0, ',', '.');
+        return 'Rp '.number_format($this->total_price, 0, ',', '.');
     }
 
     public function getStatusLabelAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending_payment' => 'Menunggu Pembayaran',
             'processing' => 'Diproses',
             'cancellation_requested' => 'Menunggu Persetujuan Batal',
@@ -97,7 +92,7 @@ class Order extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending_payment' => 'yellow',
             'processing' => 'blue',
             'cancellation_requested' => 'orange',

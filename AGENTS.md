@@ -18,7 +18,7 @@ Digital Hook adalah toko online lokal Laravel 11 (Blade, Alpine.js, Tailwind v3)
 - Alamat wajib termasuk whitelist `config/digitalhook.php`.
 - Pengiriman hanya `digital_hook_sameday` oleh kurir toko; tidak ada RajaOngkir/ekspedisi eksternal pada alur aktif.
 - Stok dikurangi saat pembayaran Midtrans sukses, bukan saat order dibuat.
-- Tidak ada wallet/payout seller dalam rute atau proses transaksi aktif.
+- Tidak ada storefront publik, moderasi/ban toko, ulasan toko, wallet/payout seller, atau kurir per toko.
 
 ## Konvensi
 

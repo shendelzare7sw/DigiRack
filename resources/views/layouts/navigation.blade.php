@@ -71,7 +71,7 @@
                     @php
                         $unreadNotifs = Auth::user()->unreadNotifications->take(8);
                         $unreadCount = Auth::user()->unreadNotifications->count();
-                        $roleLabel = Auth::user()->isAdmin() ? 'Admin & Pemilik Toko' : 'Pembeli';
+                        $roleLabel = Auth::user()->isAdmin() ? 'Admin & Pemilik' : 'Pembeli';
                     @endphp
                     <x-dropdown align="right" width="w-80 sm:w-96" contentClasses="py-0 overflow-hidden bg-white" class="mobile-dropdown-notif">
                         <x-slot name="trigger">

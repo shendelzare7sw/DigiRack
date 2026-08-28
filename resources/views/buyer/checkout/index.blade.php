@@ -85,15 +85,12 @@
 
                 </div>
 
-                {{-- Daftar Produk Per Toko --}}
+                {{-- Daftar Produk --}}
                 @foreach($storesData as $storeId => $data)
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-bold text-lg text-gray-900 mb-5 border-b border-gray-100 pb-4 flex justify-between items-center">
-                        <span class="flex items-center gap-2">
-                            <x-icon name="building-storefront" class="w-5 h-5 text-brand-navy" />
-                            {{ $data['store']->name }}
-                        </span>
-                        <span class="text-sm font-medium text-gray-500 max-w-[200px] text-right truncate">Asal: {{ $data['store']->city->name ?? 'Kota Pengirim' }}</span>
+                    <h2 class="font-bold text-lg text-gray-900 mb-5 border-b border-gray-100 pb-4 flex items-center gap-2">
+                        <x-icon name="shopping-bag" class="w-5 h-5 text-brand-navy" />
+                        Produk Pesanan
                     </h2>
 
                     <div class="space-y-4 mb-6">

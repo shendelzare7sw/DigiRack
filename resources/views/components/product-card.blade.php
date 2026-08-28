@@ -89,14 +89,6 @@
             @endif
         </div>
 
-        {{-- Store --}}
-        <div class="mt-2 pt-2 border-t border-gray-50">
-            <p class="text-xs text-gray-400 truncate">
-                <x-icon name="building-storefront" class="w-3 h-3 inline -mt-0.5" />
-                {{ $product->store->name ?? '' }}
-            </p>
-        </div>
-
         {{-- Add to Cart Button — Native Form, separate from image, always works --}}
         @if($isOwnProduct)
             <div class="mt-3 pt-2">

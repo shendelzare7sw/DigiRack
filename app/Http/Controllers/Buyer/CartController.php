@@ -20,7 +20,7 @@ class CartController extends Controller
             ->where('user_id', Auth::id())
             ->get();
 
-        // Kelompokkan per toko
+        // Keep the internal store key for order compatibility; Digital Hook has one business.
         $grouped = $cartItems->groupBy(function ($item) {
             return $item->product->store_id;
         });
@@ -49,18 +49,19 @@ class CartController extends Controller
 
         if ($product->isOwnedBy($request->user())) {
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Produk milik toko sendiri tidak bisa dimasukkan ke keranjang.'], 403);
+                return response()->json(['message' => 'Produk milik bisnis sendiri tidak bisa dimasukkan ke keranjang.'], 403);
             }
 
-            return back()->with('error', 'Produk milik toko sendiri tidak bisa dimasukkan ke keranjang.');
+            return back()->with('error', 'Produk milik bisnis sendiri tidak bisa dimasukkan ke keranjang.');
         }
 
         // Cek stok
         if ($product->stock < $request->quantity) {
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Stok tidak mencukupi. Stok tersedia: ' . $product->stock], 422);
+                return response()->json(['message' => 'Stok tidak mencukupi. Stok tersedia: '.$product->stock], 422);
             }
-            return back()->with('error', 'Stok tidak mencukupi. Stok tersedia: ' . $product->stock);
+
+            return back()->with('error', 'Stok tidak mencukupi. Stok tersedia: '.$product->stock);
         }
 
         // Cek apakah sudah ada di cart
@@ -72,8 +73,9 @@ class CartController extends Controller
             $newQty = $cartItem->quantity + $request->quantity;
             if ($newQty > $product->stock) {
                 if ($request->wantsJson()) {
-                    return response()->json(['message' => 'Total di keranjang melebihi stok. Stok tersedia: ' . $product->stock], 422);
+                    return response()->json(['message' => 'Total di keranjang melebihi stok. Stok tersedia: '.$product->stock], 422);
                 }
+
                 return back()->with('error', 'Total di keranjang melebihi stok.');
             }
             $cartItem->update(['quantity' => $newQty]);
@@ -114,16 +116,17 @@ class CartController extends Controller
             $cartItem->delete();
 
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Produk milik toko sendiri dihapus dari keranjang.'], 403);
+                return response()->json(['message' => 'Produk milik bisnis sendiri dihapus dari keranjang.'], 403);
             }
 
-            return back()->with('error', 'Produk milik toko sendiri tidak bisa ada di keranjang.');
+            return back()->with('error', 'Produk milik bisnis sendiri tidak bisa ada di keranjang.');
         }
 
         if ($request->quantity > $product->stock) {
             if ($request->wantsJson()) {
-                return response()->json(['message' => 'Stok tidak mencukupi. Stok tersedia: ' . $product->stock], 422);
+                return response()->json(['message' => 'Stok tidak mencukupi. Stok tersedia: '.$product->stock], 422);
             }
+
             return back()->with('error', 'Stok tidak mencukupi.');
         }
 
@@ -140,9 +143,9 @@ class CartController extends Controller
                 'message' => 'Kuantitas berhasil diperbarui.',
                 'cartCount' => $cartCount,
                 'subtotal' => $subtotal,
-                'formattedSubtotal' => 'Rp ' . number_format($subtotal, 0, ',', '.'),
+                'formattedSubtotal' => 'Rp '.number_format($subtotal, 0, ',', '.'),
                 'totalPrice' => $totalPrice,
-                'formattedTotal' => 'Rp ' . number_format($totalPrice, 0, ',', '.'),
+                'formattedTotal' => 'Rp '.number_format($totalPrice, 0, ',', '.'),
             ]);
         }
 
@@ -168,7 +171,7 @@ class CartController extends Controller
                 'message' => 'Produk dihapus dari keranjang.',
                 'cartCount' => $cartCount,
                 'totalPrice' => $totalPrice,
-                'formattedTotal' => 'Rp ' . number_format($totalPrice, 0, ',', '.'),
+                'formattedTotal' => 'Rp '.number_format($totalPrice, 0, ',', '.'),
             ]);
         }
 

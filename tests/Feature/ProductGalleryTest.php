@@ -21,9 +21,6 @@ class ProductGalleryTest extends TestCase
             'user_id' => $seller->id,
             'name' => 'Jaringan Nusantara',
             'slug' => 'jaringan-nusantara',
-            'is_active' => true,
-            'is_verified' => true,
-            'verification_status' => 'approved',
         ]);
         $category = Category::create([
             'name' => 'Server & Hardware',

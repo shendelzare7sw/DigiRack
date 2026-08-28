@@ -8,7 +8,7 @@
             </a>
             <div>
                 <h1 class="font-display font-bold text-2xl text-gray-900">Tambah Produk Baru</h1>
-                <p class="text-sm text-gray-500 mt-1">Isi informasi produk yang ingin dijual di toko Anda.</p>
+                <p class="text-sm text-gray-500 mt-1">Isi informasi produk yang ingin dijual oleh Digital Hook.</p>
             </div>
         </div>
 

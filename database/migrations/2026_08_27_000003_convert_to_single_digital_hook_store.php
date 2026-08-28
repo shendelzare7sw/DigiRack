@@ -32,13 +32,6 @@ return new class extends Migration
                 'name' => 'Digital Hook',
                 'slug' => 'digihook',
                 'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang Raya.',
-                'enabled_expeditions' => null,
-                'is_active' => true,
-                'is_verified' => true,
-                'verification_status' => 'approved',
-                'verified_at' => now(),
-                'avg_rating' => 0,
-                'total_sold' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -49,19 +42,13 @@ return new class extends Migration
                 'name' => 'Digital Hook',
                 'slug' => 'digihook',
                 'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang Raya.',
-                'enabled_expeditions' => null,
-                'is_active' => true,
-                'is_verified' => true,
-                'verification_status' => 'approved',
-                'verified_at' => now(),
                 'updated_at' => now(),
             ]);
         }
 
         DB::table('products')->where('store_id', '!=', $storeId)->update(['store_id' => $storeId]);
         DB::table('orders')->where('store_id', '!=', $storeId)->update(['store_id' => $storeId]);
-        DB::table('store_reviews')->where('store_id', '!=', $storeId)->update(['store_id' => $storeId]);
-        DB::table('stores')->where('id', '!=', $storeId)->update(['is_active' => false]);
+        DB::table('stores')->where('id', '!=', $storeId)->delete();
 
         if (DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE users MODIFY role ENUM('admin','buyer') NOT NULL DEFAULT 'buyer'");

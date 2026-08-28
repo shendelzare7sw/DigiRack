@@ -64,10 +64,6 @@
                                     @if($order->items->count() > 1)
                                         <div class="text-xs text-brand-navy font-semibold">+{{ $order->items->count() - 1 }} produk lainnya</div>
                                     @endif
-                                    <div class="text-sm text-gray-600 mt-2 flex items-center gap-1.5">
-                                        <x-icon name="building-storefront" class="w-3.5 h-3.5 text-gray-400" />
-                                        {{ $order->store->name ?? 'Toko' }}
-                                    </div>
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="font-bold text-gray-900">Rp {{ number_format($order->total_price, 0, ',', '.') }}</div>
@@ -126,11 +122,7 @@
                             @if($order->items->count() > 1)
                                 <p class="text-xs text-brand-navy font-semibold">+{{ $order->items->count() - 1 }} produk lainnya</p>
                             @endif
-                            <div class="flex items-center gap-1.5 mt-1 text-xs text-gray-500">
-                                <x-icon name="building-storefront" class="w-3 h-3" /> {{ $order->store->name ?? 'Toko' }}
-                                <span>&bull;</span>
-                                {{ $order->created_at->translatedFormat('d M Y') }}
-                            </div>
+                            <div class="mt-1 text-xs text-gray-500">{{ $order->created_at->translatedFormat('d M Y') }}</div>
                             <div class="flex items-center justify-between gap-3 mt-3">
                                 <span class="font-bold text-brand-blue text-base min-w-0 truncate">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
                                 <div class="flex items-center gap-1.5 shrink-0">

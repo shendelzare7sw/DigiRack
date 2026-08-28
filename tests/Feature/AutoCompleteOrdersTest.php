@@ -95,22 +95,19 @@ class AutoCompleteOrdersTest extends TestCase
         $store = Store::create([
             'user_id' => $seller->id,
             'name' => 'Auto Complete Store',
-            'slug' => 'auto-complete-store-' . uniqid(),
-            'is_active' => true,
-            'is_verified' => true,
-            'verification_status' => 'approved',
+            'slug' => 'auto-complete-store-'.uniqid(),
         ]);
 
         $category = Category::create([
             'name' => 'Rack Server',
-            'slug' => 'rack-server-' . uniqid(),
+            'slug' => 'rack-server-'.uniqid(),
         ]);
 
         $product = Product::create([
             'store_id' => $store->id,
             'category_id' => $category->id,
             'name' => 'Intel Xeon',
-            'slug' => 'intel-xeon-' . uniqid(),
+            'slug' => 'intel-xeon-'.uniqid(),
             'price' => 300000,
             'stock' => 10,
             'sold_count' => 2,
@@ -118,7 +115,7 @@ class AutoCompleteOrdersTest extends TestCase
         ]);
 
         $order = Order::create([
-            'invoice_number' => 'INV/' . date('Ymd') . '/' . strtoupper(uniqid()),
+            'invoice_number' => 'INV/'.date('Ymd').'/'.strtoupper(uniqid()),
             'buyer_id' => $buyer->id,
             'store_id' => $store->id,
             'status' => 'shipped',
@@ -126,7 +123,7 @@ class AutoCompleteOrdersTest extends TestCase
             'shipping_cost' => 15000,
             'payment_method' => 'transfer',
             'payment_status' => 'paid',
-            'payment_reference' => 'PAY-' . date('Ymd') . '-' . strtoupper(uniqid()),
+            'payment_reference' => 'PAY-'.date('Ymd').'-'.strtoupper(uniqid()),
             'shipping_tracking_number' => 'KURIR-TOKO',
             'shipped_at' => $shippedAt ?? now()->subDays(2),
             'delivered_at' => $deliveredAt,

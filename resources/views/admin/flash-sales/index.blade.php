@@ -133,7 +133,6 @@
                                                 @endif
                                                 <div class="min-w-0">
                                                     <div class="font-bold text-gray-900 truncate max-w-[150px]">{{ $fs->product->name ?? 'Produk dihapus' }}</div>
-                                                    <div class="text-[10px] text-gray-400">{{ $fs->product->store->name ?? '' }}</div>
                                                 </div>
                                             </div>
                                         </td>

@@ -7,7 +7,7 @@
             <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">
                 Dashboard Admin
             </h1>
-            <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Kelola toko dan administrasi Digital Hook dari satu panel.</p>
+            <p class="text-sm text-gray-500 mt-1">Selamat datang, {{ Auth::user()->name }}. Kelola bisnis dan administrasi Digital Hook dari satu panel.</p>
         </div>
 
         {{-- System Stats --}}
@@ -85,12 +85,12 @@
                             <span class="text-xs font-semibold text-gray-700 text-center">Pengaturan Sistem</span>
                         </a>
 
-                        {{-- Kelola Toko (Live) --}}
-                        <a href="{{ route('admin.store.show') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 hover:shadow-sm transition-all group">
+                        {{-- Profil bisnis --}}
+                        <a href="{{ route('admin.business-profile.show') }}" class="flex flex-col items-center gap-2 p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 hover:shadow-sm transition-all group">
                             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
                                 <x-icon name="building-storefront" class="w-6 h-6" />
                             </div>
-                            <span class="text-xs font-bold text-purple-900 text-center">Profil Digital Hook</span>
+                            <span class="text-xs font-bold text-purple-900 text-center">Profil Bisnis</span>
                         </a>
 
                         {{-- Pencairan Dana (Live) --}}

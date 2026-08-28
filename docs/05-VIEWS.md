@@ -12,10 +12,10 @@ Desain Blade, Alpine.js, dan Tailwind lama dipertahankan. Branding aktif menggun
 ## Navigasi admin
 
 - Dashboard operasional
-- Profil toko
+- Profil bisnis Digital Hook
 - Produk, kategori, promo/banner
 - Pesanan dan balasan ulasan
 - Pengguna serta review KTP
-- Pengaturan Midtrans dan kontak toko
+- Pengaturan Midtrans dan kontak bisnis
 
 Form alamat memakai dropdown Provinsi → Kota/Kabupaten → Kecamatan. Data dropdown berasal dari `LocationController`, sedangkan validasi final dilakukan `DeliveryAreaService`.

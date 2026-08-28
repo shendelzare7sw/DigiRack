@@ -45,10 +45,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6">
         <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Penjual</p>
-            <p class="font-bold text-gray-900 text-sm">{{ $order->store->name ?? 'Toko' }}</p>
-            @if($order->store?->city)
-                <p class="text-xs text-gray-500 mt-1">{{ $order->store->city }}</p>
-            @endif
+            <p class="font-bold text-gray-900 text-sm">Digital Hook</p>
         </div>
         <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
             <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Dikirim Kepada</p>

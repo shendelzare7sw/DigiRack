@@ -37,7 +37,7 @@ class OrderController extends Controller
 
     public function show($id, MidtransService $midtrans)
     {
-        $order = Order::with(['items.product.store', 'store', 'reviews', 'storeReview'])->where('buyer_id', Auth::id())->findOrFail($id);
+        $order = Order::with(['items.product.store', 'store', 'reviews'])->where('buyer_id', Auth::id())->findOrFail($id);
 
         // Fallback for a delayed/undelivered Midtrans webhook: confirm payment
         // status server-to-server when the buyer opens an unpaid order.
@@ -87,17 +87,19 @@ class OrderController extends Controller
                     $sellerUser->notify(new OrderNotification(
                         'order_completed',
                         '💰 Dana Pesanan Dicairkan!',
-                        'Pembeli telah mengonfirmasi penerimaan pesanan ' . $order->invoice_number . '.',
+                        'Pembeli telah mengonfirmasi penerimaan pesanan '.$order->invoice_number.'.',
                         route('admin.orders.show', $order->id),
                         '🎉'
                     ));
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
 
             return back()->with('success', 'Pesanan telah selesai. Jangan lupa berikan ulasan Anda!');
 
         } catch (\Exception $e) {
-            \Log::error('Order confirm error: ' . $e->getMessage(), ['order_id' => $id]);
+            \Log::error('Order confirm error: '.$e->getMessage(), ['order_id' => $id]);
+
             return back()->with('error', 'Terjadi kesalahan saat menyelesaikan pesanan. Silakan coba lagi.');
         }
     }
@@ -133,11 +135,13 @@ class OrderController extends Controller
                 ]);
 
                 DB::commit();
+
                 return back()->with('success', 'Pesanan berhasil dibatalkan.');
             }
 
             if ($order->status !== 'processing') {
                 DB::rollBack();
+
                 return back()->with('error', 'Pesanan ini belum dapat diajukan untuk dibatalkan.');
             }
 
@@ -157,19 +161,20 @@ class OrderController extends Controller
                     $sellerUser->notify(new OrderNotification(
                         'order_cancellation_requested',
                         'Permintaan Pembatalan Pesanan',
-                        'Pembeli meminta pembatalan pesanan ' . $order->invoice_number . '. Silakan tentukan apakah pesanan dibatalkan atau tetap diproses.',
+                        'Pembeli meminta pembatalan pesanan '.$order->invoice_number.'. Silakan tentukan apakah pesanan dibatalkan atau tetap diproses.',
                         route('admin.orders.show', $order->id),
                         '!'
                     ));
                 }
             } catch (\Exception $e) {
-                Log::warning('Order cancellation request notification failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+                Log::warning('Order cancellation request notification failed: '.$e->getMessage(), ['order_id' => $order->id]);
             }
 
             return back()->with('success', 'Permintaan pembatalan dikirim ke Digital Hook dan akan ditinjau oleh admin.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Order cancellation request error: ' . $e->getMessage(), ['order_id' => $id]);
+            Log::error('Order cancellation request error: '.$e->getMessage(), ['order_id' => $id]);
+
             return back()->with('error', 'Terjadi kesalahan saat mengajukan pembatalan. Silakan coba lagi.');
         }
     }

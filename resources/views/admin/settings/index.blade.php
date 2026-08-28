@@ -8,7 +8,7 @@
             </a>
             <div>
                 <h1 class="font-display font-bold text-2xl sm:text-3xl text-gray-900">Pengaturan Digital Hook</h1>
-                <p class="text-sm text-gray-500 mt-1">Pembayaran, penyelesaian pesanan, dan kontak toko.</p>
+                <p class="text-sm text-gray-500 mt-1">Pembayaran, penyelesaian pesanan, dan kontak bisnis.</p>
             </div>
         </div>
 
@@ -55,11 +55,11 @@
 
             <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                 <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
-                    <x-icon name="globe-alt" class="w-6 h-6 text-brand-navy" /> Profil Toko
+                    <x-icon name="globe-alt" class="w-6 h-6 text-brand-navy" /> Identitas Bisnis
                 </h2>
                 <div class="space-y-5 mt-6">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama toko</label>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nama bisnis</label>
                         <input type="text" name="platform_name" value="{{ $settings['platform_name'] ?? 'Digital Hook' }}" class="w-full border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

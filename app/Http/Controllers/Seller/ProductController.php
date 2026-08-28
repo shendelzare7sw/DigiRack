@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,14 +14,14 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     /**
-     * List semua produk milik seller
+     * List all products owned by Digital Hook.
      */
     public function index(Request $request)
     {
         $store = Auth::user()->store;
-        if (!$store) {
+        if (! $store) {
             return redirect()->route('admin.dashboard')
-                ->with('error', 'Anda belum memiliki toko. Silakan buat toko terlebih dahulu.');
+                ->with('error', 'Profil bisnis Digital Hook belum tersedia.');
         }
 
         $query = Product::with(['category', 'primaryImage'])
@@ -29,7 +29,7 @@ class ProductController extends Controller
 
         // Search
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         // Filter by status
@@ -63,15 +63,15 @@ class ProductController extends Controller
     public function report(Request $request)
     {
         $store = Auth::user()->store;
-        if (!$store) {
+        if (! $store) {
             return redirect()->route('admin.dashboard')
-                ->with('error', 'Anda belum memiliki toko.');
+                ->with('error', 'Profil bisnis Digital Hook belum tersedia.');
         }
 
         $query = Product::with(['category'])->where('store_id', $store->id);
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -101,12 +101,13 @@ class ProductController extends Controller
     public function create()
     {
         $store = Auth::user()->store;
-        if (!$store) {
+        if (! $store) {
             return redirect()->route('admin.dashboard')
-                ->with('error', 'Anda belum memiliki toko.');
+                ->with('error', 'Profil bisnis Digital Hook belum tersedia.');
         }
 
         $categories = Category::where('is_active', true)->orderBy('name')->get();
+
         return view('seller.products.create', compact('categories'));
     }
 
@@ -116,8 +117,8 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $store = Auth::user()->store;
-        if (!$store) {
-            return redirect()->route('admin.dashboard')->with('error', 'Anda belum memiliki toko.');
+        if (! $store) {
+            return redirect()->route('admin.dashboard')->with('error', 'Profil bisnis Digital Hook belum tersedia.');
         }
 
         $validated = $request->validate([
@@ -138,16 +139,16 @@ class ProductController extends Controller
 
         // Generate slug
         $slug = Str::slug($validated['name']);
-        $existingSlug = Product::where('slug', 'like', $slug . '%')->count();
+        $existingSlug = Product::where('slug', 'like', $slug.'%')->count();
         if ($existingSlug > 0) {
-            $slug .= '-' . ($existingSlug + 1);
+            $slug .= '-'.($existingSlug + 1);
         }
 
         // Filter empty specs
         $specs = [];
-        if (!empty($validated['specs'])) {
+        if (! empty($validated['specs'])) {
             foreach ($validated['specs'] as $spec) {
-                if (!empty($spec['label']) && !empty($spec['value'])) {
+                if (! empty($spec['label']) && ! empty($spec['value'])) {
                     $specs[] = ['label' => $spec['label'], 'value' => $spec['value']];
                 }
             }
@@ -155,7 +156,7 @@ class ProductController extends Controller
 
         // Handle New Category
         $categoryId = $validated['category_id'];
-        if (empty($categoryId) && !empty($validated['new_category'])) {
+        if (empty($categoryId) && ! empty($validated['new_category'])) {
             $cat = Category::firstOrCreate(
                 ['slug' => Str::slug($validated['new_category'])],
                 ['name' => $validated['new_category'], 'is_active' => true]
@@ -180,7 +181,7 @@ class ProductController extends Controller
         // Upload images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('products/' . $store->id, 'public');
+                $path = $image->store('products/'.$store->id, 'public');
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image_path' => $path,
@@ -191,7 +192,7 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Produk "' . $product->name . '" berhasil ditambahkan!');
+            ->with('success', 'Produk "'.$product->name.'" berhasil ditambahkan!');
     }
 
     /**
@@ -235,9 +236,9 @@ class ProductController extends Controller
 
         // Filter specs
         $specs = [];
-        if (!empty($validated['specs'])) {
+        if (! empty($validated['specs'])) {
             foreach ($validated['specs'] as $spec) {
-                if (!empty($spec['label']) && !empty($spec['value'])) {
+                if (! empty($spec['label']) && ! empty($spec['value'])) {
                     $specs[] = ['label' => $spec['label'], 'value' => $spec['value']];
                 }
             }
@@ -247,15 +248,15 @@ class ProductController extends Controller
         $slug = $product->slug;
         if ($product->name !== $validated['name']) {
             $slug = Str::slug($validated['name']);
-            $existingSlug = Product::where('slug', 'like', $slug . '%')->where('id', '!=', $product->id)->count();
+            $existingSlug = Product::where('slug', 'like', $slug.'%')->where('id', '!=', $product->id)->count();
             if ($existingSlug > 0) {
-                $slug .= '-' . ($existingSlug + 1);
+                $slug .= '-'.($existingSlug + 1);
             }
         }
 
         // Handle New Category
         $categoryId = $validated['category_id'];
-        if (empty($categoryId) && !empty($validated['new_category'])) {
+        if (empty($categoryId) && ! empty($validated['new_category'])) {
             $cat = Category::firstOrCreate(
                 ['slug' => Str::slug($validated['new_category'])],
                 ['name' => $validated['new_category'], 'is_active' => true]
@@ -277,7 +278,7 @@ class ProductController extends Controller
         ]);
 
         // Delete images
-        if (!empty($validated['delete_images'])) {
+        if (! empty($validated['delete_images'])) {
             $imagesToDelete = ProductImage::whereIn('id', $validated['delete_images'])
                 ->where('product_id', $product->id)
                 ->get();
@@ -294,18 +295,18 @@ class ProductController extends Controller
             $hasPrimary = $product->images()->where('is_primary', true)->exists();
 
             foreach ($request->file('new_images') as $index => $image) {
-                $path = $image->store('products/' . $store->id, 'public');
+                $path = $image->store('products/'.$store->id, 'public');
                 ProductImage::create([
                     'product_id' => $product->id,
                     'image_path' => $path,
-                    'is_primary' => !$hasPrimary && $index === 0,
+                    'is_primary' => ! $hasPrimary && $index === 0,
                     'sort_order' => $maxOrder + $index + 1,
                 ]);
             }
         }
 
         // Ensure there's a primary image
-        if (!$product->images()->where('is_primary', true)->exists()) {
+        if (! $product->images()->where('is_primary', true)->exists()) {
             $firstImage = $product->images()->orderBy('sort_order')->first();
             if ($firstImage) {
                 $firstImage->update(['is_primary' => true]);
@@ -313,7 +314,7 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Produk "' . $product->name . '" berhasil diperbarui!');
+            ->with('success', 'Produk "'.$product->name.'" berhasil diperbarui!');
     }
 
     /**
@@ -334,6 +335,6 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Produk "' . $productName . '" berhasil dihapus.');
+            ->with('success', 'Produk "'.$productName.'" berhasil dihapus.');
     }
 }

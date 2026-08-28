@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Buyer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\BuyerTransactionFee;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use App\Models\SystemSetting;
 use App\Services\DeliveryAreaService;
 use Illuminate\Http\Request;
@@ -28,16 +30,16 @@ class CheckoutController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = \App\Models\Product::with('store')->findOrFail($request->product_id);
+        $product = Product::with('store')->findOrFail($request->product_id);
 
         if ($product->isOwnedBy($request->user())) {
-            return back()->with('error', 'Produk milik toko sendiri tidak bisa dibeli atau di-checkout.');
+            return back()->with('error', 'Produk milik bisnis sendiri tidak bisa dibeli atau di-checkout.');
         }
-        
+
         if ($product->price <= 0) {
             return back()->with('error', 'Produk ini tidak dapat dibeli karena harganya tidak valid (Mengandung unsur kerugian/Rp 0).');
         }
-        
+
         if ($product->stock < $request->quantity) {
             return back()->with('error', 'Stok tidak mencukupi.');
         }
@@ -54,6 +56,7 @@ class CheckoutController extends Controller
         }
 
         $request->merge(['selected_items' => [$cartItem->id]]);
+
         return $this->index($request);
     }
 
@@ -84,7 +87,7 @@ class CheckoutController extends Controller
 
         if ($cartItems->contains(fn ($item) => $item->product->isOwnedBy($request->user()))) {
             return redirect()->route('buyer.cart.index')
-                ->with('error', 'Keranjang berisi produk milik toko sendiri. Hapus produk tersebut sebelum checkout.');
+                ->with('error', 'Keranjang berisi produk milik bisnis sendiri. Hapus produk tersebut sebelum checkout.');
         }
 
         // Get user saved addresses (with city_id for ongkir)
@@ -103,7 +106,7 @@ class CheckoutController extends Controller
 
         foreach ($cartItems as $item) {
             $storeId = $item->product->store_id;
-            if (!isset($storesData[$storeId])) {
+            if (! isset($storesData[$storeId])) {
                 $storesData[$storeId] = [
                     'store' => $item->product->store,
                     'items' => [],
@@ -119,11 +122,11 @@ class CheckoutController extends Controller
             $totalPrice += ($item->product->price * $item->quantity);
         }
 
-        $buyerFees = \App\Models\BuyerTransactionFee::where('is_active', true)->get();
+        $buyerFees = BuyerTransactionFee::where('is_active', true)->get();
         $totalBuyerFees = $buyerFees->sum('amount');
 
         // Check if Midtrans is configured
-        $midtransReady = !empty(SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY')));
+        $midtransReady = ! empty(SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY')));
 
         return view('buyer.checkout.index', compact(
             'storesData', 'totalPrice', 'selectedItems', 'buyerFees', 'totalBuyerFees',
@@ -158,7 +161,7 @@ class CheckoutController extends Controller
 
         $selectedItemIds = json_decode($request->selected_items, true);
 
-        if (!is_array($selectedItemIds) || empty($selectedItemIds)) {
+        if (! is_array($selectedItemIds) || empty($selectedItemIds)) {
             return redirect()->route('buyer.cart.index')->with('error', 'Data item tidak valid.');
         }
 
@@ -170,21 +173,21 @@ class CheckoutController extends Controller
 
         if ($cartItems->contains(fn ($item) => $item->product->isOwnedBy($request->user()))) {
             return redirect()->route('buyer.cart.index')
-                ->with('error', 'Checkout ditolak karena ada produk milik toko sendiri di keranjang.');
+                ->with('error', 'Checkout ditolak karena ada produk milik bisnis sendiri di keranjang.');
         }
 
         // Group by Store
         $storesData = [];
         foreach ($cartItems as $item) {
             if ($item->product->stock < $item->quantity) {
-                return redirect()->route('buyer.cart.index')->with('error', 'Stok untuk produk ' . $item->product->name . ' tidak mencukupi.');
+                return redirect()->route('buyer.cart.index')->with('error', 'Stok untuk produk '.$item->product->name.' tidak mencukupi.');
             }
             if ($item->product->price <= 0) {
                 return redirect()->route('buyer.cart.index')->with('error', 'Terdapat produk dengan harga tidak valid (Rp 0).');
             }
-            
+
             $storeId = $item->product->store_id;
-            if (!isset($storesData[$storeId])) {
+            if (! isset($storesData[$storeId])) {
                 $storesData[$storeId] = [
                     'store' => $item->product->store,
                     'items' => [],
@@ -198,9 +201,9 @@ class CheckoutController extends Controller
         }
 
         // Build full address string
-        $fullAddress = $address->full_address . ', Kec. ' . $address->district . ', ' . $address->city . ', ' . $address->province . ' ' . $address->postal_code;
+        $fullAddress = $address->full_address.', Kec. '.$address->district.', '.$address->city.', '.$address->province.' '.$address->postal_code;
 
-        $paymentReference = 'PAY-' . date('Ymd') . '-' . strtoupper(uniqid());
+        $paymentReference = 'PAY-'.date('Ymd').'-'.strtoupper(uniqid());
         $grandTotalGross = 0;
         $createdOrders = [];
         $paymentMethod = $request->payment_method;
@@ -220,12 +223,12 @@ class CheckoutController extends Controller
                 $grandTotalGross += $totalOrderPrice;
 
                 if ($totalOrderPrice <= 0) {
-                    throw new \Exception("Pesanan ditolak karena total akhir Rp 0.");
+                    throw new \Exception('Pesanan ditolak karena total akhir Rp 0.');
                 }
 
                 $appliedFeesJson = null;
                 if ($index === 1) {
-                    $buyerFees = \App\Models\BuyerTransactionFee::where('is_active', true)->get();
+                    $buyerFees = BuyerTransactionFee::where('is_active', true)->get();
                     if ($buyerFees->isNotEmpty()) {
                         $feeRecords = [];
                         foreach ($buyerFees as $fee) {
@@ -237,7 +240,7 @@ class CheckoutController extends Controller
                 }
 
                 $order = Order::create([
-                    'invoice_number' => 'INV/' . date('Ymd') . '/' . strtoupper(uniqid()) . '-' . $index,
+                    'invoice_number' => 'INV/'.date('Ymd').'/'.strtoupper(uniqid()).'-'.$index,
                     'buyer_id' => Auth::id(),
                     'store_id' => $storeId,
                     'status' => 'pending_payment',
@@ -254,7 +257,7 @@ class CheckoutController extends Controller
                         'courier' => config('digitalhook.courier_name'),
                         'delivery_service' => 'same_day',
                     ],
-                    'applied_buyer_fees' => $appliedFeesJson ? json_decode($appliedFeesJson, true) : null
+                    'applied_buyer_fees' => $appliedFeesJson ? json_decode($appliedFeesJson, true) : null,
                 ]);
 
                 foreach ($data['items'] as $item) {
@@ -276,11 +279,12 @@ class CheckoutController extends Controller
             // --- Payment Method Handling ---
             if ($paymentMethod === 'midtrans') {
                 $serverKey = SystemSetting::val('midtrans_server_key', env('MIDTRANS_SERVER_KEY'));
-                
+
                 if (empty($serverKey)) {
                     // Midtrans not configured - fallback to manual
                     DB::commit();
                     $order = $createdOrders[0];
+
                     return view('buyer.checkout.manual-transfer', compact('order', 'grandTotalGross', 'paymentReference'));
                 }
 
@@ -301,25 +305,27 @@ class CheckoutController extends Controller
                         'phone' => Auth::user()->phone ?? $address->phone,
                     ],
                     'callbacks' => [
-                        'finish' => route('buyer.orders.index') . '?payment=success',
+                        'finish' => route('buyer.orders.index').'?payment=success',
                     ],
                 ];
 
                 $snapToken = Snap::getSnapToken($params);
-                
+
                 foreach ($createdOrders as $ord) {
                     $ord->update(['payment_token' => $snapToken]);
                 }
 
                 DB::commit();
                 $order = $createdOrders[0];
+
                 return view('buyer.checkout.payment', compact('order', 'snapToken', 'grandTotalGross', 'paymentReference'));
 
             }
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Checkout error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            \Log::error('Checkout error: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             return redirect()->route('buyer.cart.index')->with('error', 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi atau hubungi admin.');
         }
     }

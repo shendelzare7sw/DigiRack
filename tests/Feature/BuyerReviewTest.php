@@ -8,7 +8,6 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\Store;
-use App\Models\StoreReview;
 use App\Models\User;
 use App\Notifications\ReviewNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -288,111 +287,6 @@ class BuyerReviewTest extends TestCase
             ->assertSee('sample.jpg', false);
     }
 
-    public function test_buyer_can_review_store_after_completed_order(): void
-    {
-        Notification::fake();
-        [$buyer, $order, , $product] = $this->createOrderWithItem('completed');
-        $seller = $product->store->user;
-
-        $this->actingAs($buyer)
-            ->get(route('buyer.store-reviews.edit', $order->id))
-            ->assertOk()
-            ->assertSee('Tulis Ulasan Toko');
-
-        $this->actingAs($buyer)
-            ->post(route('buyer.store-reviews.store', $order->id), [
-                'rating' => 5,
-                'comment' => 'Pelayanan toko cepat dan ramah.',
-            ])
-            ->assertRedirect(route('buyer.orders.show', $order->id));
-
-        $this->assertDatabaseHas('store_reviews', [
-            'buyer_id' => $buyer->id,
-            'store_id' => $product->store_id,
-            'order_id' => $order->id,
-            'rating' => 5,
-            'comment' => 'Pelayanan toko cepat dan ramah.',
-        ]);
-        $this->assertSame('5.0', $product->store->fresh()->avg_rating);
-
-        Notification::assertSentTo($seller, ReviewNotification::class, function ($notification) use ($seller) {
-            $data = $notification->toArray($seller);
-
-            return $data['type'] === 'store_review_created'
-                && $data['title'] === 'Ulasan toko baru'
-                && str_contains($data['message'], '5 bintang');
-        });
-
-        $this->get(route('store.show', $product->store->slug))
-            ->assertOk()
-            ->assertSee('Ulasan Performa Toko')
-            ->assertSee('Pelayanan toko cepat dan ramah.');
-    }
-
-    public function test_seller_can_reply_to_store_review_from_dashboard(): void
-    {
-        Notification::fake();
-        [$buyer, $order, , $product] = $this->createOrderWithItem('completed');
-        $seller = $product->store->user;
-
-        $storeReview = StoreReview::create([
-            'buyer_id' => $buyer->id,
-            'store_id' => $product->store_id,
-            'order_id' => $order->id,
-            'rating' => 4,
-            'comment' => 'Toko responsif.',
-        ]);
-
-        $this->actingAs($seller)
-            ->post(route('admin.store-reviews.reply', $storeReview->id), [
-                'seller_reply' => 'Terima kasih sudah berbelanja di toko kami.',
-            ])
-            ->assertRedirect();
-
-        $this->assertDatabaseHas('store_reviews', [
-            'id' => $storeReview->id,
-            'seller_reply' => 'Terima kasih sudah berbelanja di toko kami.',
-        ]);
-
-        Notification::assertSentTo($buyer, ReviewNotification::class, function ($notification) use ($order, $buyer) {
-            $data = $notification->toArray($buyer);
-
-            return $data['type'] === 'store_review_replied'
-                && $data['action_url'] === route('buyer.orders.show', $order->id);
-        });
-
-        $this->get(route('store.show', $product->store->slug))
-            ->assertOk()
-            ->assertSee('Balasan Toko')
-            ->assertSee('Terima kasih sudah berbelanja di toko kami.');
-    }
-
-    public function test_public_storefront_limits_reviews_and_links_to_all_store_reviews(): void
-    {
-        [, , , $product] = $this->createOrderWithItem('completed');
-        $store = $product->store;
-        $store->update(['avg_rating' => 4]);
-
-        $this->createStoreReviewForStore($store, 'Ulasan toko lama tersembunyi.', 3, now()->subDays(3));
-        $this->createStoreReviewForStore($store, 'Ulasan toko kedua tampil.', 4, now()->subDays(2));
-        $this->createStoreReviewForStore($store, 'Ulasan toko terbaru tampil.', 5, now()->subDay());
-
-        $this->get(route('store.show', $store->slug))
-            ->assertOk()
-            ->assertSee('Lihat Semua Ulasan')
-            ->assertSee(route('store.reviews.index', $store->slug), false)
-            ->assertSee('Ulasan toko terbaru tampil.')
-            ->assertSee('Ulasan toko kedua tampil.')
-            ->assertDontSee('Ulasan toko lama tersembunyi.');
-
-        $this->get(route('store.reviews.index', $store->slug))
-            ->assertOk()
-            ->assertSee('Ulasan Toko')
-            ->assertSee('Ulasan toko terbaru tampil.')
-            ->assertSee('Ulasan toko kedua tampil.')
-            ->assertSee('Ulasan toko lama tersembunyi.');
-    }
-
     private function createOrderWithItem(string $status): array
     {
         $buyer = User::factory()->create([
@@ -407,15 +301,12 @@ class BuyerReviewTest extends TestCase
         $store = Store::create([
             'user_id' => $seller->id,
             'name' => 'Review Store',
-            'slug' => 'review-store-' . uniqid(),
-            'is_active' => true,
-            'is_verified' => true,
-            'verification_status' => 'approved',
+            'slug' => 'review-store-'.uniqid(),
         ]);
 
         $category = Category::create([
             'name' => 'Review Category',
-            'slug' => 'review-category-' . uniqid(),
+            'slug' => 'review-category-'.uniqid(),
             'is_active' => true,
         ]);
 
@@ -423,7 +314,7 @@ class BuyerReviewTest extends TestCase
             'store_id' => $store->id,
             'category_id' => $category->id,
             'name' => 'Produk Review',
-            'slug' => 'produk-review-' . uniqid(),
+            'slug' => 'produk-review-'.uniqid(),
             'description' => 'Produk untuk test ulasan.',
             'price' => 300000,
             'stock' => 5,
@@ -433,7 +324,7 @@ class BuyerReviewTest extends TestCase
         ]);
 
         $order = Order::create([
-            'invoice_number' => 'INV-REVIEW-' . strtoupper(uniqid()),
+            'invoice_number' => 'INV-REVIEW-'.strtoupper(uniqid()),
             'buyer_id' => $buyer->id,
             'store_id' => $store->id,
             'status' => $status,
@@ -458,45 +349,5 @@ class BuyerReviewTest extends TestCase
         ]);
 
         return [$buyer, $order, $item, $product];
-    }
-
-    private function createStoreReviewForStore(Store $store, string $comment, int $rating, $createdAt): StoreReview
-    {
-        $buyer = User::factory()->create([
-            'role' => 'buyer',
-            'email_verified_at' => now(),
-        ]);
-
-        $order = Order::create([
-            'invoice_number' => 'INV-STORE-REVIEW-' . strtoupper(uniqid()),
-            'buyer_id' => $buyer->id,
-            'store_id' => $store->id,
-            'status' => 'completed',
-            'total_price' => 315000,
-            'shipping_cost' => 15000,
-            'payment_method' => 'transfer',
-            'payment_status' => 'paid',
-            'shipping_address' => [
-                'name' => $buyer->name,
-                'phone' => '081234567890',
-                'full_address' => 'Jl. Ulasan Toko',
-                'courier' => 'toko_internal',
-            ],
-        ]);
-
-        $review = StoreReview::create([
-            'buyer_id' => $buyer->id,
-            'store_id' => $store->id,
-            'order_id' => $order->id,
-            'rating' => $rating,
-            'comment' => $comment,
-        ]);
-
-        $review->forceFill([
-            'created_at' => $createdAt,
-            'updated_at' => $createdAt,
-        ])->save();
-
-        return $review;
     }
 }

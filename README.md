@@ -15,7 +15,7 @@ Digital Hook adalah toko online single-store untuk komponen komputer, laptop bar
 - Pembeli wajib mengirim KTP dan memperoleh persetujuan admin sebelum checkout.
 - Alamat hanya dapat disimpan jika kota dan kecamatannya tercantum di `config/digitalhook.php`.
 - Pengiriman hanya memakai `Kurir Digital Hook Same Day`; tidak ada ekspedisi atau API ongkir eksternal.
-- Stok berkurang saat pembayaran sukses. Pembayaran masuk langsung ke merchant toko; tidak ada wallet atau payout seller di UI/rute aktif.
+- Stok berkurang saat pembayaran sukses. Pembayaran masuk langsung ke merchant Digital Hook; tidak ada wallet atau payout seller.
 
 ## Menjalankan proyek
 

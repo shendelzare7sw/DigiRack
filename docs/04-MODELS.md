@@ -4,12 +4,12 @@
 |---|---|
 | `User` | role `admin/buyer`, profil, relasi KTP dan alamat |
 | `IdentityVerification` | data KTP privat, status review, reviewer, waktu pengajuan |
-| `Store` | etalase tunggal Digital Hook (`digihook`) |
+| `Store` | identitas internal tunggal Digital Hook (`digihook`) dan pemilik relasi produk/order; bukan storefront publik |
 | `Address` | alamat pembeli, termasuk `province`, `city`, `district`, koordinat opsional |
 | `Category`, `Product` | katalog komputer dan aksesori digital |
 | `Cart`, `Wishlist` | pilihan buyer |
 | `Order`, `OrderItem` | transaksi, snapshot harga/alamat/kurir, status pembayaran dan pemenuhan |
-| `Review`, `StoreReview` | ulasan produk dan pelayanan toko |
+| `Review` | ulasan produk dari pembeli |
 | `ShipmentEvent` | histori pengiriman kurir toko |
 | `SystemSetting` | Midtrans, kontak toko, dan durasi auto-complete |
 
@@ -17,4 +17,4 @@ Status KTP: `pending`, `verified`, `rejected`.
 
 Status order utama: `pending_payment`, `processing`, `ready_to_ship`, `shipped`, `completed`, `cancelled`, `cancellation_requested`. Status pembayaran tetap disinkronkan oleh `MidtransService`.
 
-Tabel wallet/payout warisan masih dapat ada untuk kompatibilitas data lama, tetapi tidak digunakan oleh alur atau rute aktif Digital Hook.
+Tidak ada status verifikasi/ban toko, ulasan toko, wallet seller, payout, atau kurir per toko. Moderasi hanya berlaku untuk akun buyer dan verifikasi KTP buyer.

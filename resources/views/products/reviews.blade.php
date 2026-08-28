@@ -44,7 +44,6 @@
                 <img src="{{ $product->primary_image_url }}" alt="{{ $product->name }}" class="h-16 w-16 rounded-xl border border-gray-100 object-cover shrink-0">
                 <div class="min-w-0 flex-1">
                     <h2 class="font-bold text-gray-900 line-clamp-1">{{ $product->name }}</h2>
-                    <p class="mt-1 text-xs text-gray-500">{{ $product->store->name }}</p>
                     <a href="{{ route('products.show', $product->slug) }}" class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-brand-navy hover:text-brand-blue">
                         Lihat produk
                         <x-icon name="chevron-right" class="w-3.5 h-3.5" />
@@ -53,7 +52,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
             <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
                 <p class="text-xs font-bold text-gray-500">Kualitas Produk</p>
                 <div class="mt-2 flex items-end gap-2">
@@ -66,11 +65,6 @@
                 <p class="text-xs font-bold text-gray-500">Foto & Video</p>
                 <p class="mt-2 font-display text-3xl font-bold text-gray-900">{{ $reviewsWithMediaCount }}</p>
                 <p class="mt-1 text-xs text-gray-400">ulasan bermedia</p>
-            </div>
-            <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <p class="text-xs font-bold text-gray-500">Toko</p>
-                <p class="mt-2 font-bold text-gray-900 line-clamp-1">{{ $product->store->name }}</p>
-                <p class="mt-1 text-xs text-gray-400">{{ $product->store->is_verified ? 'Terverifikasi' : 'Belum terverifikasi' }}</p>
             </div>
         </div>
 

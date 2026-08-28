@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\Buyer\CartController;
+use App\Http\Controllers\Buyer\CheckoutController;
+use App\Http\Controllers\Buyer\OrderController;
+use App\Http\Controllers\Buyer\ReviewController;
 use App\Http\Controllers\Buyer\WishlistController;
+use App\Http\Middleware\EnforceActiveBuyerRole;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 | middleware: auth, role:buyer
 */
 
-Route::middleware(['auth', 'verified', 'role:buyer', \App\Http\Middleware\EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
+Route::middleware(['auth', 'verified', 'role:buyer', EnforceActiveBuyerRole::class])->prefix('buyer')->name('buyer.')->group(function () {
 
     Route::get('/dashboard', function () {
         return view('buyer.dashboard');
@@ -29,25 +33,22 @@ Route::middleware(['auth', 'verified', 'role:buyer', \App\Http\Middleware\Enforc
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
     // Orders (Fase 5B)
-    Route::get('/orders', [App\Http\Controllers\Buyer\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{id}', [App\Http\Controllers\Buyer\OrderController::class, 'show'])->name('orders.show');
-    Route::get('/orders/{id}/invoice', [App\Http\Controllers\Buyer\OrderController::class, 'invoice'])->name('orders.invoice');
-    Route::post('/orders/{id}/confirm', [App\Http\Controllers\Buyer\OrderController::class, 'confirm'])->name('orders.confirm');
-    Route::post('/orders/{id}/cancel', [App\Http\Controllers\Buyer\OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{id}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+    Route::post('/orders/{id}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
 
     // Checkout (Fase 5B)
-    Route::post('/checkout/init', [\App\Http\Controllers\Buyer\CheckoutController::class, 'init'])->name('checkout.init');
-    Route::post('/checkout', [\App\Http\Controllers\Buyer\CheckoutController::class, 'index'])->name('checkout.index');
-    Route::post('/checkout/process', [\App\Http\Controllers\Buyer\CheckoutController::class, 'process'])->name('checkout.process');
-    Route::post('/orders/{id}/upload-proof', [\App\Http\Controllers\Buyer\CheckoutController::class, 'uploadProof'])->name('orders.upload-proof');
+    Route::post('/checkout/init', [CheckoutController::class, 'init'])->name('checkout.init');
+    Route::post('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/orders/{id}/upload-proof', [CheckoutController::class, 'uploadProof'])->name('orders.upload-proof');
 
     // Reviews
     // Route::get('/reviews', [App\Http\Controllers\Buyer\ReviewController::class, 'index'])->name('reviews.index');
-    Route::get('/reviews/{orderItem}/edit', [App\Http\Controllers\Buyer\ReviewController::class, 'edit'])->name('reviews.edit');
-    Route::post('/reviews/{orderItem}', [App\Http\Controllers\Buyer\ReviewController::class, 'store'])->name('reviews.store');
-    Route::get('/store-reviews/{order}/edit', [App\Http\Controllers\Buyer\StoreReviewController::class, 'edit'])->name('store-reviews.edit');
-    Route::post('/store-reviews/{order}', [App\Http\Controllers\Buyer\StoreReviewController::class, 'store'])->name('store-reviews.store');
-
+    Route::get('/reviews/{orderItem}/edit', [ReviewController::class, 'edit'])->name('reviews.edit');
+    Route::post('/reviews/{orderItem}', [ReviewController::class, 'store'])->name('reviews.store');
     // Profile
     // Route::get('/profile', [App\Http\Controllers\Buyer\ProfileController::class, 'edit'])->name('profile.edit');
     // Route::post('/profile', [App\Http\Controllers\Buyer\ProfileController::class, 'update'])->name('profile.update');

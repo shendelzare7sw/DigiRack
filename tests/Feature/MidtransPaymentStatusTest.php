@@ -76,21 +76,19 @@ class MidtransPaymentStatusTest extends TestCase
         $store = Store::create([
             'user_id' => $seller->id,
             'name' => 'Server Store',
-            'slug' => 'server-store-' . uniqid(),
-            'is_active' => true,
-            'is_verified' => true,
+            'slug' => 'server-store-'.uniqid(),
         ]);
 
         $category = Category::create([
             'name' => 'Rack Server',
-            'slug' => 'rack-server-' . uniqid(),
+            'slug' => 'rack-server-'.uniqid(),
         ]);
 
         $product = Product::create([
             'store_id' => $store->id,
             'category_id' => $category->id,
             'name' => 'Intel Xeon',
-            'slug' => 'intel-xeon-' . uniqid(),
+            'slug' => 'intel-xeon-'.uniqid(),
             'price' => 315000,
             'stock' => 10,
             'sold_count' => 0,
@@ -98,7 +96,7 @@ class MidtransPaymentStatusTest extends TestCase
         ]);
 
         $order = Order::create([
-            'invoice_number' => 'INV/' . date('Ymd') . '/' . strtoupper(uniqid()),
+            'invoice_number' => 'INV/'.date('Ymd').'/'.strtoupper(uniqid()),
             'buyer_id' => $buyer->id,
             'store_id' => $store->id,
             'status' => 'pending_payment',
@@ -106,7 +104,7 @@ class MidtransPaymentStatusTest extends TestCase
             'shipping_cost' => 0,
             'payment_method' => 'transfer',
             'payment_status' => 'unpaid',
-            'payment_reference' => 'PAY-' . date('Ymd') . '-' . strtoupper(uniqid()),
+            'payment_reference' => 'PAY-'.date('Ymd').'-'.strtoupper(uniqid()),
             'shipping_address' => [
                 'name' => 'Buyer',
                 'phone' => '081234567890',

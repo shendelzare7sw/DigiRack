@@ -144,7 +144,7 @@
                 @empty
                     <!-- Fallback -->
                     <div class="col-span-full">
-                        <x-empty-state title="Belum ada produk" description="Toko belum menambahkan produk." />
+                        <x-empty-state title="Belum ada produk" description="Belum ada produk yang tersedia." />
                     </div>
                 @endforelse
             </div>

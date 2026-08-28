@@ -64,12 +64,11 @@
                     </div>
                 </div>
 
-                {{-- Item Produk & Toko --}}
+                {{-- Item Produk --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <div class="flex items-center gap-3 border-b pb-3 mb-4">
-                        <x-icon name="building-storefront" class="w-5 h-5 text-brand-orange" />
-                        <h3 class="text-lg font-bold text-gray-900 flex-1">{{ $order->store->name }}</h3>
-                        <a href="{{ route('store.show', $order->store->slug) }}" class="text-xs font-bold text-brand-navy hover:underline">Kunjungi Toko</a>
+                        <x-icon name="shopping-bag" class="w-5 h-5 text-brand-orange" />
+                        <h3 class="text-lg font-bold text-gray-900">Produk Pesanan</h3>
                     </div>
                     <div class="divide-y divide-gray-100">
                         @foreach($order->items as $item)
@@ -257,11 +256,10 @@
                         </div>
                     </div>
                 @elseif($order->status === 'completed')
-                    @php $storeReview = $order->storeReview; @endphp
                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 text-center">
                         <x-icon name="check-badge" class="w-10 h-10 text-green-500 mx-auto mb-2" />
                         <h3 class="font-bold text-green-900 mb-1">Transaksi Selesai</h3>
-                        <p class="text-sm text-green-700 mb-4">Terima kasih telah berbelanja! Dana telah diteruskan ke pihak toko.</p>
+                        <p class="text-sm text-green-700 mb-4">Terima kasih telah berbelanja di Digital Hook.</p>
                         <div class="grid grid-cols-1 gap-3">
                             @if($order->items->isNotEmpty())
                                 @php $firstItemReview = $order->reviews->firstWhere('product_id', $order->items->first()->product_id); @endphp
@@ -270,10 +268,6 @@
                                     {{ $firstItemReview ? 'Edit Ulasan Produk' : 'Tulis Ulasan Produk' }}
                                 </a>
                             @endif
-                            <a href="{{ route('buyer.store-reviews.edit', $order->id) }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-brand-navylight px-4 py-3 text-sm font-bold text-brand-navy hover:border-brand-navy hover:bg-brand-navylight/40 transition-colors">
-                                <x-icon name="building-storefront" class="w-4 h-4" />
-                                {{ $storeReview ? 'Edit Ulasan Toko' : 'Tulis Ulasan Toko' }}
-                            </a>
                         </div>
                     </div>
                 @elseif($order->status === 'processing')

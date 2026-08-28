@@ -70,7 +70,7 @@
         <div class="mt-5 p-3 bg-blue-50 border border-blue-100 rounded-xl">
             <p class="text-xs text-blue-700 flex items-start gap-2">
                 <x-icon name="information-circle" class="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Username akan dibuat otomatis oleh sistem. Anda bisa mengubahnya nanti di halaman Profil. Ingin menjadi Penjual? Aktifkan fitur "Buka Toko" setelah registrasi.</span>
+                <span>Username akan dibuat otomatis oleh sistem dan dapat diubah nanti melalui halaman Profil.</span>
             </p>
         </div>
 

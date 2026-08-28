@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Review;
+use App\Models\SystemSetting;
 use App\Notifications\OrderNotification;
 use App\Notifications\ReviewNotification;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 class OrderController extends Controller
 {
     /**
-     * Get the authenticated user's store.
+     * Get the single Digital Hook business record.
      */
     protected function getStore()
     {
@@ -26,8 +27,8 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $store = $this->getStore();
-        if (!$store) {
-            return redirect()->route('dashboard')->with('error', 'Anda harus membuka toko terlebih dahulu.');
+        if (! $store) {
+            return redirect()->route('dashboard')->with('error', 'Profil bisnis Digital Hook belum tersedia.');
         }
 
         $query = Order::with(['buyer', 'items.product'])->where('store_id', $store->id);
@@ -76,12 +77,12 @@ class OrderController extends Controller
                 $review->buyer->notify(new ReviewNotification(
                     'review_replied',
                     'Digital Hook membalas ulasan Anda',
-                    'Penjual membalas ulasan Anda untuk ' . $productName . '.',
+                    'Penjual membalas ulasan Anda untuk '.$productName.'.',
                     route('buyer.orders.show', $order->id),
                 ));
             }
         } catch (\Throwable $e) {
-            Log::warning('Product review reply notification failed: ' . $e->getMessage(), [
+            Log::warning('Product review reply notification failed: '.$e->getMessage(), [
                 'review_id' => $review->id,
                 'order_id' => $order->id,
             ]);
@@ -93,8 +94,8 @@ class OrderController extends Controller
     public function report(Request $request)
     {
         $store = $this->getStore();
-        if (!$store) {
-            return redirect()->route('dashboard')->with('error', 'Anda harus membuka toko terlebih dahulu.');
+        if (! $store) {
+            return redirect()->route('dashboard')->with('error', 'Profil bisnis Digital Hook belum tersedia.');
         }
 
         $query = Order::with(['buyer', 'items'])->where('store_id', $store->id);
@@ -179,15 +180,16 @@ class OrderController extends Controller
                     $buyer->notify(new OrderNotification(
                         'order_shipped',
                         '🚚 Pesanan Sedang Dikirim!',
-                        'Pesanan ' . $order->invoice_number . ' sudah dikirim dengan nomor resi: ' . $resi . '. Pantau pengiriman Anda.',
+                        'Pesanan '.$order->invoice_number.' sudah dikirim dengan nomor resi: '.$resi.'. Pantau pengiriman Anda.',
                         route('buyer.orders.show', $order->id),
                         '📦'
                     ));
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
-        return back()->with('success', 'Status pesanan berhasil diperbarui menjadi ' . $order->status_label);
+        return back()->with('success', 'Status pesanan berhasil diperbarui menjadi '.$order->status_label);
     }
 
     public function markDelivered(Request $request, $id)
@@ -227,21 +229,21 @@ class OrderController extends Controller
         try {
             $buyer = $order->buyer ?? null;
             if ($buyer) {
-                $hours = (int) \App\Models\SystemSetting::val('auto_complete_hours', 24);
+                $hours = (int) SystemSetting::val('auto_complete_hours', 24);
                 $deadline = $hours > 0
-                    ? ' Jika tidak dikonfirmasi dalam ' . $hours . ' jam, pesanan akan otomatis selesai.'
+                    ? ' Jika tidak dikonfirmasi dalam '.$hours.' jam, pesanan akan otomatis selesai.'
                     : '';
 
                 $buyer->notify(new OrderNotification(
                     'order_delivered',
                     'Paket Tercatat Sampai',
-                    'Pesanan ' . $order->invoice_number . ' tercatat sudah sampai di alamat tujuan.' . $deadline,
+                    'Pesanan '.$order->invoice_number.' tercatat sudah sampai di alamat tujuan.'.$deadline,
                     route('buyer.orders.show', $order->id),
                     'check'
                 ));
             }
         } catch (\Exception $e) {
-            Log::warning('Order delivered notification failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+            Log::warning('Order delivered notification failed: '.$e->getMessage(), ['order_id' => $order->id]);
         }
 
         return back()->with('success', 'Paket ditandai sudah sampai. Timer auto-selesai pembeli dimulai sekarang.');
@@ -303,14 +305,14 @@ class OrderController extends Controller
                         $approved ? 'order_cancelled' : 'order_cancellation_rejected',
                         $approved ? 'Pesanan Dibatalkan' : 'Permintaan Pembatalan Ditolak',
                         $approved
-                            ? 'Permintaan pembatalan pesanan ' . $order->invoice_number . ' disetujui penjual.'
-                            : 'Penjual menolak pembatalan pesanan ' . $order->invoice_number . ' dan akan melanjutkan proses pengiriman.',
+                            ? 'Permintaan pembatalan pesanan '.$order->invoice_number.' disetujui penjual.'
+                            : 'Penjual menolak pembatalan pesanan '.$order->invoice_number.' dan akan melanjutkan proses pengiriman.',
                         route('buyer.orders.show', $order->id),
                         $approved ? 'x' : '!'
                     ));
                 }
             } catch (\Exception $e) {
-                Log::warning('Order cancellation resolution notification failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+                Log::warning('Order cancellation resolution notification failed: '.$e->getMessage(), ['order_id' => $order->id]);
             }
 
             $message = $request->decision === 'approve'
@@ -320,7 +322,8 @@ class OrderController extends Controller
             return back()->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Order cancellation resolution error: ' . $e->getMessage(), ['order_id' => $id]);
+            Log::error('Order cancellation resolution error: '.$e->getMessage(), ['order_id' => $id]);
+
             return back()->with('error', 'Terjadi kesalahan saat memproses permintaan pembatalan. Silakan coba lagi.');
         }
     }

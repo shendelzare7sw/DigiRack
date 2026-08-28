@@ -128,7 +128,7 @@
         @else
             <form action="{{ route('buyer.checkout.index') }}" method="POST" class="flex flex-col lg:flex-row gap-8">
                 @csrf
-                {{-- Cart Items (grouped by store) --}}
+                {{-- Cart Items --}}
                 <div class="flex-1 min-w-0 space-y-5">
                     {{-- Master Checkbox --}}
                     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
@@ -138,17 +138,7 @@
                     </div>
 
                     @foreach($grouped as $storeId => $items)
-                        @php $store = $items->first()->product->store; @endphp
                         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden store-group">
-                            {{-- Store Header --}}
-                            <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-gray-50/80">
-                                <img src="{{ $store->logo_url }}" alt="{{ $store->name }}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
-                                <h3 class="font-semibold text-sm text-gray-800 truncate">{{ $store->name }}</h3>
-                                @if($store->is_verified)
-                                    <x-icon name="check-badge" class="w-4 h-4 text-green-500 shrink-0" />
-                                @endif
-                            </div>
-
                             {{-- Items --}}
                             <div class="divide-y divide-gray-50">
                                 @foreach($items as $cartItem)
