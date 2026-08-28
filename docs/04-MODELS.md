@@ -11,7 +11,7 @@
 | `Order`, `OrderItem` | transaksi, snapshot harga/alamat/kurir, status pembayaran dan pemenuhan |
 | `Review` | ulasan produk dari pembeli |
 | `ShipmentEvent` | histori pengiriman kurir toko |
-| `SystemSetting` | Midtrans, kontak toko, dan durasi auto-complete |
+| `SystemSetting` | Midtrans, kontak toko, durasi auto-complete, dan konfigurasi section beranda |
 
 Status KTP: `pending`, `verified`, `rejected`.
 

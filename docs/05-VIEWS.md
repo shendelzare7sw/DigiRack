@@ -23,3 +23,5 @@ Form alamat memakai dropdown Provinsi → Kota/Kabupaten → Kecamatan. Data dro
 Nomor telepon, email, dan alamat footer publik dibaca dari `SystemSetting` dan dapat diubah melalui menu Pengaturan admin. Kontak yang belum diisi tidak ditampilkan sebagai data contoh.
 
 Semua pemanggilan paginator Laravel menggunakan override global `resources/views/vendor/pagination/tailwind.blade.php`. Versi mobile menampilkan ringkasan hasil, halaman aktif, serta tombol kembali/lanjut yang tidak overflow; versi desktop menampilkan nomor halaman lengkap dengan gaya Digital Hook.
+
+Beranda memiliki section pretelan laptop/PC second dengan tampilan netral. Admin dapat mengubah judul, deskripsi, label tombol, status tampil, dan memilih maksimal 10 produk kondisi `used` melalui menu Pengaturan. Jika tidak ada produk yang dipilih, section otomatis menggunakan produk second aktif terbaru yang masih memiliki stok.

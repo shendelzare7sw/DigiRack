@@ -41,10 +41,6 @@
         </div>
         
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-6">
-            @php
-                $categories = \App\Models\Category::where('is_active', true)->orderBy('sort_order')->take(6)->get();
-            @endphp
-            
             @forelse($categories as $category)
                 <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-navy/30 transition-all duration-300">
                     <div class="w-14 h-14 bg-brand-navylight rounded-full flex items-center justify-center mb-3 group-hover:bg-brand-blue transition-colors duration-300 text-brand-navy group-hover:text-white">
@@ -68,10 +64,6 @@
     </section>
 
     <!-- 3. Flash Sale Section -->
-    @php
-        $flashSales = \App\Models\FlashSale::with(['product', 'product.store', 'product.category'])->where('is_active', true)->where('end_time', '>=', now())->get();
-    @endphp
-
     @if($flashSales->isNotEmpty())
     <section class="mt-4 mb-8">
         <div class="bg-gradient-to-r from-red-600 to-brand-blue py-10">
@@ -122,7 +114,40 @@
     </section>
     @endif
 
-    <!-- 4. Recommended Products Grid Section -->
+    <!-- 4. Used Parts Section -->
+    @if($usedPartsSection['enabled'] && $usedParts->isNotEmpty())
+        <section id="pretelan-second" class="border-y border-gray-100 bg-white py-10 sm:py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div class="max-w-3xl">
+                        <div class="mb-3 flex items-center gap-3">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-brand-blue">
+                                <x-icon name="wrench-screwdriver" class="h-5 w-5" />
+                            </span>
+                            <h2 class="font-display text-xl font-bold text-gray-900 sm:text-2xl">
+                                {{ $usedPartsSection['title'] }}
+                            </h2>
+                        </div>
+                        <p class="text-sm leading-relaxed text-gray-500 sm:text-base">
+                            {{ $usedPartsSection['description'] }}
+                        </p>
+                    </div>
+                    <a href="{{ route('products.index', ['condition' => 'used']) }}" class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl border border-gray-200 bg-white px-5 text-sm font-bold text-brand-navy shadow-sm transition-colors hover:border-brand-blue hover:bg-blue-50 hover:text-brand-blue sm:self-auto">
+                        {{ $usedPartsSection['cta_label'] }}
+                        <x-icon name="arrow-right" class="h-4 w-4" />
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-5">
+                    @foreach($usedParts as $product)
+                        <x-product-card :product="$product" :wishlisted="in_array($product->id, $wishlistIds ?? [])" />
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <!-- 5. Recommended Products Grid Section -->
     <section class="bg-gray-50 py-10 border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="font-display font-bold text-xl sm:text-2xl text-gray-900 mb-6 flex items-center gap-2">
@@ -131,14 +156,6 @@
             </h2>
             
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
-                @php
-                    $products = \App\Models\Product::with(['store', 'category'])
-                        ->whereDoesntHave('flashSale')
-                        ->inRandomOrder()
-                        ->take(10)
-                        ->get();
-                @endphp
-                
                 @forelse($products as $product)
                     <x-product-card :product="$product" :wishlisted="in_array($product->id, $wishlistIds ?? [])" />
                 @empty

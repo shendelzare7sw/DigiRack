@@ -8,11 +8,10 @@ use App\Http\Controllers\IdentityVerificationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileAddressController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\LocationController;
 use App\Http\Controllers\Public\PageController;
 use App\Http\Controllers\Public\ProductController;
-use App\Models\Wishlist;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,16 +20,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    $wishlistIds = [];
-    if (Auth::check()) {
-        $wishlistIds = Wishlist::where('user_id', Auth::id())
-            ->pluck('product_id')
-            ->toArray();
-    }
-
-    return view('welcome', compact('wishlistIds'));
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('/download-app', [PageController::class, 'downloadApp'])->name('pages.download-app');
 Route::get('/tentang-digital-hook', [PageController::class, 'about'])->name('pages.about');
