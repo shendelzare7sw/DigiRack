@@ -108,9 +108,6 @@
                         <a href="{{ route('pages.sitemap') }}" class="hover:text-white transition-colors">Sitemap</a>
                     </div>
                 </div>
-                <div class="border-t border-white/10 pt-3 text-center text-[11px] text-gray-500">
-                    Developed by : <span class="font-semibold text-gray-400">Tabah Ujianto &amp; Yayan Wahyudi</span>
-                </div>
             </div>
         </footer>
 
