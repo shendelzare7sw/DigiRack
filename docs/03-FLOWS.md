@@ -26,4 +26,4 @@ Pembayaran diterima langsung oleh merchant Digital Hook. Tidak ada pemindahan da
 
 ## Pengiriman
 
-Hanya Banten dengan tiga wilayah kota/kabupaten yang tampil. Kecamatan yang tidak ada di `config/digitalhook.php` dianggap tidak terjangkau. Tarif awal dibedakan per kota/kabupaten dan cutoff same-day dikendalikan `DIGITAL_HOOK_SAMEDAY_CUTOFF`.
+Hanya Banten dengan tiga wilayah kota/kabupaten yang tampil. Kecamatan yang tidak ada di `config/digitalhook.php` dianggap tidak terjangkau. Tarif awal dibedakan per kota/kabupaten, dapat diubah admin melalui Pengaturan (termasuk Rp0/gratis), dan cutoff same-day dikendalikan `DIGITAL_HOOK_SAMEDAY_CUTOFF`.

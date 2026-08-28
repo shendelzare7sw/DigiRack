@@ -112,8 +112,6 @@ class CheckoutController extends Controller
                     'items' => [],
                     'totalWeight' => 0,
                     'subtotal' => 0,
-                    'custom_couriers' => collect(),
-                    'active_expeditions' => [],
                 ];
             }
             $storesData[$storeId]['items'][] = $item;

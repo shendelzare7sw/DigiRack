@@ -47,7 +47,7 @@
                         <img src="{{ asset('images/digital-hook-logo-white.png') }}" alt="Digital Hook" class="h-10 w-auto bg-white px-3 py-1.5 rounded-xl mb-6 shadow-sm">
                         <h3 class="text-xl font-bold text-white mb-3">Digital Hook</h3>
                         <p class="text-gray-300 text-[15px] leading-relaxed mb-6">
-                            Komponen komputer, laptop second, periferal, dan aksesori digital dengan pengantaran same-day di Tangerang Raya.
+                            Komponen komputer, laptop second, periferal, dan aksesori digital dengan pengantaran same-day untuk Tangerang dan sekitarnya.
                         </p>
                         
                         <!-- Social Icons -->

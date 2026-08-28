@@ -55,6 +55,39 @@
 
             <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
                 <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+                    <x-icon name="truck" class="w-6 h-6 text-brand-navy" /> Ongkir Kurir Digital Hook
+                </h2>
+                <p class="text-xs text-gray-500 mt-2 mb-6">Tentukan tarif same-day untuk setiap wilayah. Isi 0 untuk gratis ongkir.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kota Tangerang</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-gray-400">Rp</span>
+                            <input type="number" name="delivery_fee_kota_tangerang" value="{{ old('delivery_fee_kota_tangerang', $settings['delivery_fee_kota_tangerang'] ?? config('digitalhook.delivery_areas.Kota Tangerang.fee')) }}" min="0" max="10000000" step="1" required class="w-full pl-10 border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                        </div>
+                        <x-input-error :messages="$errors->get('delivery_fee_kota_tangerang')" class="mt-1" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kota Tangerang Selatan</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-gray-400">Rp</span>
+                            <input type="number" name="delivery_fee_tangerang_selatan" value="{{ old('delivery_fee_tangerang_selatan', $settings['delivery_fee_tangerang_selatan'] ?? config('digitalhook.delivery_areas.Kota Tangerang Selatan.fee')) }}" min="0" max="10000000" step="1" required class="w-full pl-10 border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                        </div>
+                        <x-input-error :messages="$errors->get('delivery_fee_tangerang_selatan')" class="mt-1" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Kabupaten Tangerang</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-gray-400">Rp</span>
+                            <input type="number" name="delivery_fee_kabupaten_tangerang" value="{{ old('delivery_fee_kabupaten_tangerang', $settings['delivery_fee_kabupaten_tangerang'] ?? config('digitalhook.delivery_areas.Kabupaten Tangerang.fee')) }}" min="0" max="10000000" step="1" required class="w-full pl-10 border-gray-200 rounded-xl text-sm focus:border-brand-navy focus:ring-brand-navy/20">
+                        </div>
+                        <x-input-error :messages="$errors->get('delivery_fee_kabupaten_tangerang')" class="mt-1" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                <h2 class="font-bold text-lg text-gray-900 flex items-center gap-2">
                     <x-icon name="globe-alt" class="w-6 h-6 text-brand-navy" /> Identitas Bisnis
                 </h2>
                 <div class="space-y-5 mt-6">

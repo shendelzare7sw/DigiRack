@@ -17,6 +17,7 @@ return [
             'province' => 'Banten',
             'postal_code' => '15100',
             'fee' => 20_000,
+            'fee_setting_key' => 'delivery_fee_kota_tangerang',
             'districts' => [
                 'Batuceper', 'Benda', 'Cibodas', 'Ciledug', 'Cipondoh',
                 'Jatiuwung', 'Karang Tengah', 'Karawaci', 'Larangan',
@@ -27,6 +28,7 @@ return [
             'province' => 'Banten',
             'postal_code' => '15300',
             'fee' => 25_000,
+            'fee_setting_key' => 'delivery_fee_tangerang_selatan',
             'districts' => [
                 'Ciputat', 'Ciputat Timur', 'Pamulang', 'Pondok Aren',
                 'Serpong', 'Serpong Utara', 'Setu',
@@ -36,6 +38,7 @@ return [
             'province' => 'Banten',
             'postal_code' => '15700',
             'fee' => 30_000,
+            'fee_setting_key' => 'delivery_fee_kabupaten_tangerang',
             'districts' => [
                 'Cikupa', 'Cisauk', 'Curug', 'Kelapa Dua', 'Kosambi', 'Legok',
                 'Pagedangan', 'Panongan', 'Pasar Kemis', 'Sepatan',

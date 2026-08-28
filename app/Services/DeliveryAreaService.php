@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Address;
+use App\Models\SystemSetting;
 use Illuminate\Support\Collection;
 
 class DeliveryAreaService
@@ -19,7 +20,7 @@ class DeliveryAreaService
                 'name' => $city,
                 'province' => $area['province'],
                 'postal_code' => $area['postal_code'],
-                'fee' => (int) $area['fee'],
+                'fee' => $this->areaFee($area),
             ];
         })->values();
     }
@@ -47,7 +48,7 @@ class DeliveryAreaService
         abort_unless($this->isCovered($address->province, $address->city, $address->district), 422,
             'Alamat tidak berada dalam wilayah pengantaran Digital Hook.');
 
-        return (int) $this->areas()->get($this->normaliseCity($address->city))['fee'];
+        return $this->areaFee($this->areas()->get($this->normaliseCity($address->city)));
     }
 
     public function normaliseCity(string $city): string
@@ -61,5 +62,16 @@ class DeliveryAreaService
 
         return collect($this->areas()->keys())
             ->first(fn (string $covered) => strcasecmp(preg_replace('/^(Kota|Kabupaten)\s+/i', '', $covered), $city) === 0, $city);
+    }
+
+    private function areaFee(array $area): int
+    {
+        $settingKey = $area['fee_setting_key'] ?? null;
+
+        if (! $settingKey) {
+            return (int) $area['fee'];
+        }
+
+        return max(0, (int) SystemSetting::val($settingKey, $area['fee']));
     }
 }

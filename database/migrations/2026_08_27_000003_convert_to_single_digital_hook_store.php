@@ -31,7 +31,7 @@ return new class extends Migration
                 'user_id' => $admin->id,
                 'name' => 'Digital Hook',
                 'slug' => 'digihook',
-                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang Raya.',
+                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang dan sekitarnya.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -41,7 +41,7 @@ return new class extends Migration
                 'user_id' => $admin->id,
                 'name' => 'Digital Hook',
                 'slug' => 'digihook',
-                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang Raya.',
+                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital untuk Tangerang dan sekitarnya.',
                 'updated_at' => now(),
             ]);
         }

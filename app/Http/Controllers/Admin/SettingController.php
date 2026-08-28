@@ -11,6 +11,7 @@ class SettingController extends Controller
     public function index()
     {
         $settings = SystemSetting::pluck('value', 'key');
+
         return view('admin.settings.index', compact('settings'));
     }
 
@@ -25,12 +26,17 @@ class SettingController extends Controller
             'platform_email' => 'nullable|email',
             'platform_phone' => 'nullable|string',
             'auto_complete_hours' => 'nullable|integer|min:0|max:168',
+            'delivery_fee_kota_tangerang' => 'required|integer|min:0|max:10000000',
+            'delivery_fee_tangerang_selatan' => 'required|integer|min:0|max:10000000',
+            'delivery_fee_kabupaten_tangerang' => 'required|integer|min:0|max:10000000',
         ]);
 
         $keys = [
             'midtrans_server_key', 'midtrans_client_key', 'midtrans_merchant_id',
             'midtrans_is_production', 'platform_name', 'platform_email', 'platform_phone',
-            'auto_complete_hours'
+            'auto_complete_hours',
+            'delivery_fee_kota_tangerang', 'delivery_fee_tangerang_selatan',
+            'delivery_fee_kabupaten_tangerang',
         ];
 
         foreach ($request->only($keys) as $key => $value) {

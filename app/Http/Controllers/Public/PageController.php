@@ -33,14 +33,14 @@ class PageController extends Controller
             'title' => 'Tentang Digital Hook',
             'eyebrow' => 'Tentang Kami',
             'heading' => 'Perangkat digital yang dekat, praktis, dan cepat sampai.',
-            'description' => 'Digital Hook menyediakan komponen komputer, laptop second, periferal, kabel, dan aksesori digital untuk pembeli di Tangerang Raya.',
+            'description' => 'Digital Hook menyediakan komponen komputer, laptop second, periferal, kabel, dan aksesori digital untuk pembeli di Tangerang dan sekitarnya.',
             'accent' => 'navy',
             'primaryAction' => ['label' => 'Jelajahi Produk', 'url' => route('products.index')],
             'secondaryAction' => ['label' => 'Cek Wilayah Pengantaran', 'url' => route('pages.help')],
             'highlights' => [
                 ['icon' => 'shield-check', 'title' => 'Pembeli Terverifikasi', 'body' => 'Verifikasi KTP membantu mengurangi transaksi fiktif dan melindungi operasional kurir toko.'],
                 ['icon' => 'computer-desktop', 'title' => 'Kebutuhan Komputer', 'body' => 'Katalog berfokus pada komponen PC, laptop, periferal, jaringan rumahan, dan aksesori digital umum.'],
-                ['icon' => 'truck', 'title' => 'Kurir Same-day', 'body' => 'Pesanan diantar langsung oleh kurir Digital Hook pada wilayah Tangerang Raya yang terjangkau.'],
+                ['icon' => 'truck', 'title' => 'Kurir Same-day', 'body' => 'Pesanan diantar langsung oleh kurir Digital Hook untuk alamat Tangerang dan sekitarnya yang masih terjangkau.'],
             ],
             'sections' => [
                 ['title' => 'Belanja lebih terarah', 'body' => 'Cari produk berdasarkan kategori, kondisi baru atau second, simpan wishlist, dan pantau pesanan dalam satu akun.'],
@@ -54,8 +54,8 @@ class PageController extends Controller
         return view('public.pages.info', [
             'title' => 'Wilayah Pengantaran',
             'eyebrow' => 'Kurir Same-day',
-            'heading' => 'Pengantaran lokal untuk Tangerang Raya.',
-            'description' => 'Digital Hook hanya menerima alamat pada kota dan kecamatan yang tersedia agar pesanan dapat diantar langsung oleh kurir toko pada hari yang sama.',
+            'heading' => 'Pengantaran lokal untuk Tangerang dan sekitarnya.',
+            'description' => 'Layanan same-day bersifat lokal dan fleksibel berdasarkan kedekatan alamat. Ketersediaan pasti tetap mengikuti kota dan kecamatan yang dapat dipilih saat checkout.',
             'accent' => 'green',
             'primaryAction' => ['label' => 'Jelajahi Katalog', 'url' => route('products.index')],
             'secondaryAction' => ['label' => 'Kelola Alamat', 'url' => auth()->check() ? route('profile.edit').'#address-section' : route('register')],

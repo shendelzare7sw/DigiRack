@@ -14,7 +14,7 @@
                     <span class="block text-brand-blue mt-1 md:mt-2">Terpercaya.</span>
                 </h1>
                 <p class="text-sm sm:text-base md:text-lg text-gray-200 mb-8 max-w-2xl hidden sm:block leading-relaxed">
-                    Komponen PC, laptop second, periferal, kabel, dan aksesori pilihan dengan pengantaran same-day khusus Tangerang Raya.
+                    Komponen PC, laptop second, periferal, kabel, dan aksesori pilihan dengan pengantaran same-day untuk Tangerang dan sekitarnya.
                 </p>
                 <div class="flex flex-wrap gap-4">
                     <a href="{{ route('products.index') }}" class="bg-brand-blue hover:bg-blue-600 text-white font-bold px-6 md:px-8 py-3 md:py-4 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 text-sm sm:text-base">

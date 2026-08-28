@@ -17,7 +17,7 @@ class StoreSeeder extends Seeder
             [
                 'user_id' => $admin->id,
                 'name' => 'Digital Hook',
-                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital dengan pengantaran same-day di Tangerang Raya.',
+                'description' => 'Perangkat komputer, laptop second, komponen, dan aksesori digital dengan pengantaran same-day untuk Tangerang dan sekitarnya.',
             ]
         );
     }

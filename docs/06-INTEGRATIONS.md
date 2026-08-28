@@ -13,7 +13,7 @@ Tidak ada API RajaOngkir, ekspedisi reguler, atau tracking pihak ketiga pada alu
 - tarif same-day;
 - nama kurir dan cutoff pemesanan.
 
-Kode kurir order adalah `digital_hook_sameday`. Bukti sampai dan histori tetap dikelola di aplikasi.
+Kode kurir order adalah `digital_hook_sameday`. Bukti sampai dan histori tetap dikelola di aplikasi. Nilai tarif per kota/kabupaten dapat diubah melalui pengaturan admin dan menerima nilai `0` untuk gratis ongkir.
 
 ## Email dan notifikasi
 

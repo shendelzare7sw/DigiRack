@@ -2,8 +2,7 @@
     <x-slot name="title">Checkout Pesanan</x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8" x-data="checkoutPage({
-            storesCount: {{ count($storesData) }},
-            stores: {{ json_encode(collect($storesData)->map(fn($data, $id) => ['id' => $id, 'weight' => $data['totalWeight'], 'subtotal' => $data['subtotal'], 'origin_city_id' => $data['store']['city_id'] ?? 153])->values()) }},
+            stores: {{ json_encode(collect($storesData)->keys()->map(fn($id) => ['id' => $id])->values()) }},
             productSubtotal: {{ $totalPrice }},
             totalBuyerFees: {{ $totalBuyerFees }},
             midtransReady: {{ $midtransReady ? 'true' : 'false' }},
@@ -113,7 +112,7 @@
                     
                     <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
                         <input type="hidden" name="couriers[{{ $storeId }}]" value="digital_hook_sameday">
-                        <div class="flex items-start gap-3"><x-icon name="truck" class="w-6 h-6 text-brand-blue shrink-0" /><div class="flex-1"><p class="text-sm font-bold text-gray-900">{{ config('digitalhook.courier_name') }}</p><p class="text-xs text-gray-600 mt-1">Diantar langsung pada hari yang sama untuk pesanan sebelum pukul {{ config('digitalhook.order_cutoff') }}.</p><div class="mt-2 flex justify-between text-sm"><span>Tarif wilayah</span><strong x-text="selectedAddress ? 'Rp ' + formatRupiah(selectedAddress.shipping_fee) : '-' "></strong></div></div></div>
+                        <div class="flex items-start gap-3"><x-icon name="truck" class="w-6 h-6 text-brand-blue shrink-0" /><div class="flex-1"><p class="text-sm font-bold text-gray-900">{{ config('digitalhook.courier_name') }}</p><p class="text-xs text-gray-600 mt-1">Diantar langsung pada hari yang sama untuk pesanan sebelum pukul {{ config('digitalhook.order_cutoff') }}.</p><div class="mt-2 flex justify-between text-sm"><span>Tarif wilayah</span><strong x-text="selectedAddress ? formatShipping(selectedAddress.shipping_fee) : '-' "></strong></div></div></div>
                     </div>
                 </div>
                 @endforeach
@@ -132,7 +131,7 @@
                         </div>
                         <div class="flex justify-between text-gray-600">
                             <span>Total Ongkos Kirim <br><template x-if="isAnyCalculating"><span class="text-[10px] text-brand-blue mt-1 truncate">Sedang menghitung...</span></template></span>
-                            <span class="font-semibold text-gray-900" x-text="totalShipping > 0 ? 'Rp ' + formatRupiah(totalShipping) : '-'"></span>
+                            <span class="font-semibold text-gray-900" x-text="formatShipping(totalShipping)"></span>
                         </div>
                         @if($totalBuyerFees > 0)
                         <div class="pt-3 border-t border-gray-50">
@@ -211,7 +210,7 @@
                 init() {
                     this.stores.forEach(store => {
                         this.selectedCouriers[store.id] = "digital_hook_sameday";
-                        this.shippingCosts[store.id] = this.selectedAddress?.shipping_fee || 0;
+                        this.shippingCosts[store.id] = Number(this.selectedAddress?.shipping_fee ?? 0);
                         this.isCalculating[store.id] = false;
                         this.ongkirError[store.id] = null;
                     });
@@ -220,7 +219,7 @@
                 onAddressChange() {
                     this.stores.forEach(store => {
                         this.selectedCouriers[store.id] = "digital_hook_sameday";
-                        this.shippingCosts[store.id] = this.selectedAddress?.shipping_fee || 0;
+                        this.shippingCosts[store.id] = Number(this.selectedAddress?.shipping_fee ?? 0);
                         this.ongkirError[store.id] = null;
                     });
                 },
@@ -241,7 +240,7 @@
                     if (!this.selectedAddressId) return false;
                     
                     for (const store of this.stores) {
-                        if (!this.selectedCouriers[store.id] || this.shippingCosts[store.id] === 0) {
+                        if (!this.selectedCouriers[store.id] || this.shippingCosts[store.id] === undefined || this.shippingCosts[store.id] < 0) {
                             return false;
                         }
                     }
@@ -250,6 +249,10 @@
 
                 formatRupiah(number) {
                     return new Intl.NumberFormat('id-ID').format(number);
+                },
+
+                formatShipping(number) {
+                    return Number(number) === 0 ? 'Gratis (Rp 0)' : 'Rp ' + this.formatRupiah(number);
                 }
             }
         }

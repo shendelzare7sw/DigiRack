@@ -21,7 +21,7 @@
                 </a>
                 <span class="text-gray-300">|</span>
                 <a href="{{ route('pages.about') }}" class="hover:text-brand-navy transition-colors">Tentang Digital Hook</a>
-                <span>Same-day Tangerang Raya</span>
+                <span>Same-day Tangerang & Sekitarnya</span>
             </div>
             <div class="flex gap-5">
                 <a href="{{ route('pages.promos') }}" class="hover:text-brand-navy transition-colors flex items-center gap-1">

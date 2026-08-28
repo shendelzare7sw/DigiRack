@@ -1,6 +1,6 @@
 # Digital Hook
 
-Digital Hook adalah toko online single-store untuk komponen komputer, laptop baru/second, periferal, perangkat jaringan ringan, dan aksesori digital. Layanan ditujukan untuk Tangerang Raya dan menggunakan kurir toko same-day.
+Digital Hook adalah toko online single-store untuk komponen komputer, laptop baru/second, periferal, perangkat jaringan ringan, dan aksesori digital. Layanan ditujukan untuk Tangerang dan sekitarnya menggunakan kurir toko same-day.
 
 ## Teknologi
 
